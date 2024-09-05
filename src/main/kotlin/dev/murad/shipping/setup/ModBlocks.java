@@ -1,0 +1,168 @@
+package dev.murad.shipping.setup;
+
+
+import dev.murad.shipping.block.dock.BargeDockBlock;
+import dev.murad.shipping.block.dock.TugDockBlock;
+import dev.murad.shipping.block.energy.VesselChargerBlock;
+import dev.murad.shipping.block.fluid.FluidHopperBlock;
+import dev.murad.shipping.block.guiderail.CornerGuideRailBlock;
+import dev.murad.shipping.block.guiderail.TugGuideRailBlock;
+import dev.murad.shipping.block.rail.*;
+import dev.murad.shipping.block.rapidhopper.RapidHopperBlock;
+import dev.murad.shipping.block.vesseldetector.VesselDetectorBlock;
+import dev.murad.shipping.util.MultiMap;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+public class ModBlocks {
+
+    private static final MultiMap<ResourceKey<CreativeModeTab>, Supplier<BlockItem>> PRIVATE_TAB_REGISTRY = new MultiMap<>();
+
+    // Taken from IRON_BLOCK
+    private static BlockBehaviour.Properties METAL_BLOCK_BEHAVIOUR =
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(0.5F, 6.0F)
+                    .sound(SoundType.METAL);
+    private static BlockBehaviour.Properties RAIL_BLOCK_BEHAVIOUR = BlockBehaviour.Properties.ofFullCopy(Blocks.RAIL);
+
+    public static final Supplier<Block> TUG_DOCK = register(
+            "tug_dock",
+            () -> new TugDockBlock(METAL_BLOCK_BEHAVIOUR),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> BARGE_DOCK = register(
+            "barge_dock",
+            () -> new BargeDockBlock(METAL_BLOCK_BEHAVIOUR),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> GUIDE_RAIL_CORNER = register(
+            "guide_rail_corner",
+            () -> new CornerGuideRailBlock(METAL_BLOCK_BEHAVIOUR),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> VESSEL_DETECTOR = register(
+            "vessel_detector",
+            () -> new VesselDetectorBlock(METAL_BLOCK_BEHAVIOUR),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> GUIDE_RAIL_TUG = register(
+            "guide_rail_tug",
+            () -> new TugGuideRailBlock(METAL_BLOCK_BEHAVIOUR),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> FLUID_HOPPER = register(
+            "fluid_hopper",
+            () -> new FluidHopperBlock(METAL_BLOCK_BEHAVIOUR),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> VESSEL_CHARGER = register(
+            "vessel_charger",
+            () -> new VesselChargerBlock(METAL_BLOCK_BEHAVIOUR),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> RAPID_HOPPER = register(
+            "rapid_hopper",
+            () -> new RapidHopperBlock(METAL_BLOCK_BEHAVIOUR),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> SWITCH_RAIL = register(
+            "switch_rail",
+            () -> new SwitchRail(RAIL_BLOCK_BEHAVIOUR, false),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> AUTOMATIC_SWITCH_RAIL = register(
+            "automatic_switch_rail",
+            () -> new SwitchRail(RAIL_BLOCK_BEHAVIOUR, true),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> TEE_JUNCTION_RAIL = register(
+            "tee_junction_rail",
+            () -> new TeeJunctionRail(RAIL_BLOCK_BEHAVIOUR, false),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> AUTOMATIC_TEE_JUNCTION_RAIL = register(
+            "automatic_tee_junction_rail",
+            () -> new TeeJunctionRail(RAIL_BLOCK_BEHAVIOUR, true),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> JUNCTION_RAIL = register(
+            "junction_rail",
+            () -> new JunctionRail(RAIL_BLOCK_BEHAVIOUR),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> CAR_DOCK_RAIL = register(
+            "car_dock_rail",
+            () -> new TrainCarDockingRail(RAIL_BLOCK_BEHAVIOUR),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static final Supplier<Block> LOCOMOTIVE_DOCK_RAIL = register(
+            "locomotive_dock_rail",
+            () -> new LocomotiveDockingRail(RAIL_BLOCK_BEHAVIOUR),
+            List.of(
+                    CreativeModeTabs.TOOLS_AND_UTILITIES,
+                    CreativeModeTabs.REDSTONE_BLOCKS));
+
+    public static void buildCreativeTab(BuildCreativeModeTabContentsEvent event) {
+        PRIVATE_TAB_REGISTRY.getOrDefault(event.getTabKey(), new ArrayList<>())
+                .forEach(supplier  -> event.accept(supplier.get()));
+    }
+
+    private static <T extends Block> Supplier<T> registerNoItem(String name, Supplier<T> block){
+        return Registration.BLOCKS.register(name, block);
+    }
+
+    private static <T extends Block> Supplier<T> register(String name, Supplier<T> block, List<ResourceKey<CreativeModeTab>> tabs){
+        Supplier<T> ret = registerNoItem(name, block);
+        Supplier<BlockItem> item = Registration.ITEMS.register(name, () -> new BlockItem(ret.get(), new Item.Properties()));
+
+        for (var tab : tabs) {
+            PRIVATE_TAB_REGISTRY.putInsert(tab, item);
+        }
+
+        return ret;
+    }
+
+    public static void register () {}
+}
