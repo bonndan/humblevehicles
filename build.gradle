@@ -4,7 +4,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.neoforged.gradle.userdev' version '7.0.145'
-    id "org.jetbrains.kotlin.jvm" version ("2.0.10")
+    id "org.jetbrains.kotlin.jvm" version("2.0.10")
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -25,6 +25,7 @@ repositories {
         name = "Kotlin for Forge"
         setUrl("https://thedarkcolour.github.io/KotlinForForge/")
     }
+    maven { url 'https://maven.blamejared.com' }
 }
 
 base {
@@ -109,6 +110,9 @@ dependencies {
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
     // compileOnly "mezz.jei:jei-${mc_version}-neoforge-api:${jei_version}"
+    compileOnly "vazkii.patchouli:Patchouli:1.21-87-NEOFORGE:api"
+    runtimeOnly "vazkii.patchouli:Patchouli:1.21-87-NEOFORGE"
+
     // We add the full version to localRuntime, not runtimeOnly, so that we do not publish a dependency on it
     // localRuntime "mezz.jei:jei-${mc_version}-neoforge:${jei_version}"
 
@@ -146,7 +150,8 @@ tasks.withType(ProcessResources).configureEach {
             mod_license            : mod_license,
             mod_version            : mod_version,
             mod_authors            : mod_authors,
-            mod_description        : mod_description
+            mod_description        : mod_description,
+            patchouli_version_range: patchouli_version_range
     ]
     inputs.properties replaceProperties
 
