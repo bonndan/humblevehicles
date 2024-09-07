@@ -1,78 +1,85 @@
-package dev.murad.shipping.setup;
+package dev.murad.shipping.setup
 
-import dev.murad.shipping.block.dock.BargeDockTileEntity;
-import dev.murad.shipping.block.dock.TugDockTileEntity;
-import dev.murad.shipping.block.energy.VesselChargerTileEntity;
-import dev.murad.shipping.block.fluid.FluidHopperTileEntity;
-import dev.murad.shipping.block.rail.blockentity.LocomotiveDockTileEntity;
-import dev.murad.shipping.block.rail.blockentity.TrainCarDockTileEntity;
-import dev.murad.shipping.block.rapidhopper.RapidHopperTileEntity;
-import dev.murad.shipping.block.vesseldetector.VesselDetectorTileEntity;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import dev.murad.shipping.block.dock.BargeDockTileEntity
+import dev.murad.shipping.block.dock.TugDockTileEntity
+import dev.murad.shipping.block.energy.VesselChargerTileEntity
+import dev.murad.shipping.block.fluid.FluidHopperTileEntity
+import dev.murad.shipping.block.rail.blockentity.LocomotiveDockTileEntity
+import dev.murad.shipping.block.rail.blockentity.TrainCarDockTileEntity
+import dev.murad.shipping.block.rapidhopper.RapidHopperTileEntity
+import dev.murad.shipping.block.vesseldetector.VesselDetectorTileEntity
+import net.minecraft.core.BlockPos
+import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.entity.BlockEntityType
+import net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier
+import net.minecraft.world.level.block.state.BlockState
+import java.util.function.Supplier
 
-import java.util.function.Supplier;
+object ModTileEntitiesTypes {
+    val TUG_DOCK: Supplier<BlockEntityType<TugDockTileEntity>> = register(
+        "tug_dock",
+        { pos: BlockPos, state: BlockState -> TugDockTileEntity(pos, state) },
+        ModBlocks.TUG_DOCK
+    )
 
-public class ModTileEntitiesTypes {
-    public static final Supplier<BlockEntityType<TugDockTileEntity>> TUG_DOCK = register(
-            "tug_dock",
-            TugDockTileEntity::new,
-            ModBlocks.TUG_DOCK
-    );
+    val BARGE_DOCK: Supplier<BlockEntityType<BargeDockTileEntity>> = register(
+        "barge_dock",
+        { pos: BlockPos, state: BlockState -> BargeDockTileEntity(pos, state) },
+        ModBlocks.BARGE_DOCK
+    )
 
-    public static final Supplier<BlockEntityType<BargeDockTileEntity>> BARGE_DOCK = register(
-            "barge_dock",
-            BargeDockTileEntity::new,
-            ModBlocks.BARGE_DOCK
-    );
+    @JvmField
+    val LOCOMOTIVE_DOCK: Supplier<BlockEntityType<LocomotiveDockTileEntity>> = register(
+        "locomotive_dock",
+        { pos: BlockPos, state: BlockState -> LocomotiveDockTileEntity(pos, state) },
+        ModBlocks.LOCOMOTIVE_DOCK_RAIL
+    )
 
-    public static final Supplier<BlockEntityType<LocomotiveDockTileEntity>> LOCOMOTIVE_DOCK = register(
-            "locomotive_dock",
-            LocomotiveDockTileEntity::new,
-            ModBlocks.LOCOMOTIVE_DOCK_RAIL
-    );
+    @JvmField
+    val CAR_DOCK: Supplier<BlockEntityType<TrainCarDockTileEntity>> = register(
+        "car_dock",
+        { pos: BlockPos, state: BlockState -> TrainCarDockTileEntity(pos, state) },
+        ModBlocks.CAR_DOCK_RAIL
+    )
 
-    public static final Supplier<BlockEntityType<TrainCarDockTileEntity>> CAR_DOCK = register(
-            "car_dock",
-            TrainCarDockTileEntity::new,
-            ModBlocks.CAR_DOCK_RAIL
-    );
+    @JvmField
+    val VESSEL_DETECTOR: Supplier<BlockEntityType<VesselDetectorTileEntity>> = register(
+        "vessel_detector",
+        { pos: BlockPos, state: BlockState -> VesselDetectorTileEntity(pos, state) },
+        ModBlocks.VESSEL_DETECTOR
+    )
 
-    public static final Supplier<BlockEntityType<VesselDetectorTileEntity>> VESSEL_DETECTOR = register(
-            "vessel_detector",
-            VesselDetectorTileEntity::new,
-            ModBlocks.VESSEL_DETECTOR
-    );
+    @JvmField
+    val FLUID_HOPPER: Supplier<BlockEntityType<FluidHopperTileEntity>> = register(
+        "fluid_hopper",
+        { pos: BlockPos, state: BlockState -> FluidHopperTileEntity(pos, state) },
+        ModBlocks.FLUID_HOPPER
+    )
 
-    public static final Supplier<BlockEntityType<FluidHopperTileEntity>> FLUID_HOPPER = register(
-            "fluid_hopper",
-            FluidHopperTileEntity::new,
-            ModBlocks.FLUID_HOPPER
-    );
+    val VESSEL_CHARGER: Supplier<BlockEntityType<VesselChargerTileEntity>> = register(
+        "vessel_charger",
+        { pos: BlockPos, state: BlockState -> VesselChargerTileEntity(pos, state) },
+        ModBlocks.VESSEL_CHARGER
+    )
 
-    public static final Supplier<BlockEntityType<VesselChargerTileEntity>> VESSEL_CHARGER = register(
-            "vessel_charger",
-            VesselChargerTileEntity::new,
-            ModBlocks.VESSEL_CHARGER
-    );
+    @JvmField
+    val RAPID_HOPPER: Supplier<BlockEntityType<RapidHopperTileEntity>> = register(
+        "rapid_hopper",
+        { pWorldPosition: BlockPos, pBlockState: BlockState -> RapidHopperTileEntity(pWorldPosition, pBlockState) },
+        ModBlocks.RAPID_HOPPER
+    )
 
-    public static final Supplier<BlockEntityType<RapidHopperTileEntity>> RAPID_HOPPER = register(
-            "rapid_hopper",
-            RapidHopperTileEntity::new,
-            ModBlocks.RAPID_HOPPER
-    );
-
-    private static <T extends BlockEntity> Supplier<BlockEntityType<T>> register(
-            String name,
-            BlockEntityType.BlockEntitySupplier<T> factory,
-            Supplier<? extends Block> block
-    ) {
-        return Registration.TILE_ENTITIES.register(name, () ->
-                BlockEntityType.Builder.of(factory, block.get()).build(null));
+    private fun <T : BlockEntity?> register(
+        name: String,
+        factory: BlockEntitySupplier<T>,
+        block: Supplier<out Block?>
+    ): Supplier<BlockEntityType<T>> {
+        return Registration.TILE_ENTITIES.register(
+            name,
+            Supplier { BlockEntityType.Builder.of(factory, block.get()).build(null) })
     }
 
-    public static void register () {
-
+    fun register() {
     }
 }

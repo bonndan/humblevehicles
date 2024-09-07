@@ -6,8 +6,8 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.level.block.state.BlockState
 
-class BargeDockTileEntity(pos: BlockPos?, state: BlockState?) :
-    AbstractTailDockTileEntity<VesselEntity?>(ModTileEntitiesTypes.BARGE_DOCK.get(), pos, state) {
+class BargeDockTileEntity(pos: BlockPos, state: BlockState) :
+    AbstractTailDockTileEntity<VesselEntity>(ModTileEntitiesTypes.BARGE_DOCK.get(), pos, state) {
 
     override val targetBlockPos: List<BlockPos>
         get() = if (isExtract) {

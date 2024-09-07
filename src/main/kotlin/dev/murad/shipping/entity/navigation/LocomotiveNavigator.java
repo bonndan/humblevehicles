@@ -82,7 +82,7 @@ public class LocomotiveNavigator {
                 var nextRail = pair.getFirst();
                 var prevExitTaken = pair.getSecond();
                 var state = locomotive.level().getBlockState(nextRail);
-                if (state.getBlock() instanceof MultiShapeRail s && s.isAutomaticSwitching()) {
+                if (state.getBlock() instanceof MultiShapeRail s && s.isAutomaticSwitching) {
                     var choices = s.getPossibleOutputDirections(state, prevExitTaken.getOpposite()).stream().toList();
                     if (choices.size() == 1) {
                         s.setRailState(state, locomotive.level(), nextRail, prevExitTaken.getOpposite(), choices.get(0));

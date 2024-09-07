@@ -366,7 +366,7 @@ public abstract class AbstractLocomotiveEntity extends AbstractTrainCarEntity im
             int y = (int) Math.floor(this.getY());
             int z = (int) Math.floor(this.getZ());
 
-            boolean docked = cap.isDocked();
+            boolean docked = cap.isDocked;
 
             if (docked && dockCheckCooldown > 0) {
                 dockCheckCooldown--;
@@ -456,7 +456,7 @@ public abstract class AbstractLocomotiveEntity extends AbstractTrainCarEntity im
 
     public boolean shouldFreezeTrain() {
         return !enrollmentHandler.mayMove()
-                || (stalling.isStalled() && !docked)
+                || (stalling.isStalled && !docked)
                 || linkingHandler.train.asList().stream().anyMatch(AbstractTrainCarEntity::isFrozen);
     }
 

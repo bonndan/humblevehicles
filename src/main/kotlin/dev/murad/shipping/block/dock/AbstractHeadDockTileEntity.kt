@@ -18,8 +18,8 @@ import java.util.stream.Collectors
 import java.util.stream.IntStream
 import kotlin.math.min
 
-abstract class AbstractHeadDockTileEntity<T>(t: BlockEntityType<*>?, pos: BlockPos?, state: BlockState?) :
-    AbstractDockTileEntity<T>(t, pos, state) where T : Entity?, T : LinkableEntity<T>? {
+abstract class AbstractHeadDockTileEntity<T>(t: BlockEntityType<*>, pos: BlockPos, state: BlockState) :
+    AbstractDockTileEntity<T>(t, pos, state) where T : Entity, T : LinkableEntity<T> {
 
     protected fun handleItemHopper(tugEntity: T, hopper: HopperBlockEntity?): Boolean {
         if (tugEntity !is Container) {
@@ -62,9 +62,9 @@ abstract class AbstractHeadDockTileEntity<T>(t: BlockEntityType<*>?, pos: BlockP
         return false
     }
 
-    protected abstract fun checkBadDirCondition(tug: T, direction: Direction?): Boolean
+    protected abstract fun checkBadDirCondition(tug: T, direction: Direction): Boolean
 
-    protected abstract fun getRowDirection(facing: Direction?): Direction
+    protected abstract fun getRowDirection(facing: Direction): Direction
 
     private fun getTailDockPairs(tug: T): List<Pair<T, AbstractTailDockTileEntity<T>>> {
         val barges = tug!!.train.asListOfTugged()

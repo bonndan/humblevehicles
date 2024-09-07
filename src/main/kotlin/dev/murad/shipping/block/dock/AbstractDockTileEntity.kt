@@ -16,14 +16,14 @@ abstract class AbstractDockTileEntity<T>(p_i48289_1_: BlockEntityType<*>?, pos: 
 
     abstract fun hold(vessel: T, direction: Direction): Boolean
 
-    fun getHopper(p: BlockPos?): Optional<HopperBlockEntity> {
+    fun getHopper(p: BlockPos): Optional<HopperBlockEntity> {
         val mayBeHopper = level!!.getBlockEntity(p)
         return if (mayBeHopper is HopperBlockEntity) {
             Optional.of(mayBeHopper)
         } else Optional.empty()
     }
 
-    fun getVesselLoader(p: BlockPos?): Optional<IVesselLoader> {
+    fun getVesselLoader(p: BlockPos): Optional<IVesselLoader> {
         val mayBeHopper = level!!.getBlockEntity(p)
         return if (mayBeHopper is IVesselLoader) {
             Optional.of(mayBeHopper)

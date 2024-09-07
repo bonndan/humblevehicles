@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.HopperBlockEntity
 import net.minecraft.world.level.block.state.BlockState
 
 abstract class AbstractTailDockTileEntity<T>(t: BlockEntityType<*>?, pos: BlockPos?, state: BlockState?) :
-    AbstractDockTileEntity<T>(t, pos, state) where T : Entity?, T : LinkableEntity<T>? {
+    AbstractDockTileEntity<T>(t, pos, state) where T : Entity, T : LinkableEntity<T>? {
     protected fun handleItemHopper(bargeEntity: T, hopper: HopperBlockEntity?): Boolean {
         if (bargeEntity !is Container) {
             return false

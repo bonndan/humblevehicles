@@ -213,7 +213,7 @@ public abstract class AbstractTugEntity extends VesselEntity implements
             int y = (int) Math.floor(this.getY());
             int z = (int) Math.floor(this.getZ());
 
-            boolean docked = cap.isDocked();
+            boolean docked = cap.isDocked;
 
             if (docked && dockCheckCooldown > 0) {
                 dockCheckCooldown--;
@@ -387,7 +387,7 @@ public abstract class AbstractTugEntity extends VesselEntity implements
         var dockcap = Optional.ofNullable(getCapability(StallingCapability.STALLING_CAPABILITY));
         if (dockcap.isPresent() ) {
             var cap = dockcap.get();
-            if (cap.isDocked() || cap.isFrozen() || cap.isStalled())
+            if (cap.isDocked || cap.isFrozen || cap.isStalled)
                 return;
         }
 
@@ -446,7 +446,7 @@ public abstract class AbstractTugEntity extends VesselEntity implements
     }
 
     public boolean shouldFreezeTrain() {
-        return !enrollmentHandler.mayMove() || (stalling.isStalled() && !docked) || linkingHandler.train.asList().stream().anyMatch(VesselEntity::isFrozen);
+        return !enrollmentHandler.mayMove() || (stalling.isStalled && !docked) || linkingHandler.train.asList().stream().anyMatch(VesselEntity::isFrozen);
     }
 
     @Override
