@@ -1,3 +1,19 @@
+# Little Logistics Mod for Minecraft NeoForge
+
+This is a NeoForge port of [LittleLogistics](https://littlelogistics.murad.dev/).
+
+## Project goals
+
+* learn Minecraft modding (+learn more Kotlin)
+* have fun with rideable trains and ships in a vanilla setting
+
+
+
+
+-----------------
+
+
+
 ![Little Logistics](https://user-images.githubusercontent.com/31002977/162084973-b37fd259-e3c5-4c91-81e5-193f32e1ef91.png)
 ###### banner by naj77
 
@@ -12,9 +28,7 @@ https://www.curseforge.com/minecraft/mc-mods/little-logistics
 
 https://modrinth.com/mod/little-logistics
 
-### Discord
 
-https://discord.gg/e6U2CFruVC
 
 ### Features
 
