@@ -35,9 +35,9 @@ interface IVesselLoader {
     fun entityPredicate(entity: Entity, pos: BlockPos, capability: EntityCapability<*, *>?): Boolean {
         return Optional.ofNullable(entity.getCapability(capability, null)).map { cap: Any? ->
             if (entity is LinkableEntity<*>) {
-                return@map entity.allowDockInterface() && (entity.blockPos.x == pos.x && entity.blockPos.z == pos.z)
+                 entity.allowDockInterface() && (entity.getBlockPos().x == pos.x && entity.getBlockPos().z == pos.z)
             } else {
-                return@map true
+                 true
             }
         }.orElse(false)
     }
@@ -52,9 +52,5 @@ interface IVesselLoader {
             pos.z + 1.0
         )
     }
-    companion object {
 
-
-
-    }
 }

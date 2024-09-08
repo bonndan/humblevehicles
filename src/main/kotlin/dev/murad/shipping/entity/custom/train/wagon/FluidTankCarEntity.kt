@@ -1,111 +1,110 @@
-package dev.murad.shipping.entity.custom.train.wagon;
+package dev.murad.shipping.entity.custom.train.wagon
 
-import dev.murad.shipping.entity.custom.vessel.tug.AbstractTugEntity;
-import dev.murad.shipping.setup.ModEntityTypes;
-import dev.murad.shipping.setup.ModItems;
-import dev.murad.shipping.util.FluidDisplayUtil;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
-import org.jetbrains.annotations.NotNull;
+import dev.murad.shipping.entity.custom.vessel.tug.AbstractTugEntity
+import dev.murad.shipping.setup.ModEntityTypes
+import dev.murad.shipping.setup.ModItems
+import dev.murad.shipping.util.FluidDisplayUtil
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.syncher.EntityDataAccessor
+import net.minecraft.network.syncher.EntityDataSerializers
+import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResult
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.material.Fluid
+import net.minecraft.world.level.material.Fluids
+import net.neoforged.neoforge.fluids.FluidStack
+import net.neoforged.neoforge.fluids.FluidType
+import net.neoforged.neoforge.fluids.FluidUtil
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank
 
-public class FluidTankCarEntity extends AbstractWagonEntity {
-
-    public static int CAPACITY = FluidType.BUCKET_VOLUME * 10;
-    protected FluidTank tank = new FluidTank(CAPACITY) {
-        @Override
-        protected void onContentsChanged() {
-            sendInfoToClient();
+class FluidTankCarEntity : AbstractWagonEntity {
+    protected var tank: FluidTank = object : FluidTank(
+        CAPACITY
+    ) {
+        override fun onContentsChanged() {
+            sendInfoToClient()
         }
-    };
-    private static final EntityDataAccessor<Integer> VOLUME = SynchedEntityData.defineId(AbstractTugEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<String> FLUID_TYPE = SynchedEntityData.defineId(AbstractTugEntity.class, EntityDataSerializers.STRING);
-    private Fluid clientCurrFluid = Fluids.EMPTY;
-    private int clientCurrAmount = 0;
+    }
+    private var clientCurrFluid: Fluid = Fluids.EMPTY
+    private var clientCurrAmount = 0
 
-    public FluidTankCarEntity(EntityType<?> p_38087_, Level p_38088_) {
-        super(p_38087_, p_38088_);
+    constructor(p_38087_: EntityType<*>, p_38088_: Level) : super(p_38087_, p_38088_)
+
+    constructor(
+        level: Level,
+        aDouble: Double,
+        aDouble1: Double,
+        aDouble2: Double
+    ) : super(ModEntityTypes.FLUID_CAR.get(), level, aDouble, aDouble1, aDouble2)
+
+    override fun getPickResult(): ItemStack {
+        return ItemStack(ModItems.FLUID_CAR.get())
     }
 
-    public FluidTankCarEntity(Level level, Double aDouble, Double aDouble1, Double aDouble2) {
-        super(ModEntityTypes.FLUID_CAR.get(), level, aDouble, aDouble1, aDouble2);
-
+    override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
+        super.defineSynchedData(pBuilder)
+        entityData.set(FLUID_TYPE, "minecraft:empty")
+        entityData.set(VOLUME, 0)
     }
 
-    @Override
-    public @NotNull ItemStack getPickResult() {
-        return new ItemStack(ModItems.FLUID_CAR.get());
-    }
+    override fun interact(player: Player, hand: InteractionHand): InteractionResult {
+        val ret = super.interact(player, hand)
+        if (ret.consumesAction()) return ret
 
-    @Override
-    protected void defineSynchedData(SynchedEntityData.Builder pBuilder) {
-        super.defineSynchedData(pBuilder);
-        entityData.set(FLUID_TYPE, "minecraft:empty");
-        entityData.set(VOLUME, 0);
-    }
-
-    @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
-        InteractionResult ret = super.interact(player, hand);
-        if (ret.consumesAction()) return ret;
-
-        if (!this.level().isClientSide) {
-            FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, tank);
-            player.displayClientMessage(FluidDisplayUtil.getFluidDisplay(tank), false);
+        if (!level().isClientSide) {
+            FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, tank)
+            player.displayClientMessage(FluidDisplayUtil.getFluidDisplay(tank), false)
         }
-        return InteractionResult.CONSUME;
+        return InteractionResult.CONSUME
     }
 
-    public FluidStack getFluidStack() {
-        return tank.getFluid();
+    val fluidStack: FluidStack
+        get() = tank.fluid
+
+    public override fun readAdditionalSaveData(tag: CompoundTag) {
+        super.readAdditionalSaveData(tag)
+        tank.readFromNBT(registryAccess(), tag)
+        sendInfoToClient()
     }
 
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        tank.readFromNBT(registryAccess(), tag);
-        sendInfoToClient();
+    public override fun addAdditionalSaveData(tag: CompoundTag) {
+        super.addAdditionalSaveData(tag)
+        tank.writeToNBT(registryAccess(), tag)
     }
 
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tank.writeToNBT(registryAccess(), tag);
+    private fun sendInfoToClient() {
+        entityData.set(VOLUME, tank.fluidAmount)
+        entityData.set(FLUID_TYPE, BuiltInRegistries.FLUID.getKey(tank.fluid.fluid).toString())
     }
 
-    private void sendInfoToClient() {
-        entityData.set(VOLUME, tank.getFluidAmount());
-        entityData.set(FLUID_TYPE, BuiltInRegistries.FLUID.getKey(tank.getFluid().getFluid()).toString());
-    }
-
-    @Override
-    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> key) {
-        super.onSyncedDataUpdated(key);
+    override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
+        super.onSyncedDataUpdated(key)
 
         if (level().isClientSide) {
-            if (VOLUME.equals(key)) {
-                clientCurrAmount = entityData.get(VOLUME);
-                tank.setFluid(new FluidStack(clientCurrFluid, clientCurrAmount));
-            } else if (FLUID_TYPE.equals(key)) {
-                ResourceLocation fluidName = ResourceLocation.parse(entityData.get(FLUID_TYPE));
-                clientCurrFluid = BuiltInRegistries.FLUID.get(fluidName);
-                tank.setFluid(new FluidStack(clientCurrFluid, clientCurrAmount));
+            if (VOLUME == key) {
+                clientCurrAmount = entityData.get(VOLUME)
+                tank.fluid = FluidStack(clientCurrFluid, clientCurrAmount)
+            } else if (FLUID_TYPE == key) {
+                val fluidName = ResourceLocation.parse(entityData.get(FLUID_TYPE))
+                clientCurrFluid = BuiltInRegistries.FLUID[fluidName]
+                tank.fluid = FluidStack(clientCurrFluid, clientCurrAmount)
             }
         }
+    }
+
+    companion object {
+        var CAPACITY: Int = FluidType.BUCKET_VOLUME * 10
+        private val VOLUME: EntityDataAccessor<Int> = SynchedEntityData.defineId(
+            AbstractTugEntity::class.java, EntityDataSerializers.INT
+        )
+        private val FLUID_TYPE: EntityDataAccessor<String> = SynchedEntityData.defineId(
+            AbstractTugEntity::class.java, EntityDataSerializers.STRING
+        )
     }
 }

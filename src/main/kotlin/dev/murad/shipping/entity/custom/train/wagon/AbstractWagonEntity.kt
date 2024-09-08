@@ -1,138 +1,127 @@
-package dev.murad.shipping.entity.custom.train.wagon;
+package dev.murad.shipping.entity.custom.train.wagon
 
-import dev.murad.shipping.capability.StallingCapability;
-import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity;
-import dev.murad.shipping.entity.custom.train.locomotive.AbstractLocomotiveEntity;
-import dev.murad.shipping.util.Train;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import dev.murad.shipping.capability.StallingCapability
+import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity
+import dev.murad.shipping.entity.custom.train.locomotive.AbstractLocomotiveEntity
+import dev.murad.shipping.util.Train
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.level.Level
+import net.minecraft.world.phys.Vec3
+import java.util.*
 
-import javax.annotation.Nonnull;
-import java.util.Optional;
+abstract class AbstractWagonEntity : AbstractTrainCarEntity {
+    constructor(entityType: EntityType<*>, level: Level) : super(entityType, level)
 
-public abstract class AbstractWagonEntity extends AbstractTrainCarEntity {
+    constructor(entityType: EntityType<*>, level: Level, aDouble: Double, aDouble1: Double, aDouble2: Double) : super(
+        entityType,
+        level,
+        aDouble,
+        aDouble1,
+        aDouble2
+    )
 
-    public AbstractWagonEntity(EntityType<?> p_38087_, Level p_38088_) {
-        super(p_38087_, p_38088_);
+    override fun setDominated(entity: AbstractTrainCarEntity) {
+        linkingHandler.follower = Optional.of(entity)
     }
 
-    public AbstractWagonEntity(EntityType<?> p_38087_, Level level, Double aDouble, Double aDouble1, Double aDouble2) {
-        super(p_38087_, level, aDouble, aDouble1, aDouble2);
+
+    override fun setDominant(entity: AbstractTrainCarEntity) {
+        this.setTrain(entity.getTrain())
+        linkingHandler.leader = Optional.of(entity)
     }
 
-    @Override
-    public void setDominated(AbstractTrainCarEntity entity) {
-        linkingHandler.follower = Optional.of(entity);
-    }
-
-
-    @Override
-    public void setDominant(AbstractTrainCarEntity entity) {
-        this.setTrain(entity.getTrain());
-        linkingHandler.leader = Optional.of(entity);
-    }
-
-    @Override
-    public void tick() {
-        if(capability.isFrozen || linkingHandler.train.getTug().map(s -> (AbstractLocomotiveEntity) s).map(AbstractLocomotiveEntity::shouldFreezeTrain).orElse(false)){
-            this.setDeltaMovement(Vec3.ZERO);
+    override fun tick() {
+        if (capability.isFrozen() || linkingHandler.train?.tug
+                ?.map { s -> s as AbstractLocomotiveEntity }
+                ?.map { obj: AbstractLocomotiveEntity -> obj.shouldFreezeTrain() }?.orElse(false) == true
+        ) {
+            this.deltaMovement = Vec3.ZERO
         } else {
-            super.tick();
+            super.tick()
         }
     }
 
-    @Override
-    public void removeDominated() {
-        if(!this.isAlive()){
-            return;
+    override fun removeDominated() {
+        if (!this.isAlive) {
+            return
         }
-        linkingHandler.follower = Optional.empty();
-        linkingHandler.train.setTail(this);
+        linkingHandler.follower = Optional.empty()
+        linkingHandler.train?.tail = this
     }
 
-    @Override
-    public void removeDominant() {
-        if(!this.isAlive()){
-            return;
+    override fun removeDominant() {
+        if (!this.isAlive) {
+            return
         }
-        linkingHandler.leader = Optional.empty();
-        this.setTrain(new Train<>(this));
+        linkingHandler.leader = Optional.empty()
+        this.setTrain(Train(this))
     }
 
-    @Override
-    public void setTrain(Train<AbstractTrainCarEntity> train) {
-        linkingHandler.train = train;
-        train.setTail(this);
-        linkingHandler.follower.ifPresent(dominated -> {
+    override fun setTrain(train: Train<AbstractTrainCarEntity>) {
+        linkingHandler.train = train
+        train.tail = this
+        linkingHandler.follower.ifPresent { dominated: AbstractTrainCarEntity ->
             // avoid recursion loops
-            if(!dominated.getTrain().equals(train)){
-                dominated.setTrain(train);
+            if (dominated.getTrain() != train) {
+                dominated.setTrain(train)
             }
-        });
+        }
     }
 
-    // hack to disable hoppers
-    public boolean isDockable() {
-        return linkingHandler.leader.map(dom -> this.distanceToSqr(dom) < 1.05).orElse(true);
+    val isDockable: Boolean
+        // hack to disable hoppers
+        get() = linkingHandler.leader.map { dom: AbstractTrainCarEntity? ->
+            this.distanceToSqr(
+                dom
+            ) < 1.05
+        }.orElse(true)
+
+
+    override fun allowDockInterface(): Boolean {
+        return isDockable
     }
 
+    private val capability: StallingCapability = object : StallingCapability {
 
-    public boolean allowDockInterface(){
-        return isDockable();
-    }
+        override fun isDocked(): Boolean =
+            delegate().map(StallingCapability::isDocked).orElse(false)
 
-    private final StallingCapability capability = new StallingCapability() {
-        @Override
-        public boolean isDocked() {
-            return delegate().map(StallingCapability::isDocked).orElse(false);
+        override fun dock(x: Double, y: Double, z: Double) {
+            delegate().ifPresent { s: StallingCapability -> s.dock(x, y, z) }
         }
 
-        @Override
-        public void dock(double x, double y, double z) {
-            delegate().ifPresent(s -> s.dock(x, y, z));
+        override fun undock() {
+            delegate().ifPresent { obj: StallingCapability -> obj.undock() }
         }
 
-        @Override
-        public void undock() {
-            delegate().ifPresent(StallingCapability::undock);
+        override fun isStalled(): Boolean = delegate().map(StallingCapability::isStalled).orElse(false)
+
+        override fun stall() {
+            delegate().ifPresent { obj: StallingCapability -> obj.stall() }
         }
 
-        @Override
-        public boolean isStalled() {
-            return delegate().map(StallingCapability::isStalled).orElse(false);
+        override fun unstall() {
+            delegate().ifPresent { obj: StallingCapability -> obj.unstall() }
         }
 
-        @Override
-        public void stall() {
-            delegate().ifPresent(StallingCapability::stall);
+        override fun isFrozen(): Boolean = super@AbstractWagonEntity.isFrozen()
+
+        override fun freeze() {
+            super@AbstractWagonEntity.setFrozen(true)
         }
 
-        @Override
-        public void unstall() {
-            delegate().ifPresent(StallingCapability::unstall);
+        override fun unfreeze() {
+            super@AbstractWagonEntity.setFrozen(false)
         }
 
-        @Override
-        public boolean isFrozen() {
-            return AbstractWagonEntity.super.isFrozen();
-        }
-
-        @Override
-        public void freeze() {
-            AbstractWagonEntity.super.setFrozen(true);
-        }
-
-        @Override
-        public void unfreeze() {
-            AbstractWagonEntity.super.setFrozen(false);
-        }
-
-        private Optional<StallingCapability> delegate() {
-            if (linkingHandler.train.getHead() instanceof AbstractLocomotiveEntity e) {
-                return Optional.ofNullable(e.getCapability(STALLING_CAPABILITY));
+        private fun delegate(): Optional<StallingCapability> {
+            val e = linkingHandler.train?.head
+            if (e is AbstractLocomotiveEntity) {
+                return Optional.ofNullable<StallingCapability>(
+                    e.getCapability(StallingCapability.STALLING_CAPABILITY)
+                )
             }
-            return Optional.empty();
+            return Optional.empty()
         }
-    };
+    }
 }

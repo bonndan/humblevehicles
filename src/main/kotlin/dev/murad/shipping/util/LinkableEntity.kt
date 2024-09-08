@@ -1,78 +1,85 @@
-package dev.murad.shipping.util;
+package dev.murad.shipping.util
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.player.Player
+import java.util.*
+import java.util.function.Function
+import java.util.stream.Stream
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Stream;
+interface LinkableEntity<V : LinkableEntity<V>> {
 
-public interface LinkableEntity<V extends LinkableEntity<V>> {
+    fun getFollower():Optional<V>
 
-    Optional<V> getFollower();
-    Optional<V> getLeader();
-    void setDominated(V entity);
-    void setDominant(V entity);
-    void removeDominated();
-    void removeDominant();
-    void handleShearsCut();
-    Train<V> getTrain();
-    boolean linkEntities(Player player, Entity target);
-    void setTrain(Train<V> train);
-    boolean hasWaterOnSides();
+    fun getLeader():Optional<V>
 
-    default void handleLinkableKill(){
-        this.getFollower().ifPresent(LinkableEntity::removeDominant);
-        this.getLeader().ifPresent(LinkableEntity::removeDominated);
+    fun setDominated(entity: V)
+    fun setDominant(entity: V)
+    fun removeDominated()
+    fun removeDominant()
+    fun handleShearsCut()
+    fun getTrain(): Train<V>
+    fun linkEntities(player: Player, target: Entity): Boolean
+    fun setTrain(train: Train<V>)
+    fun hasWaterOnSides(): Boolean
+
+    fun handleLinkableKill() {
+        getFollower().ifPresent { obj: V -> obj.removeDominant() }
+        getLeader().ifPresent { obj: V -> obj.removeDominated() }
     }
 
-    default boolean checkNoLoopsDominated(){
-        return checkNoLoopsHelper(this, (LinkableEntity::getFollower), new HashSet<>());
+    fun checkNoLoopsDominated(): Boolean {
+        return checkNoLoopsHelper(this, { obj -> obj.getFollower() }, HashSet())
     }
 
-    default boolean checkNoLoopsDominant(){
-        return checkNoLoopsHelper(this, (LinkableEntity::getLeader), new HashSet<>());
+    fun checkNoLoopsDominant(): Boolean {
+        return checkNoLoopsHelper(this, { obj: LinkableEntity<V> -> obj.getLeader() }, HashSet())
     }
 
-    default boolean checkNoLoopsHelper(LinkableEntity<V> entity, Function<LinkableEntity<V>, Optional<V>> next, Set<LinkableEntity<V>> set){
-        if(set.contains(entity)){
-            return true;
+    fun checkNoLoopsHelper(
+        entity: LinkableEntity<V>,
+        next: Function<LinkableEntity<V>, Optional<V>?>,
+        set: MutableSet<LinkableEntity<V>?>
+    ): Boolean {
+        if (set.contains(entity)) {
+            return true
         }
-        set.add(entity);
-        Optional<V> nextEntity = next.apply(entity);
-        return nextEntity.map(e -> this.checkNoLoopsHelper(e, next, set)).orElse(false);
+        set.add(entity)
+        val nextEntity = next.apply(entity)
+        return nextEntity!!.map { e: V -> this.checkNoLoopsHelper(e, next, set) }.orElse(false)
     }
 
-    default<U> Stream<U> applyWithAll(Function<LinkableEntity<V>, U> function){
-        return this.getTrain().getHead().applyWithDominated(function);
+    fun <U> applyWithAll(function: Function<LinkableEntity<V>?, U>): Stream<U> {
+        return getTrain()!!.head!!.applyWithDominated(function)
     }
 
-    default<U> Stream<U> applyWithDominant(Function<LinkableEntity<V>, U> function){
-        Stream<U> ofThis = Stream.of(function.apply(this));
+    fun <U> applyWithDominant(function: Function<LinkableEntity<V>?, U>): Stream<U> {
+        val ofThis = Stream.of(function.apply(this))
 
-        return checkNoLoopsDominant() ? ofThis : this.getLeader().map(dom ->
-                Stream.concat(ofThis, dom.applyWithDominant(function))
-        ).orElse(ofThis);
-
+        return if (checkNoLoopsDominant()) ofThis else getLeader().map { dom: V ->
+            Stream.concat(
+                ofThis,
+                dom.applyWithDominant(function)
+            )
+        }.orElse(ofThis)
     }
 
-    default<U> Stream<U> applyWithDominated(Function<LinkableEntity<V>, U> function){
-        Stream<U> ofThis = Stream.of(function.apply(this));
+    fun <U> applyWithDominated(function: Function<LinkableEntity<V>?, U>): Stream<U> {
+        val ofThis = Stream.of(function.apply(this))
 
-        return checkNoLoopsDominated() ? ofThis : this.getFollower().map(dom ->
-                Stream.concat(ofThis, dom.applyWithDominated(function))
-        ).orElse(ofThis);
-
+        return if (checkNoLoopsDominated()) ofThis else getFollower().map { dom: V ->
+            Stream.concat(
+                ofThis,
+                dom.applyWithDominated(function)
+            )
+        }.orElse(ofThis)
     }
 
-    boolean allowDockInterface();
+    fun allowDockInterface(): Boolean
 
-    BlockPos getBlockPos();
+    fun getBlockPos(): BlockPos
 
-    enum LinkSide {
+    enum class LinkSide {
         DOMINANT, DOMINATED
     }
 }

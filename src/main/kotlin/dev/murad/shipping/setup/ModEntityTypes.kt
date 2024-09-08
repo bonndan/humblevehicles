@@ -115,7 +115,7 @@ object ModEntityTypes {
     val CHEST_CAR: Supplier<EntityType<ChestCarEntity>> =
         ENTITIES.register("chest_car", Supplier<EntityType<ChestCarEntity>> {
             EntityType.Builder.of(
-                { type: EntityType<ChestCarEntity>, level: Level? -> ChestCarEntity(type, level) }, MobCategory.MISC
+                { type: EntityType<ChestCarEntity>, level: Level -> ChestCarEntity(type, level) }, MobCategory.MISC
             ).sized(0.7f, 0.9f).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
                 .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "chest_car").toString())
         })
@@ -124,7 +124,7 @@ object ModEntityTypes {
     val BARREL_CAR: Supplier<EntityType<ChestCarEntity>> =
         ENTITIES.register("barrel_car", Supplier<EntityType<ChestCarEntity>> {
             EntityType.Builder.of(
-                { type: EntityType<ChestCarEntity>, level: Level? -> ChestCarEntity(type, level) }, MobCategory.MISC
+                { type: EntityType<ChestCarEntity>, level: Level -> ChestCarEntity(type, level) }, MobCategory.MISC
             ).sized(0.7f, 0.9f).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
                 .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "barrel_car").toString())
         })
@@ -132,7 +132,8 @@ object ModEntityTypes {
     @JvmField
     val SEATER_CAR: Supplier<EntityType<SeaterCarEntity>> =
         ENTITIES.register("seater_car", Supplier<EntityType<SeaterCarEntity>> {
-            EntityType.Builder.of({ type, level -> SeaterCarEntity(type, level) }, MobCategory.MISC).sized(0.7f, 0.9f)
+            EntityType.Builder.of({ type, level -> SeaterCarEntity(type, level) }, MobCategory.MISC)
+                .sized(0.7f, 0.9f)
                 .clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
                 .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "seater_car").toString())
         })
@@ -164,7 +165,7 @@ object ModEntityTypes {
     val STEAM_LOCOMOTIVE: Supplier<EntityType<AbstractLocomotiveEntity>> =
         ENTITIES.register("steam_locomotive", Supplier<EntityType<AbstractLocomotiveEntity>> {
             EntityType.Builder.of(
-                { type: EntityType<AbstractLocomotiveEntity>, level: Level? ->
+                { type: EntityType<AbstractLocomotiveEntity>, level: Level ->
                     SteamLocomotiveEntity(
                         type, level
                     )
@@ -177,10 +178,8 @@ object ModEntityTypes {
     val ENERGY_LOCOMOTIVE: Supplier<EntityType<AbstractLocomotiveEntity>> =
         ENTITIES.register("energy_locomotive", Supplier<EntityType<AbstractLocomotiveEntity>> {
             EntityType.Builder.of(
-                { type: EntityType<AbstractLocomotiveEntity>, level: Level? ->
-                    EnergyLocomotiveEntity(
-                        type, level
-                    )
+                { type: EntityType<AbstractLocomotiveEntity>, level: Level ->
+                    EnergyLocomotiveEntity(type, level)
                 }, MobCategory.MISC
             ).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true).sized(0.7f, 0.9f)
                 .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "energy_locomotive").toString())

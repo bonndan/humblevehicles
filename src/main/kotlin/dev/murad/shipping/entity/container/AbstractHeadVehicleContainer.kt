@@ -32,9 +32,9 @@ abstract class AbstractHeadVehicleContainer<T : HeadVehicleDataAccessor?, U>(
 
         addSlot(
             SlotItemHandler(
-                entity!!.routeItemHandler,
+                entity!!.getRouteItemHandler(),
                 0, 98, 57
-            ).setBackground(EMPTY_ATLAS_LOC, entity!!.routeIcon)
+            ).setBackground(EMPTY_ATLAS_LOC, entity!!.getRouteIcon())
         )
     }
 
@@ -64,7 +64,7 @@ abstract class AbstractHeadVehicleContainer<T : HeadVehicleDataAccessor?, U>(
     }
 
     val owner: String
-        get() = entity!!.owner()
+        get() = entity!!.owner()!!
 
     fun canMove(): Boolean {
         return data!!.canMove()

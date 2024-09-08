@@ -1,614 +1,625 @@
-package dev.murad.shipping.entity.custom.train.locomotive;
+package dev.murad.shipping.entity.custom.train.locomotive
 
-import dev.murad.shipping.ShippingConfig;
-import dev.murad.shipping.block.rail.MultiShapeRail;
-import dev.murad.shipping.block.rail.blockentity.LocomotiveDockTileEntity;
-import dev.murad.shipping.capability.StallingCapability;
-import dev.murad.shipping.entity.accessor.DataAccessor;
-import dev.murad.shipping.entity.custom.HeadVehicle;
-import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity;
-import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart;
-import dev.murad.shipping.entity.navigation.LocomotiveNavigator;
-import dev.murad.shipping.item.LocoRouteItem;
-import dev.murad.shipping.setup.ModBlocks;
-import dev.murad.shipping.setup.ModItems;
-import dev.murad.shipping.setup.ModSounds;
-import dev.murad.shipping.util.*;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.PoweredRailBlock;
-import net.minecraft.world.level.block.state.properties.RailShape;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.entity.PartEntity;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import dev.murad.shipping.ShippingConfig
+import dev.murad.shipping.block.rail.MultiShapeRail
+import dev.murad.shipping.block.rail.blockentity.LocomotiveDockTileEntity
+import dev.murad.shipping.capability.StallingCapability
+import dev.murad.shipping.entity.accessor.DataAccessor
+import dev.murad.shipping.entity.custom.HeadVehicle
+import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity
+import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart
+import dev.murad.shipping.entity.navigation.LocomotiveNavigator
+import dev.murad.shipping.item.LocoRouteItem
+import dev.murad.shipping.setup.ModBlocks
+import dev.murad.shipping.setup.ModItems
+import dev.murad.shipping.setup.ModSounds
+import dev.murad.shipping.util.*
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
+import net.minecraft.network.syncher.EntityDataAccessor
+import net.minecraft.network.syncher.EntityDataSerializers
+import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResult
+import net.minecraft.world.MenuProvider
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.vehicle.AbstractMinecart
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.PoweredRailBlock
+import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.state.properties.RailShape
+import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.Vec3
+import net.neoforged.neoforge.entity.PartEntity
+import net.neoforged.neoforge.items.ItemStackHandler
+import java.util.*
+import java.util.function.Consumer
+import java.util.function.Function
+import java.util.function.Predicate
+import kotlin.math.abs
+import kotlin.math.floor
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
-import java.util.function.Predicate;
+abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntityHead<AbstractTrainCarEntity>,
+    ItemHandlerVanillaContainerWrapper, HeadVehicle {
 
-public abstract class AbstractLocomotiveEntity extends AbstractTrainCarEntity implements LinkableEntityHead<AbstractTrainCarEntity>, ItemHandlerVanillaContainerWrapper, HeadVehicle {
-    protected boolean engineOn = false;
+    private var engineOn: Boolean = false
 
-    protected final ChunkManagerEnrollmentHandler enrollmentHandler;
-    private boolean doflip = false;
-    private boolean independentMotion = false;
-    private boolean docked = false;
-    private final VehicleFrontPart frontHitbox;
-    private int speedRecomputeCooldown = 0;
-    private double speedLimit = -1;
-    private int collisionCheckCooldown = 0;
-    private int remainingStallTime = 0;
-    private boolean forceStallCheck = false;
+    protected val enrollmentHandler: ChunkManagerEnrollmentHandler
+    private val doflip = false
+    private var independentMotion = false
+    var isDocked: Boolean = false
+        private set
+    private val frontHitbox: VehicleFrontPart
+    private var speedRecomputeCooldown = 0
+    private var speedLimit = -1.0
+    private var collisionCheckCooldown = 0
+    private var remainingStallTime = 0
+    private var forceStallCheck = false
 
-    private BlockPos currentHorizontalBlockPos;
-    @Nullable
-    private BlockPos oldHorizontalBlockPos;
+    private var currentHorizontalBlockPos: BlockPos? = null
+    var oldHorizontalBlockPos: BlockPos? = null
+        private set
 
-    // item handler for loco routes
-    private static final String LOCO_ROUTE_INV_TAG = "locoRouteInv";
+    private var routeItemHandler: ItemStackHandler = createLocoRouteItemHandler()
 
+    protected var navigator: LocomotiveNavigator = LocomotiveNavigator(this)
 
-    protected ItemStackHandler routeItemHandler = createLocoRouteItemHandler();
-
-    private static final String NAVIGATOR_TAG = "navigator";
-    protected LocomotiveNavigator navigator = new LocomotiveNavigator(this);
-
-    private static final EntityDataAccessor<Boolean> INDEPENDENT_MOTION = SynchedEntityData.defineId(AbstractLocomotiveEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<String> OWNER = SynchedEntityData.defineId(AbstractLocomotiveEntity.class, EntityDataSerializers.STRING);
-    private int dockCheckCooldown = 0;
+    private var dockCheckCooldown = 0
 
 
-    public AbstractLocomotiveEntity(EntityType<?> type, Level world) {
-        super(type, world);
-        frontHitbox = new VehicleFrontPart(this);
-        enrollmentHandler = new ChunkManagerEnrollmentHandler(this);
+    constructor(type: EntityType<*>, world: Level) : super(type, world) {
+        frontHitbox = VehicleFrontPart(this)
+        enrollmentHandler = ChunkManagerEnrollmentHandler(this)
     }
 
-    public AbstractLocomotiveEntity(EntityType<?> type, Level level, Double x, Double y, Double z) {
-        super(type, level, x, y, z);
-        frontHitbox = new VehicleFrontPart(this);
-        enrollmentHandler = new ChunkManagerEnrollmentHandler(this);
+    constructor(type: EntityType<*>, level: Level, x: Double, y: Double, z: Double) : super(type, level, x, y, z) {
+        frontHitbox = VehicleFrontPart(this)
+        enrollmentHandler = ChunkManagerEnrollmentHandler(this)
     }
 
-    @Override
-    public void enroll(UUID uuid) {
-        enrollmentHandler.enroll(uuid);
+    override fun enroll(uuid: UUID) {
+        enrollmentHandler.enroll(uuid)
     }
 
-    @Override
-    public boolean allowDockInterface() {
-        return docked;
+    override fun allowDockInterface(): Boolean {
+        return isDocked
     }
 
-    @Override
-    public ResourceLocation getRouteIcon() {
-        return ModItems.LOCO_ROUTE_ICON;
+    override fun getRouteIcon(): ResourceLocation {
+        return ModItems.LOCO_ROUTE_ICON
     }
 
-    @Override
-    public void remove(RemovalReason r) {
-        if (!this.level().isClientSide) {
-            this.spawnAtLocation(routeItemHandler.getStackInSlot(0));
+    override fun remove(r: RemovalReason) {
+        if (!level().isClientSide) {
+            this.spawnAtLocation(routeItemHandler.getStackInSlot(0))
         }
-        super.remove(r);
+        super.remove(r)
     }
 
-    @Override
-    public InteractionResult interact(Player pPlayer, InteractionHand pHand) {
+    override fun interact(pPlayer: Player, pHand: InteractionHand): InteractionResult {
+        val ret = super.interact(pPlayer, pHand)
+        if (ret.consumesAction()) return ret
 
-        InteractionResult ret = super.interact(pPlayer, pHand);
-        if (ret.consumesAction()) return ret;
-
-        if (!pHand.equals(InteractionHand.MAIN_HAND)) {
-            return InteractionResult.PASS;
+        if (pHand != InteractionHand.MAIN_HAND) {
+            return InteractionResult.PASS
         }
 
-        if (!this.level().isClientSide) {
-            pPlayer.openMenu(createContainerProvider());
+        if (!level().isClientSide) {
+            pPlayer.openMenu(createContainerProvider())
             //NetworkHooks.openScreen((ServerPlayer) pPlayer, , getDataAccessor()::write);
         }
 
-        return InteractionResult.CONSUME;
+        return InteractionResult.CONSUME
     }
 
-    private ItemStackHandler createLocoRouteItemHandler() {
-        return new ItemStackHandler() {
-            @Override
-            protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
-                return 1;
+    private fun createLocoRouteItemHandler(): ItemStackHandler {
+        return object : ItemStackHandler() {
+            override fun getStackLimit(slot: Int, stack: ItemStack): Int {
+                return 1
             }
 
-            @Override
-            protected void onContentsChanged(int slot) {
-                updateNavigatorFromItem();
+            override fun onContentsChanged(slot: Int) {
+                updateNavigatorFromItem()
             }
 
-            @Override
-            public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return stack.getItem() instanceof LocoRouteItem;
+            override fun isItemValid(slot: Int, stack: ItemStack): Boolean {
+                return stack.item is LocoRouteItem
             }
-        };
+        }
     }
 
-    protected abstract MenuProvider createContainerProvider();
+    protected abstract fun createContainerProvider(): MenuProvider
 
-    public abstract DataAccessor getDataAccessor();
+    abstract val dataAccessor: DataAccessor
 
-    protected abstract boolean tickFuel();
+    protected abstract fun tickFuel(): Boolean
 
-    @Override
-    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> key) {
-        super.onSyncedDataUpdated(key);
+    override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
+        super.onSyncedDataUpdated(key)
 
         if (level().isClientSide) {
-            if (INDEPENDENT_MOTION.equals(key)) {
-                independentMotion = entityData.get(INDEPENDENT_MOTION);
+            if (INDEPENDENT_MOTION == key) {
+                independentMotion = entityData.get(INDEPENDENT_MOTION)
             }
         }
     }
 
-    @Override
-    public String owner() {
-        return entityData.get(OWNER);
+    override fun owner(): String {
+        return entityData.get(OWNER)
     }
 
-    @Override
-    public boolean hasOwner() {
-        return enrollmentHandler.hasOwner();
+    override fun hasOwner(): Boolean {
+        return enrollmentHandler.hasOwner()
     }
 
 
-    @Override
-    public void tick() {
-        linkingHandler.tickLoad();
+    override fun tick() {
+        linkingHandler.tickLoad()
 
-        if (!this.level().isClientSide) {
-            tickOldBlockPos();
+        if (!level().isClientSide) {
+            tickOldBlockPos()
             if (remainingStallTime <= 0) {
-                navigator.serverTick();
+                navigator.serverTick()
             }
-            enrollmentHandler.tick();
-            enrollmentHandler.getPlayerName().ifPresent(name ->
-                    entityData.set(OWNER, name)
-            );
+            enrollmentHandler.tick()
+            enrollmentHandler.playerName.ifPresent { name: String ->
+                entityData.set(
+                    OWNER,
+                    name
+                )
+            }
         }
 
-        tickYRot();
-        var yrot = this.getYRot();
-        tickVanilla();
-        this.setYRot(yrot);
-        if (linkingHandler.follower.isEmpty() && this.getDeltaMovement().length() > 0.05) {
-            this.setYRot(RailHelper.directionFromVelocity(getDeltaMovement()).toYRot());
+        tickYRot()
+        val yrot = this.yRot
+        tickVanilla()
+        this.yRot = yrot
+        if (linkingHandler.follower.isEmpty && deltaMovement.length() > 0.05) {
+            this.yRot = RailHelper.directionFromVelocity(deltaMovement).toYRot()
         }
-        if (!this.level().isClientSide) {
-            tickDockCheck();
-            tickMovement();
-        }
-
-        if (this.level().isClientSide
-                && independentMotion) {
-            doMovementEffect();
+        if (!level().isClientSide) {
+            tickDockCheck()
+            tickMovement()
         }
 
+        if (level().isClientSide
+            && independentMotion
+        ) {
+            doMovementEffect()
+        }
 
-        frontHitbox.updatePosition(this);
+
+        frontHitbox.updatePosition(this)
     }
 
-    private void tickOldBlockPos() {
+    private fun tickOldBlockPos() {
         if (oldHorizontalBlockPos == null || currentHorizontalBlockPos == null) {
-            oldHorizontalBlockPos = getBlockPos();
-            currentHorizontalBlockPos = getBlockPos();
+            oldHorizontalBlockPos = getBlockPos()
+            currentHorizontalBlockPos = getBlockPos()
         } else {
-            if (currentHorizontalBlockPos.getX() != this.getBlockX() ||
-                    currentHorizontalBlockPos.getZ() != this.getBlockZ()) {
-                oldHorizontalBlockPos = currentHorizontalBlockPos;
-                currentHorizontalBlockPos = getBlockPos();
+            if (currentHorizontalBlockPos!!.x != this.blockX ||
+                currentHorizontalBlockPos!!.z != this.blockZ
+            ) {
+                oldHorizontalBlockPos = currentHorizontalBlockPos
+                currentHorizontalBlockPos = getBlockPos()
             }
         }
     }
 
-    @Override
-    public float getMaxCartSpeedOnRail() {
-        return (float) (ShippingConfig.Server.TRAIN_MAX_SPEED.get() * 0.9);
+    override fun getMaxCartSpeedOnRail(): Float {
+        return (ShippingConfig.Server.TRAIN_MAX_SPEED!!.get() * 0.9).toFloat()
     }
 
-    public void flip() {
-        this.setYRot(getDirection().getOpposite().toYRot());
+    fun flip() {
+        this.yRot = direction.opposite.toYRot()
     }
 
-    protected void doMovementEffect() {
-
+    protected open fun doMovementEffect() {
     }
 
-    @Override
-    protected void defineSynchedData(SynchedEntityData.Builder pBuilder) {
-        super.defineSynchedData(pBuilder);
-        entityData.set(INDEPENDENT_MOTION, false);
-        entityData.set(OWNER, "");
+    override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
+        super.defineSynchedData(pBuilder)
+        entityData.set(INDEPENDENT_MOTION, false)
+        entityData.set(OWNER, "")
     }
 
-    private void tickMovement() {
+    private fun tickMovement() {
         if (remainingStallTime > 0) {
-            remainingStallTime--;
-            if (remainingStallTime == 0)
-                forceStallCheck = true;
+            remainingStallTime--
+            if (remainingStallTime == 0) forceStallCheck = true
         } else {
             if (collisionCheckCooldown <= 0 || forceStallCheck) {
-                var result = railHelper.traverse(getOnPos().above(), this.level(), this.getDirection(), (dir, pos)
-                                -> checkCollision(pos) || checkStopSign(pos, dir),
-                        4);
-                if (result.isPresent()) {
-                    remainingStallTime = 40;
+                val result = railHelper.traverse(
+                    onPos.above(), this.level(), this.direction,
+                    { dir: Direction, pos: BlockPos -> checkCollision(pos) || checkStopSign(pos, dir) },
+                    4
+                )
+                if (result.isPresent) {
+                    remainingStallTime = 40
                 }
-                collisionCheckCooldown = 4;
-                forceStallCheck = false;
+                collisionCheckCooldown = 4
+                forceStallCheck = false
             } else {
-                collisionCheckCooldown--;
+                collisionCheckCooldown--
             }
         }
-        if (!docked && engineOn && remainingStallTime <= 0 && !forceStallCheck && !shouldFreezeTrain() && tickFuel()) {
-            tickSpeedLimit();
-            entityData.set(INDEPENDENT_MOTION, true);
-            accelerate();
+        if (!isDocked && engineOn && remainingStallTime <= 0 && !forceStallCheck && !shouldFreezeTrain() && tickFuel()) {
+            tickSpeedLimit()
+            entityData.set(INDEPENDENT_MOTION, true)
+            accelerate()
         } else {
-            if (RailHelper.getRail(this.getOnPos().above(), this.level())
-                    .map(railHelper::getShape)
-                    .map(Enum::name)
-                    .map(s -> s.contains("ASCENDING"))
-                    .orElse(true) && tickFuel()) {
-                this.setDeltaMovement(Vec3.ZERO);
-                entityData.set(INDEPENDENT_MOTION, true);
-                this.setPos(xOld, yOld, zOld);
+            if (RailHelper.getRail(this.onPos.above(), this.level())
+                    .map { pos: BlockPos? -> railHelper.getShape(pos) }
+                    .map { obj: RailShape -> obj.name }
+                    .map { s: String -> s.contains("ASCENDING") }
+                    .orElse(true) && tickFuel()
+            ) {
+                this.deltaMovement = Vec3.ZERO
+                entityData.set(INDEPENDENT_MOTION, true)
+                this.setPos(xOld, yOld, zOld)
             } else {
-                entityData.set(INDEPENDENT_MOTION, false);
+                entityData.set(INDEPENDENT_MOTION, false)
             }
         }
 
         if (shouldFreezeTrain()) {
-            linkingHandler.train.asList().forEach(t -> t.setDeltaMovement(0, 0, 0));
+            linkingHandler.train?.asList()
+                ?.forEach(Consumer { t: AbstractTrainCarEntity -> t.setDeltaMovement(0.0, 0.0, 0.0) })
         }
     }
 
-    private boolean checkStopSign(BlockPos pos, Direction prevExitTaken) {
+    private fun checkStopSign(pos: BlockPos, prevExitTaken: Direction): Boolean {
+        return RailHelper.getRail(pos, this.level()).flatMap { block: BlockPos? ->
 
-        return RailHelper.getRail(pos, this.level()).flatMap(block -> {
-            if (level().getBlockState(block).getBlock() instanceof MultiShapeRail r) {
-                if (!this.level().getEntitiesOfClass(Entity.class, new AABB(pos), e -> e.equals(this) || e.equals(frontHitbox)).isEmpty())
-                    return Optional.empty();
-                return r.getPriorityDirectionsToCheck(level().getBlockState(block), prevExitTaken.getOpposite())
-                        .stream()
-                        .map(p -> railHelper.traverse(pos.relative(p), this.level(), p, (dir, f) -> checkLocoCollision(f), 2))
-                        .map(Optional::isPresent)
-                        .reduce(Boolean::logicalOr);
-            } else return Optional.of(false);
-        }).orElse(false);
+            if (level().getBlockState(block).block is MultiShapeRail) {
 
+                val r = level().getBlockState(block).block as MultiShapeRail
+                if (level().getEntitiesOfClass<Entity>(
+                        Entity::class.java, AABB(pos)
+                    ) { e: Entity -> e == this || e == frontHitbox }.isNotEmpty()
+                ) {
+                    return@flatMap Optional.empty<Boolean>()
+                }
+
+                return@flatMap r.getPriorityDirectionsToCheck(level().getBlockState(block), prevExitTaken.opposite)
+                    .stream()
+                    .map<Optional<Int>> { p: Direction? ->
+                        railHelper.traverse(
+                            pos.relative(p), this.level(), p,
+                            { dir: Direction?, f: BlockPos -> checkLocoCollision(f) }, 2
+                        )
+                    }
+                    .map<Boolean> { obj -> obj.isPresent }
+                    .reduce { a: Boolean, b: Boolean -> java.lang.Boolean.logicalOr(a, b) }
+            } else return@flatMap Optional.of<Boolean>(false)
+        }.orElse(false)
     }
 
-    private boolean checkCollision(BlockPos pos) {
-        AABB aabb = new AABB(pos);
-        return !this.level().getEntitiesOfClass(Entity.class, aabb, e -> {
-            if (e instanceof AbstractTrainCarEntity t) {
-                return t.getTrain().getTug().map(f -> !f.getUUID().equals(this.getUUID())).orElse(true);
-            } else if (e instanceof AbstractMinecart) return true;
-            else if (e instanceof VehicleFrontPart p) {
-                return !p.is(this);
-            } else return false;
-        }).isEmpty();
+    private fun checkCollision(pos: BlockPos): Boolean {
+        val aabb = AABB(pos)
+        return level().getEntitiesOfClass(
+            Entity::class.java, aabb
+        ) { entity ->
+            when (entity) {
+                //TODO check this kotlin conversion
+                is AbstractTrainCarEntity -> {
+                    entity.getTrain()?.tug?.map { f -> f?.uuid != this.getUUID() }
+                        ?.orElse(true) ?: true
+                }
+
+                is AbstractMinecart -> {
+                    true
+                }
+
+                is VehicleFrontPart -> {
+                    !entity.`is`(this)
+                }
+
+                else -> false
+            }
+        }.isNotEmpty()
     }
 
     // to avoid deadlock for stopsign, you only care about incoming "heads"
-    private boolean checkLocoCollision(BlockPos pos) {
-        AABB aabb = new AABB(pos);
-        return !this.level().getEntitiesOfClass(Entity.class, aabb, e -> {
-            if (e instanceof AbstractLocomotiveEntity t) {
-                return t.getTrain().getTug().map(f -> !f.getUUID().equals(this.getUUID())).orElse(true);
-            } else if (e instanceof VehicleFrontPart p) {
-                return !p.is(this);
-            } else return false;
-        }).isEmpty();
-    }
+    private fun checkLocoCollision(pos: BlockPos): Boolean {
+        val aabb = AABB(pos)
+        return level().getEntitiesOfClass(Entity::class.java, aabb)
+        { e: Entity ->
+            when (e) {
+                //TODO check this kotlin conversion
+                is AbstractLocomotiveEntity -> {
+                    e.getTrain()?.tug?.map { f -> f?.uuid != this.getUUID() }
+                        ?.orElse(true) ?: true
+                }
 
-    @Override
-    public PartEntity<?>[] getParts() {
-        return new PartEntity<?>[]{frontHitbox};
-    }
+                is VehicleFrontPart -> {
+                    !e.`is`(this)
+                }
 
-    @Override
-    public boolean isMultipartEntity() {
-        return true;
-    }
-
-    @Override
-    public boolean isPoweredCart() {
-        return true;
-    }
-
-    @Override
-    public void recreateFromPacket(ClientboundAddEntityPacket p_149572_) {
-        super.recreateFromPacket(p_149572_);
-        frontHitbox.setId(p_149572_.getId());
-    }
-
-
-    protected void onDock() {
-        this.playSound(ModSounds.TUG_DOCKING.get(), 0.6f, 1.0f);
-    }
-
-    protected void onUndock() {
-        this.playSound(ModSounds.TUG_UNDOCKING.get(), 0.6f, 1.5f);
-    }
-
-    private void tickDockCheck() {
-        Optional.ofNullable(getCapability(StallingCapability.STALLING_CAPABILITY)).ifPresent(cap -> {
-            int x = (int) Math.floor(this.getX());
-            int y = (int) Math.floor(this.getY());
-            int z = (int) Math.floor(this.getZ());
-
-            boolean docked = cap.isDocked;
-
-            if (docked && dockCheckCooldown > 0) {
-                dockCheckCooldown--;
-                this.setDeltaMovement(Vec3.ZERO);
-                this.moveTo(x + 0.5, getY(), z + 0.5);
-                return;
+                else -> false
             }
-
-            Function<Double, Double> prepCord =
-                    (Double d) -> Math.abs(d - d.intValue());
-            Predicate<Double> aroundCentre =
-                    (var i) -> prepCord.apply(i) < 0.8 && prepCord.apply(i) > 0.2;
-
-            if (!aroundCentre.test(this.getX()) || !aroundCentre.test(this.getZ())) {
-                return;
-            }
-
-
-            // Check docks
-            boolean shouldDock = Optional.ofNullable(level().getBlockEntity(getOnPos().above()))
-                    .filter(entity -> entity instanceof LocomotiveDockTileEntity)
-                    .map(entity -> (LocomotiveDockTileEntity) entity)
-                    .map(dock -> dock.hold(this, getDirection()))
-                    .orElse(false);
-
-            boolean changedDock = !docked && shouldDock;
-            boolean changedUndock = docked && !shouldDock;
-
-            if (shouldDock) {
-                dockCheckCooldown = 20; // todo: magic number
-                cap.dock(x + 0.5, getY(), z + 0.5);
-            } else {
-                dockCheckCooldown = 0;
-                cap.undock();
-            }
-
-            if (changedDock) onDock();
-            if (changedUndock) onUndock();
-        });
-
+        }.isNotEmpty()
     }
 
-    private double getSpeedModifier() {
-        // adjust speed based on slope etc.
-        var state = this.level().getBlockState(this.getOnPos().above());
-        if (state.is(Blocks.POWERED_RAIL)) {
-            if (!state.getValue(PoweredRailBlock.POWERED)) {
-                return 0;
-            } else {
-                return 0.005;
+    override fun getParts(): Array<PartEntity<*>> {
+        return arrayOf(frontHitbox)
+    }
+
+    override fun isMultipartEntity(): Boolean {
+        return true
+    }
+
+    override fun isPoweredCart(): Boolean {
+        return true
+    }
+
+    override fun recreateFromPacket(p_149572_: ClientboundAddEntityPacket) {
+        super.recreateFromPacket(p_149572_)
+        frontHitbox.id = p_149572_.id
+    }
+
+
+    protected fun onDock() {
+        this.playSound(ModSounds.TUG_DOCKING.get(), 0.6f, 1.0f)
+    }
+
+    protected open fun onUndock() {
+        this.playSound(ModSounds.TUG_UNDOCKING.get(), 0.6f, 1.5f)
+    }
+
+    private fun tickDockCheck() {
+        Optional.ofNullable(getCapability(StallingCapability.STALLING_CAPABILITY))
+            .ifPresent { cap: StallingCapability ->
+                val x = floor(this.x) as Int
+                val y = floor(this.y) as Int
+                val z = floor(this.z) as Int
+
+                val docked = cap.isDocked()
+
+                if (docked && dockCheckCooldown > 0) {
+                    dockCheckCooldown--
+                    this.deltaMovement = Vec3.ZERO
+                    this.moveTo(x + 0.5, getY(), z + 0.5)
+                    return@ifPresent
+                }
+
+                val prepCord =
+                    Function { d: Double -> abs(d - d.toInt()) }
+                val aroundCentre =
+                    Predicate { i: Double ->
+                        prepCord.apply(i) < 0.8 && prepCord.apply(
+                            i
+                        ) > 0.2
+                    }
+
+                if (!aroundCentre.test(this.x) || !aroundCentre.test(this.z)) {
+                    return@ifPresent
+                }
+
+
+                // Check docks
+                val shouldDock = Optional.ofNullable(level().getBlockEntity(onPos.above()))
+                    .filter { entity: BlockEntity? -> entity is LocomotiveDockTileEntity }
+                    .map { entity: BlockEntity -> entity as LocomotiveDockTileEntity }
+                    .map { dock: LocomotiveDockTileEntity ->
+                        dock.hold(
+                            this,
+                            direction
+                        )
+                    }
+                    .orElse(false)
+
+                val changedDock = !docked && shouldDock
+                val changedUndock = docked && !shouldDock
+
+                if (shouldDock) {
+                    dockCheckCooldown = 20 // todo: magic number
+                    cap.dock(x + 0.5, getY(), z + 0.5)
+                } else {
+                    dockCheckCooldown = 0
+                    cap.undock()
+                }
+
+                if (changedDock) onDock()
+                if (changedUndock) onUndock()
             }
+    }
+
+    private val speedModifier: Double
+        get() {
+            // adjust speed based on slope etc.
+            val state = level().getBlockState(this.onPos.above())
+            if (state.`is`(Blocks.POWERED_RAIL)) {
+                return if (!state.getValue(PoweredRailBlock.POWERED)) {
+                    0.0
+                } else {
+                    0.005
+                }
+            }
+            return railShape.map { shape: RailShape? ->
+                when (shape) {
+                    RailShape.NORTH_SOUTH, RailShape.EAST_WEST -> 0.07
+                    RailShape.SOUTH_WEST, RailShape.NORTH_WEST, RailShape.SOUTH_EAST, RailShape.NORTH_EAST -> 0.03
+                    else -> 0.07
+                }
+            }.orElse(0.0)
         }
-        return getRailShape().map(shape -> switch (shape) {
-            case NORTH_SOUTH, EAST_WEST -> 0.07;
-            case SOUTH_WEST, NORTH_WEST, SOUTH_EAST, NORTH_EAST -> 0.03;
-            default -> 0.07; //TODO lower if descending
-        }).orElse(0d);
-    }
 
-    private void tickSpeedLimit() {
+    private fun tickSpeedLimit() {
         if (speedRecomputeCooldown < 0 || speedLimit < 0) {
-            var dist = RailHelper.getRail(getOnPos().above(), this.level()).flatMap(pos ->
-                            railHelper.traverse(pos,
-                                    this.level(),
-                                    this.getDirection(),
-                                    (direction, p) -> {
-                                        var railoc = RailHelper.getRail(p, this.level());
-                                        if (railoc.isEmpty()) {
-                                            return true;
-                                        }
-                                        var shape = railHelper.getShape(railoc.get());
-                                        var block = this.level().getBlockState(railoc.get());
-                                        return !(shape.equals(RailShape.EAST_WEST) || shape.equals(RailShape.NORTH_SOUTH))
-                                                || block.is(ModBlocks.LOCOMOTIVE_DOCK_RAIL.get())
-                                                || block.getBlock() instanceof MultiShapeRail;
-                                    },
-                                    12))
-                    .orElse(12);
-            double minimum = ShippingConfig.Server.LOCO_BASE_SPEED.get() * 0.2;
-            double modifier = dist / 12d;
-            speedLimit = minimum + (ShippingConfig.Server.LOCO_BASE_SPEED.get() * 0.8 * modifier);
-            speedRecomputeCooldown = 10;
+            val dist = RailHelper.getRail(onPos.above(), this.level()).flatMap { pos: BlockPos? ->
+                railHelper.traverse(
+                    pos,
+                    this.level(),
+                    this.direction,
+                    { direction: Direction?, p: BlockPos? ->
+                        val railoc = RailHelper.getRail(p, this.level())
+                        if (railoc.isEmpty) {
+                            return@traverse true
+                        }
+                        val shape = railHelper.getShape(railoc.get())
+                        val block = level().getBlockState(railoc.get())
+                        !(shape == RailShape.EAST_WEST || shape == RailShape.NORTH_SOUTH)
+                                || block.`is`(ModBlocks.LOCOMOTIVE_DOCK_RAIL.get())
+                                || block.block is MultiShapeRail
+                    },
+                    12
+                )
+            }
+                .orElse(12)
+            val minimum = ShippingConfig.Server.LOCO_BASE_SPEED!!.get() * 0.2
+            val modifier = dist / 12.0
+            speedLimit = minimum + (ShippingConfig.Server.LOCO_BASE_SPEED!!.get() * 0.8 * modifier)
+            speedRecomputeCooldown = 10
         } else {
-            speedRecomputeCooldown--;
+            speedRecomputeCooldown--
         }
     }
 
-    public boolean shouldFreezeTrain() {
-        return !enrollmentHandler.mayMove()
-                || (stalling.isStalled && !docked)
-                || linkingHandler.train.asList().stream().anyMatch(AbstractTrainCarEntity::isFrozen);
-    }
+    fun shouldFreezeTrain(): Boolean = !enrollmentHandler.mayMove()
+            || (stalling.isStalled() && !isDocked)
+            || linkingHandler.train?.asList()?.any { trainCarEntity -> trainCarEntity.isFrozen() } ?: false
 
-    private void accelerate() {
-        var dir = this.getDirection();
-        if (Math.abs(this.getDeltaMovement().x) < speedLimit && Math.abs(this.getDeltaMovement().z) < speedLimit) {
-            var mod = this.getSpeedModifier();
-            this.push(dir.getStepX() * mod, 0, dir.getStepZ() * mod);
+    private fun accelerate() {
+        val dir = this.direction
+        if (abs(deltaMovement.x) < speedLimit && abs(deltaMovement.z) < speedLimit) {
+            val mod = this.speedModifier
+            this.push(dir.stepX * mod, 0.0, dir.stepZ * mod)
         }
     }
 
-    @Override
-    public void setDominated(AbstractTrainCarEntity entity) {
-        linkingHandler.follower = Optional.of(entity);
+    override fun setDominated(entity: AbstractTrainCarEntity) {
+        linkingHandler.follower = Optional.of(entity)
     }
 
-    @Override
-    public void setDominant(AbstractTrainCarEntity entity) {
+    override fun setDominant(entity: AbstractTrainCarEntity) {
     }
 
 
-    @Override
-    public void removeDominated() {
-        linkingHandler.follower = Optional.empty();
-        linkingHandler.train.setTail(this);
+    override fun removeDominated() {
+        linkingHandler.follower = Optional.empty()
+        linkingHandler.train?.tail = this
     }
 
-    @Override
-    public void removeDominant() {
-
+    override fun removeDominant() {
     }
 
-    @Override
-    public void setTrain(Train<AbstractTrainCarEntity> train) {
-        linkingHandler.train = train;
+    override fun setTrain(train: Train<AbstractTrainCarEntity>) {
+        linkingHandler.train = train
     }
 
-    protected final StallingCapability stalling = new StallingCapability() {
-        @Override
-        public boolean isDocked() {
-            return docked;
+    protected val stalling: StallingCapability = object : StallingCapability {
+
+        override fun isDocked(): Boolean
+            = isDocked
+
+        override fun dock(x: Double, y: Double, z: Double) {
+            isDocked = true
+            deltaMovement = Vec3.ZERO
+            moveTo(x, y, z)
         }
 
-        @Override
-        public void dock(double x, double y, double z) {
-            docked = true;
-            setDeltaMovement(Vec3.ZERO);
-            moveTo(x, y, z);
+        override fun undock() {
+            isDocked = false
         }
 
-        @Override
-        public void undock() {
-            docked = false;
+        override fun isStalled(): Boolean = remainingStallTime > 0
+
+        override fun stall() {
+            remainingStallTime = 20
         }
 
-        @Override
-        public boolean isStalled() {
-            return remainingStallTime > 0;
+        override fun unstall() {
+            remainingStallTime = 0
         }
 
-        @Override
-        public void stall() {
-            remainingStallTime = 20;
+        override fun isFrozen(): Boolean
+            = super@AbstractLocomotiveEntity.isFrozen()
+
+        override fun freeze() {
+            setFrozen(true)
         }
 
-        @Override
-        public void unstall() {
-            remainingStallTime = 0;
+        override fun unfreeze() {
+            setFrozen(false)
         }
+    }
 
-        @Override
-        public boolean isFrozen() {
-            return AbstractLocomotiveEntity.super.isFrozen();
-        }
-
-        @Override
-        public void freeze() {
-            setFrozen(true);
-        }
-
-        @Override
-        public void unfreeze() {
-            setFrozen(false);
-        }
-    };
-
-    private void updateNavigatorFromItem() {
-        ItemStack stack = routeItemHandler.getStackInSlot(0);
-        if (stack.getItem() instanceof LocoRouteItem) {
-            navigator.updateWithLocoRouteItem(LocoRouteItem.getRoute(stack));
+    private fun updateNavigatorFromItem() {
+        val stack = routeItemHandler.getStackInSlot(0)
+        if (stack.item is LocoRouteItem) {
+            navigator.updateWithLocoRouteItem(LocoRouteItem.getRoute(stack))
         } else {
-            navigator.updateWithLocoRouteItem(new LocoRoute());
+            navigator.updateWithLocoRouteItem(LocoRoute())
         }
     }
 
-    @Override
-    protected void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
+    override fun readAdditionalSaveData(compound: CompoundTag) {
+        super.readAdditionalSaveData(compound)
         if (compound.contains("eo")) {
-            engineOn = compound.getBoolean("eo");
+            engineOn = compound.getBoolean("eo")
         }
-        routeItemHandler.deserializeNBT(this.registryAccess(), compound.getCompound(LOCO_ROUTE_INV_TAG));
-        navigator.loadFromNbt(compound.getCompound(NAVIGATOR_TAG));
-        enrollmentHandler.load(compound);
-        updateNavigatorFromItem();
+        routeItemHandler.deserializeNBT(this.registryAccess(), compound.getCompound(LOCO_ROUTE_INV_TAG))
+        navigator.loadFromNbt(compound.getCompound(NAVIGATOR_TAG))
+        enrollmentHandler.load(compound)
+        updateNavigatorFromItem()
     }
 
-    @Override
-    protected void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putBoolean("eo", engineOn);
-        compound.put(LOCO_ROUTE_INV_TAG, routeItemHandler.serializeNBT(this.registryAccess()));
-        compound.put(NAVIGATOR_TAG, navigator.saveToNbt());
-        enrollmentHandler.save(compound);
+    override fun addAdditionalSaveData(compound: CompoundTag) {
+        super.addAdditionalSaveData(compound)
+        compound.putBoolean("eo", engineOn)
+        compound.put(LOCO_ROUTE_INV_TAG, routeItemHandler.serializeNBT(this.registryAccess()))
+        compound.put(NAVIGATOR_TAG, navigator.saveToNbt())
+        enrollmentHandler.save(compound)
     }
 
     // duplicate due to linking issues
-
-    @Override
-    public boolean isValid(Player pPlayer) {
-        if (this.isRemoved()) {
-            return false;
+    override fun isValid(pPlayer: Player): Boolean {
+        return if (this.isRemoved) {
+            false
         } else {
-            return !(this.distanceToSqr(pPlayer) > 64D);
+            !(this.distanceToSqr(pPlayer) > 64.0)
         }
     }
 
-    @Override
-    public boolean stillValid(Player pPlayer) {
-        if (this.isRemoved()) {
-            return false;
+    override fun stillValid(pPlayer: Player): Boolean {
+        return if (this.isRemoved) {
+            false
         } else {
-            return !(this.distanceToSqr(pPlayer) > 64D);
+            !(this.distanceToSqr(pPlayer) > 64.0)
         }
     }
 
-    public boolean isEngineOn() {
-        return engineOn;
+    fun isEngineOn(): Boolean {
+        return engineOn
     }
 
-    @Override
-    public void setEngineOn(boolean engineOn) {
-        this.engineOn = engineOn;
+    override fun setEngineOn(state: Boolean) {
+        this.engineOn = state
     }
 
-    @Override
-    public ItemStackHandler getRouteItemHandler() {
-        return routeItemHandler;
+    override fun getRouteItemHandler(): ItemStackHandler {
+        return routeItemHandler
     }
 
-    @Nullable
-    public BlockPos getOldHorizontalBlockPos() {
-        return oldHorizontalBlockPos;
+    companion object {
+        // item handler for loco routes
+        private const val LOCO_ROUTE_INV_TAG = "locoRouteInv"
+
+
+        private const val NAVIGATOR_TAG = "navigator"
+        private val INDEPENDENT_MOTION: EntityDataAccessor<Boolean> = SynchedEntityData.defineId(
+            AbstractLocomotiveEntity::class.java, EntityDataSerializers.BOOLEAN
+        )
+        private val OWNER: EntityDataAccessor<String> = SynchedEntityData.defineId(
+            AbstractLocomotiveEntity::class.java, EntityDataSerializers.STRING
+        )
     }
 }

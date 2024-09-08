@@ -1,182 +1,172 @@
-package dev.murad.shipping.entity.custom.vessel.barge;
+package dev.murad.shipping.entity.custom.vessel.barge
+
+import dev.murad.shipping.capability.StallingCapability
+import dev.murad.shipping.entity.custom.vessel.VesselEntity
+import dev.murad.shipping.entity.custom.vessel.tug.AbstractTugEntity
+import dev.murad.shipping.util.Train
+import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResult
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.DyeColor
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.Level
+import net.minecraft.world.phys.Vec3
+import java.util.*
 
 
-import dev.murad.shipping.capability.StallingCapability;
-import dev.murad.shipping.entity.custom.vessel.VesselEntity;
-import dev.murad.shipping.entity.custom.vessel.tug.AbstractTugEntity;
-import dev.murad.shipping.util.Train;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-
-import java.util.Optional;
-
-public abstract class AbstractBargeEntity extends VesselEntity {
-
-    public AbstractBargeEntity(EntityType<? extends AbstractBargeEntity> type, Level world) {
-        super(type, world);
-        this.blocksBuilding = true;
-        linkingHandler.train = new Train<>(this);
+abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity?>, world: Level) :
+    VesselEntity(type, world) {
+    constructor(
+        type: EntityType<out AbstractBargeEntity?>,
+        worldIn: Level,
+        x: Double,
+        y: Double,
+        z: Double
+    ) : this(type, worldIn) {
+        this.setPos(x, y, z)
+        this.deltaMovement = Vec3.ZERO
+        this.xo = x
+        this.yo = y
+        this.zo = z
     }
 
-    public AbstractBargeEntity(EntityType<? extends AbstractBargeEntity> type, Level worldIn, double x, double y, double z) {
-        this(type, worldIn);
-        this.setPos(x, y, z);
-        this.setDeltaMovement(Vec3.ZERO);
-        this.xo = x;
-        this.yo = y;
-        this.zo = z;
+    override fun canAddPassenger(passenger: Entity): Boolean {
+        return false
     }
 
-    @Override
-    protected boolean canAddPassenger(Entity passenger) {
-        return false;
-    }
+    abstract override val dropItem: Item?
 
-    public abstract Item getDropItem();
-
-    @Override
-    public InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (!this.level().isClientSide) {
-            var color = DyeColor.getColor(player.getItemInHand(hand));
+    public override fun mobInteract(player: Player, hand: InteractionHand): InteractionResult {
+        if (!level().isClientSide) {
+            val color = DyeColor.getColor(player.getItemInHand(hand))
 
             if (color != null) {
-                this.getEntityData().set(COLOR_DATA, color.getId());
+                getEntityData().set(COLOR_DATA, color.id)
             } else {
-                doInteract(player);
+                doInteract(player)
             }
         }
 
         // don't interact *and* use current item
-        return InteractionResult.sidedSuccess(this.level().isClientSide);
+        return InteractionResult.sidedSuccess(level().isClientSide)
     }
 
-    abstract protected void doInteract(Player player);
+    protected abstract fun doInteract(player: Player?)
 
-    public boolean hasWaterOnSides(){
-        return super.hasWaterOnSides();
+    override fun hasWaterOnSides(): Boolean {
+        return super.hasWaterOnSides()
     }
 
-    @Override
-    public void setDominated(VesselEntity entity) {
-        linkingHandler.follower = Optional.of(entity);
+    override fun setDominated(entity: VesselEntity) {
+        getLinkingHandler().follower = Optional.of(entity)
     }
 
-    @Override
-    public void setDominant(VesselEntity entity) {
-        this.setTrain(entity.getTrain());
-        linkingHandler.leader = Optional.of(entity);
+    override fun setDominant(entity: VesselEntity) {
+        this.setTrain(entity.getTrain())
+        getLinkingHandler().leader = Optional.of(entity)
     }
 
-    @Override
-    public void removeDominated() {
-        if(!this.isAlive()){
-            return;
+    override fun removeDominated() {
+        if (!this.isAlive) {
+            return
         }
-        linkingHandler.follower = Optional.empty();
-        linkingHandler.train.setTail(this);
+        getLinkingHandler().follower = Optional.empty()
+        getLinkingHandler().train!!.tail = this
     }
 
-    @Override
-    public void removeDominant() {
-        if(!this.isAlive()){
-            return;
+    override fun removeDominant() {
+        if (!this.isAlive) {
+            return
         }
-        linkingHandler.leader = Optional.empty();
-        this.setTrain(new Train(this));
+        getLinkingHandler().leader = Optional.empty()
+        this.setTrain(Train(this))
     }
 
-    @Override
-    public void setTrain(Train<VesselEntity> train) {
-        linkingHandler.train = train;
-        train.setTail(this);
-        linkingHandler.follower.ifPresent(dominated -> {
+    override fun setTrain(train: Train<VesselEntity>) {
+        getLinkingHandler().train = train
+        train.tail = this
+        getLinkingHandler().follower.ifPresent { dominated: VesselEntity ->
             // avoid recursion loops
-            if(!dominated.getTrain().equals(train)){
-                dominated.setTrain(train);
+            if (dominated.getTrain() != train) {
+                dominated.setTrain(train)
             }
-        });
+        }
     }
 
-    @Override
-    public void remove(RemovalReason r){
-        if (!this.level().isClientSide) {
-            var stack = new ItemStack(this.getDropItem());
+    override fun remove(r: RemovalReason) {
+        if (!level().isClientSide) {
+            val stack = ItemStack(this.dropItem)
             if (this.hasCustomName()) {
                 //stack.setHoverName(this.getCustomName());
             }
-            this.spawnAtLocation(stack);
+            this.spawnAtLocation(stack)
         }
-        super.remove(r);
+        super.remove(r)
     }
 
-    // hack to disable hoppers
-    public boolean isDockable() {
-        return this.linkingHandler.leader.map(dom -> this.distanceToSqr((Entity) dom) < 1.1).orElse(true);
+    val isDockable: Boolean
+        // hack to disable hoppers
+        get() = getLinkingHandler().leader.map { dom: VesselEntity? ->
+            this.distanceToSqr(
+                dom
+            ) < 1.1
+        }.orElse(true)
+
+    override fun allowDockInterface(): Boolean {
+        return isDockable
     }
 
-    public boolean allowDockInterface(){
-        return isDockable();
-    }
-
-    private final StallingCapability capability = new StallingCapability() {
-        @Override
-        public boolean isDocked() {
-            return delegate().map(StallingCapability::isDocked).orElse(false);
+    private val capability: StallingCapability = object : StallingCapability {
+        override fun isDocked(): Boolean {
+            return delegate().map { obj: StallingCapability -> obj.isDocked() }.orElse(false)
         }
 
-        @Override
-        public void dock(double x, double y, double z) {
-            delegate().ifPresent(s -> s.dock(x, y, z));
+        override fun dock(x: Double, y: Double, z: Double) {
+            delegate().ifPresent { s: StallingCapability -> s.dock(x, y, z) }
         }
 
-        @Override
-        public void undock() {
-            delegate().ifPresent(StallingCapability::undock);
+        override fun undock() {
+            delegate().ifPresent { obj: StallingCapability -> obj.undock() }
         }
 
-        @Override
-        public boolean isStalled() {
-            return delegate().map(StallingCapability::isStalled).orElse(false);
+        override fun isStalled(): Boolean {
+            return delegate().map { obj: StallingCapability -> obj.isStalled() }.orElse(false)
         }
 
-        @Override
-        public void stall() {
-            delegate().ifPresent(StallingCapability::stall);
+        override fun stall() {
+            delegate().ifPresent { obj: StallingCapability -> obj.stall() }
         }
 
-        @Override
-        public void unstall() {
-            delegate().ifPresent(StallingCapability::unstall);
+        override fun unstall() {
+            delegate().ifPresent { obj: StallingCapability -> obj.unstall() }
         }
 
-        @Override
-        public boolean isFrozen() {
-            return AbstractBargeEntity.super.isFrozen();
+        override fun isFrozen(): Boolean {
+            return super@AbstractBargeEntity.isFrozen
         }
 
-        @Override
-        public void freeze() {
-            AbstractBargeEntity.super.setFrozen(true);
+        override fun freeze() {
+            super@AbstractBargeEntity.isFrozen = true
         }
 
-        @Override
-        public void unfreeze() {
-            AbstractBargeEntity.super.setFrozen(false);
+        override fun unfreeze() {
+            super@AbstractBargeEntity.isFrozen = false
         }
 
-        private Optional<StallingCapability> delegate() {
-            if (linkingHandler.train.getHead() instanceof AbstractTugEntity e) {
-                return Optional.ofNullable(e.getCapability(StallingCapability.STALLING_CAPABILITY));
+        private fun delegate(): Optional<StallingCapability> {
+            val head = getLinkingHandler().train!!.head
+            if (head is AbstractTugEntity) {
+                return Optional.ofNullable<StallingCapability>(head.getCapability(StallingCapability.STALLING_CAPABILITY))
             }
-            return Optional.empty();
+            return Optional.empty()
         }
-    };
+    }
+
+    init {
+        this.blocksBuilding = true
+        getLinkingHandler().train = Train(this)
+    }
 }

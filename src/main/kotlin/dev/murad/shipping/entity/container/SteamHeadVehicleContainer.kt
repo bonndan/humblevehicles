@@ -25,7 +25,7 @@ class SteamHeadVehicleContainer<T>(
     data,
     playerInventory,
     player
-) where T : Entity?, T : HeadVehicle? {
+) where T : Entity, T : HeadVehicle {
     init {
         if (null != entity) {
             Optional.ofNullable(entity!!.getCapability(Capabilities.ItemHandler.ENTITY))

@@ -36,7 +36,7 @@ public class Train <V extends LinkableEntity<V>> {
         if(this.head.checkNoLoopsDominated()) {
             // just in case - to avoid crashing the world.
             this.head.removeDominated();
-            this.head.getFollower().ifPresent(LinkableEntity::removeDominant);
+            this.head.follower.ifPresent(LinkableEntity::removeDominant);
             return new ArrayList<>();
         }
         return tug.map(tugEntity -> {
@@ -52,7 +52,7 @@ public class Train <V extends LinkableEntity<V>> {
         if(this.head.checkNoLoopsDominated()) {
             // just in case - to avoid crashing the world.
             this.head.removeDominated();
-            this.head.getFollower().ifPresent(LinkableEntity::removeDominant);
+            this.head.follower.ifPresent(LinkableEntity::removeDominant);
             return new ArrayList<>();
         }
 
@@ -64,7 +64,7 @@ public class Train <V extends LinkableEntity<V>> {
     }
 
     public Optional<V> getNext(V entity){
-        return entity.getFollower().map(t -> (V) t);
+        return entity.follower.map(t -> (V) t);
     }
 
     public void setHead(V head) {

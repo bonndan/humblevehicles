@@ -1,24 +1,23 @@
-package dev.murad.shipping.entity.custom;
+package dev.murad.shipping.entity.custom
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.entity.player.Player
+import net.neoforged.neoforge.items.ItemStackHandler
+import java.util.*
 
-import java.util.UUID;
+interface HeadVehicle {
 
-public interface HeadVehicle  {
+    fun setEngineOn(state: Boolean)
 
-    void setEngineOn(boolean state);
+    fun getRouteItemHandler(): ItemStackHandler
 
-    ItemStackHandler getRouteItemHandler();
+    fun isValid(pPlayer: Player): Boolean
 
-    boolean isValid(Player pPlayer);
+    fun hasOwner(): Boolean
 
-    boolean hasOwner();
+    fun getRouteIcon(): ResourceLocation
 
-    ResourceLocation getRouteIcon();
+    fun enroll(uuid: UUID)
 
-    void enroll(UUID uuid);
-
-    String owner();
+    fun owner(): String?
 }

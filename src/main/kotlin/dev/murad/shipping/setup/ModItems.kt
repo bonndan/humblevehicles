@@ -23,19 +23,20 @@ import java.util.function.Consumer
 import java.util.function.Supplier
 
 object ModItems {
+
     private val PRIVATE_TAB_REGISTRY = MultiMap<ResourceKey<CreativeModeTab>, Supplier<out Item>>()
 
     /**
      * Empty Icons
      */
     @JvmField
-    val LOCO_ROUTE_ICON: ResourceLocation? = ResourceLocation.tryBuild(ShippingMod.MOD_ID, "item/empty_loco_route")
+    val LOCO_ROUTE_ICON: ResourceLocation = ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "item/empty_loco_route")
 
     @JvmField
-    val TUG_ROUTE_ICON: ResourceLocation? = ResourceLocation.tryBuild(ShippingMod.MOD_ID, "item/empty_tug_route")
+    val TUG_ROUTE_ICON: ResourceLocation = ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "item/empty_tug_route")
 
     @JvmField
-    val EMPTY_ENERGY: ResourceLocation? = ResourceLocation.tryBuild(ShippingMod.MOD_ID, "item/empty_energy")
+    val EMPTY_ENERGY: ResourceLocation = ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "item/empty_energy")
 
 
     /**
@@ -44,14 +45,14 @@ object ModItems {
     @JvmField
     val CONDUCTORS_WRENCH: Supplier<Item> = register(
         "conductors_wrench",
-        { WrenchItem(defaultItemProperties(1)) }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        { WrenchItem(defaultItemProperties(1)) }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
 
     @JvmField
     val SPRING: Supplier<Item> = register(
         "spring",
-        { SpringItem(defaultItemProperties(64)) }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        { SpringItem(defaultItemProperties(64)) }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     /**
@@ -109,7 +110,7 @@ object ModItems {
                     z
                 )
             }
-        }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     @JvmField
@@ -139,7 +140,7 @@ object ModItems {
                     z
                 )
             }
-        }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     @JvmField
@@ -196,19 +197,13 @@ object ModItems {
         "chest_car",
         {
             TrainCarItem(
-                { level: Level?, x: Double?, y: Double?, z: Double? ->
-                    ChestCarEntity(
-                        ModEntityTypes.CHEST_CAR.get(),
-                        level,
-                        x,
-                        y,
-                        z
-                    )
+                { level: Level, x: Double, y: Double, z: Double ->
+                    ChestCarEntity(ModEntityTypes.CHEST_CAR.get(), level, x, y, z)
                 },
                 defaultItemProperties(64)
             )
         },
-        java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     @JvmField
@@ -216,26 +211,20 @@ object ModItems {
         "barrel_car",
         {
             TrainCarItem(
-                { level: Level?, x: Double?, y: Double?, z: Double? ->
-                    ChestCarEntity(
-                        ModEntityTypes.BARREL_CAR.get(),
-                        level,
-                        x,
-                        y,
-                        z
-                    )
+                { level: Level, x: Double, y: Double, z: Double ->
+                    ChestCarEntity(ModEntityTypes.BARREL_CAR.get(), level, x, y, z)
                 },
                 defaultItemProperties(64)
             )
         },
-        java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     @JvmField
     val FLUID_CAR: Supplier<Item> = register(
         "fluid_car",
         {
-            TrainCarItem({ level: Level?, aDouble: Double?, aDouble1: Double?, aDouble2: Double? ->
+            TrainCarItem({ level: Level, aDouble: Double, aDouble1: Double, aDouble2: Double ->
                 FluidTankCarEntity(
                     level,
                     aDouble,
@@ -243,14 +232,14 @@ object ModItems {
                     aDouble2
                 )
             }, defaultItemProperties(64))
-        }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     @JvmField
     val SEATER_CAR: Supplier<Item> = register(
         "seater_car",
         {
-            TrainCarItem({ level: Level?, aDouble: Double?, aDouble1: Double?, aDouble2: Double? ->
+            TrainCarItem({ level: Level, aDouble: Double, aDouble1: Double, aDouble2: Double ->
                 SeaterCarEntity(
                     level,
                     aDouble,
@@ -258,7 +247,7 @@ object ModItems {
                     aDouble2
                 )
             }, defaultItemProperties(64))
-        }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     @JvmField
@@ -266,10 +255,10 @@ object ModItems {
         "steam_locomotive",
         {
             TrainCarItem(
-                { level: Level?, x: Double?, y: Double?, z: Double? -> SteamLocomotiveEntity(level, x, y, z) },
+                { level: Level, x: Double, y: Double, z: Double -> SteamLocomotiveEntity(level, x, y, z) },
                 defaultItemProperties(64)
             )
-        }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     @JvmField
@@ -277,20 +266,20 @@ object ModItems {
         "energy_locomotive",
         {
             TrainCarItem(
-                { level: Level?, x: Double?, y: Double?, z: Double? -> EnergyLocomotiveEntity(level, x, y, z) },
+                { level: Level, x: Double, y: Double, z: Double -> EnergyLocomotiveEntity(level, x, y, z) },
                 defaultItemProperties(64)
             )
-        }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     val RECEIVER_COMPONENT: Supplier<Item> = register(
         "receiver_component",
-        { Item(defaultItemProperties(64)) }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        { Item(defaultItemProperties(64)) }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     val TRANSMITTER_COMPONENT: Supplier<Item> = register(
         "transmitter_component",
-        { Item(defaultItemProperties(64)) }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        { Item(defaultItemProperties(64)) }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     @JvmField

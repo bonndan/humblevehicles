@@ -1,512 +1,514 @@
-package dev.murad.shipping.entity.custom.vessel;
+package dev.murad.shipping.entity.custom.vessel
 
-import dev.murad.shipping.ShippingConfig;
-import dev.murad.shipping.entity.Colorable;
-import dev.murad.shipping.entity.custom.TrainInventoryProvider;
-import dev.murad.shipping.setup.ModItems;
-import dev.murad.shipping.util.LinkableEntity;
-import dev.murad.shipping.util.LinkingHandler;
-import dev.murad.shipping.util.SpringPhysicsUtil;
-import dev.murad.shipping.util.Train;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.Mth;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.ai.attributes.*;
-import net.minecraft.world.entity.animal.WaterAnimal;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.WaterlilyBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.NotNull;
+import dev.murad.shipping.ShippingConfig
+import dev.murad.shipping.entity.Colorable
+import dev.murad.shipping.entity.custom.TrainInventoryProvider
+import dev.murad.shipping.setup.ModItems
+import dev.murad.shipping.util.LinkableEntity
+import dev.murad.shipping.util.LinkingHandler
+import dev.murad.shipping.util.SpringPhysicsUtil
+import net.minecraft.core.BlockPos
+import net.minecraft.core.BlockPos.MutableBlockPos
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.Tag
+import net.minecraft.network.chat.Component
+import net.minecraft.network.syncher.EntityDataAccessor
+import net.minecraft.network.syncher.EntityDataSerializers
+import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.tags.FluidTags
+import net.minecraft.tags.TagKey
+import net.minecraft.util.Mth
+import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.effect.MobEffects
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.MoverType
+import net.minecraft.world.entity.ai.attributes.AttributeModifier
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier
+import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.entity.animal.WaterAnimal
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.vehicle.Boat
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.GameRules
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.WaterlilyBlock
+import net.minecraft.world.level.material.Fluid
+import net.minecraft.world.level.material.Fluids
+import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.Vec3
+import net.minecraft.world.phys.shapes.BooleanOp
+import net.minecraft.world.phys.shapes.Shapes
+import net.neoforged.neoforge.common.NeoForgeMod
+import java.util.*
+import java.util.stream.Stream
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sqrt
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
+abstract class VesselEntity protected constructor(type: EntityType<out WaterAnimal>, world: Level) :
+    WaterAnimal(type, world), LinkableEntity<VesselEntity>, Colorable {
 
-import static net.neoforged.neoforge.common.NeoForgeMod.NAMETAG_DISTANCE;
-import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
+    var isFrozen: Boolean = false
 
-public abstract class VesselEntity extends WaterAnimal implements LinkableEntity<VesselEntity>, Colorable {
+    private val linkingHandler: LinkingHandler<VesselEntity> = LinkingHandler(
+        this,
+        VesselEntity::class.java,
+        DOMINANT_ID,
+        DOMINATED_ID
+    )
 
-    public static final EntityDataAccessor<Integer> COLOR_DATA = SynchedEntityData.defineId(VesselEntity.class, EntityDataSerializers.INT);
-
-    private final static double NAMETAG_RENDERING_DISTANCE = 15;
-
-    private boolean frozen = false;
-    public static final EntityDataAccessor<Integer> DOMINANT_ID = SynchedEntityData.defineId(VesselEntity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> DOMINATED_ID = SynchedEntityData.defineId(VesselEntity.class, EntityDataSerializers.INT);
-    protected final LinkingHandler<VesselEntity> linkingHandler = new LinkingHandler<>(this, VesselEntity.class, DOMINANT_ID, DOMINATED_ID);
-
-    protected VesselEntity(EntityType<? extends WaterAnimal> type, Level world) {
-        super(type, world);
-        stuckCounter = 0;
-
-        resetAttributes(ShippingConfig.Server.TUG_BASE_SPEED.get());
+    protected fun getLinkingHandler(): LinkingHandler<VesselEntity> {
+        return linkingHandler
     }
 
-    private int stuckCounter;
-    private double waterLevel;
-    private float landFriction;
-    private Boat.Status status;
-    private Boat.Status oldStatus;
-    private double lastYd;
+    private var stuckCounter = 0
+    private var waterLevel = 0.0
+    private var landFriction = 0f
+    private var status: Boat.Status? = null
+    private var oldStatus: Boat.Status? = null
+    private var lastYd = 0.0
 
-    @Override
-    public boolean isPickable(){
-        return true;
+    init {
+        resetAttributes(ShippingConfig.Server.TUG_BASE_SPEED!!.get())
     }
 
-    public boolean hasWaterOnSides(){
-        return this.level().getFluidState(this.getOnPos().relative(this.getDirection().getClockWise())).is(Fluids.WATER) &&
-                this.level().getFluidState(this.getOnPos().relative(this.getDirection().getCounterClockWise())).is(Fluids.WATER) &&
-                this.level().getBlockState(this.getOnPos().above().relative(this.getDirection().getClockWise())).getBlock().equals(Blocks.AIR) &&
-                this.level().getBlockState(this.getOnPos().above().relative(this.getDirection().getCounterClockWise())).getBlock().equals(Blocks.AIR);
+    override fun isPickable(): Boolean {
+        return true
     }
 
-    public BlockPos getBlockPos(){
-        return getOnPos();
+    override fun hasWaterOnSides(): Boolean {
+        return level().getFluidState(this.onPos.relative(this.direction.clockWise)).`is`(Fluids.WATER) &&
+                level().getFluidState(this.onPos.relative(this.direction.counterClockWise)).`is`(Fluids.WATER) &&
+                level().getBlockState(this.onPos.above().relative(this.direction.clockWise)).block == Blocks.AIR &&
+                level().getBlockState(this.onPos.above().relative(this.direction.counterClockWise)).block == Blocks.AIR
     }
 
-    @Override
-    public void tick() {
-        super.tick();
+    override fun getBlockPos(): BlockPos {
+        return onPos
+    }
 
-        linkingHandler.tickLoad();
-        if(!this.level().isClientSide) {
-            doChainMath();
+    override fun tick() {
+        super.tick()
+
+        linkingHandler.tickLoad()
+        if (!level().isClientSide) {
+            doChainMath()
         }
-        if(this.isAlive()) {
-            if(this.tickCount % 10 == 0){
-                this.heal(1f);
+        if (this.isAlive) {
+            if (this.tickCount % 10 == 0) {
+                this.heal(1f)
             }
         }
 
-        if(!this.level().isClientSide) {
-            this.oldStatus = this.status;
-            this.status = this.getStatus();
+        if (!level().isClientSide) {
+            this.oldStatus = this.status
+            this.status = this.getStatus()
 
-            this.floatBoat();
-            this.unDrown();
-        }
-
-    }
-
-    private void unDrown(){
-        if(level().getBlockState(getOnPos().above()).getBlock().equals(Blocks.WATER)){
-            this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(0, 0.1, 0)));
+            this.floatBoat()
+            this.unDrown()
         }
     }
 
-    public static AttributeSupplier.Builder setCustomAttributes() {
-        return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 20.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.0D)
-                //TODO .add(ForgeMod.NAMETAG_DISTANCE, NAMETAG_RENDERING_DISTANCE)
-                //TODO.add(ForgeMod.SWIM_SPEED.get(), 0.0D)
-        ;
-    }
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        linkingHandler.readAdditionalSaveData(compound);
-        if (compound.contains("Color", Tag.TAG_INT)) {
-            setColor(compound.getInt("Color"));
+    private fun unDrown() {
+        if (level().getBlockState(onPos.above()).block == Blocks.WATER) {
+            this.deltaMovement = deltaMovement.add(Vec3(0.0, 0.1, 0.0))
         }
-        super.readAdditionalSaveData(compound);
     }
 
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        linkingHandler.addAdditionalSaveData(compound);
+    override fun readAdditionalSaveData(compound: CompoundTag) {
+        linkingHandler.readAdditionalSaveData(compound)
+        if (compound.contains("Color", Tag.TAG_INT.toInt())) {
+            color = compound.getInt("Color")
+        }
+        super.readAdditionalSaveData(compound)
+    }
 
-        Integer color = getColor();
+    override fun addAdditionalSaveData(compound: CompoundTag) {
+        linkingHandler.addAdditionalSaveData(compound)
+
+        val color = color
         if (color != null) {
-            compound.putInt("Color", color);
+            compound.putInt("Color", color)
         }
 
-        super.addAdditionalSaveData(compound);
+        super.addAdditionalSaveData(compound)
     }
 
-    @Override
-    protected void defineSynchedData(SynchedEntityData.Builder pBuilder) {
-        super.defineSynchedData(pBuilder);
-        this.getEntityData().set(COLOR_DATA, -1);
-        LinkingHandler.defineSynchedData(this, DOMINANT_ID, DOMINATED_ID);
+    override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
+        super.defineSynchedData(pBuilder)
+        getEntityData().set(COLOR_DATA, -1)
+        LinkingHandler.defineSynchedData(this, DOMINANT_ID, DOMINATED_ID)
     }
 
-    @Override
-    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> key) {
-        super.onSyncedDataUpdated(key);
-        if(linkingHandler != null) {
-            linkingHandler.onSyncedDataUpdated(key);
-        }
+    override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
+        super.onSyncedDataUpdated(key)
+        linkingHandler.onSyncedDataUpdated(key)
     }
 
-    @Nullable
-    public Integer getColor() {
-        int color = this.getEntityData().get(COLOR_DATA);
-        return color == -1 ? null : color;
+    override fun getColor(): Int? {
+        val color = getEntityData().get(COLOR_DATA)
+        return if (color == -1) null else color
     }
 
-    public void setColor(Integer color) {
-        if (color == null) color = -1;
-        this.getEntityData().set(COLOR_DATA, color);
+    override fun setColor(color: Int?) {
+        var color = color
+        if (color == null) color = -1
+        getEntityData().set(COLOR_DATA, color)
     }
 
     // reset speed to 1
-    private void resetAttributes(double newSpeed) {
-        this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0);
+    private fun resetAttributes(newSpeed: Double) {
+        getAttribute(Attributes.MOVEMENT_SPEED)!!.baseValue =
+            0.0
 
-        Holder<Attribute> swimSpeed = SWIM_SPEED.getDelegate();
-        this.getAttribute(swimSpeed).setBaseValue(0);
+        val swimSpeed = NeoForgeMod.SWIM_SPEED.delegate
+        getAttribute(swimSpeed)!!.baseValue = 0.0
 
-        this.getAttribute(Attributes.MOVEMENT_SPEED)
-                .addTransientModifier(
-                        new AttributeModifier(ResourceLocation.parse("movementspeed_mult"), newSpeed, AttributeModifier.Operation.ADD_VALUE));
-        this.getAttribute(swimSpeed)
-                .addTransientModifier(
-                        new AttributeModifier(ResourceLocation.parse("swimspeed_mult"), newSpeed, AttributeModifier.Operation.ADD_VALUE));
+        getAttribute(Attributes.MOVEMENT_SPEED)
+            ?.addTransientModifier(
+                AttributeModifier(
+                    ResourceLocation.parse("movementspeed_mult"),
+                    newSpeed,
+                    AttributeModifier.Operation.ADD_VALUE
+                )
+            )
+        getAttribute(swimSpeed)
+            ?.addTransientModifier(
+                AttributeModifier(
+                    ResourceLocation.parse("swimspeed_mult"),
+                    newSpeed,
+                    AttributeModifier.Operation.ADD_VALUE
+                )
+            )
 
-        setCustomNameVisible(true);
-        this.getAttribute(NAMETAG_DISTANCE.getDelegate()).setBaseValue(NAMETAG_RENDERING_DISTANCE);
+        isCustomNameVisible = true
+        getAttribute(NeoForgeMod.NAMETAG_DISTANCE.delegate)!!.baseValue =
+            NAMETAG_RENDERING_DISTANCE
     }
 
-    @Override
-    protected void handleAirSupply(int airSupply) {
-        this.setAirSupply(300);
+    override fun handleAirSupply(airSupply: Int) {
+        this.airSupply = 300
     }
 
-    public abstract Item getDropItem();
+    abstract val dropItem: Item?
 
-    @Override
-    public Optional<VesselEntity> getFollower() {
-        return this.linkingHandler.follower;
+
+    override fun getFollower(): Optional<VesselEntity> {
+        return linkingHandler.follower
     }
 
-    @Override
-    public Optional<VesselEntity> getLeader() {
-        return this.linkingHandler.leader;
+    override fun getLeader(): Optional<VesselEntity> {
+        return linkingHandler.leader
     }
 
 
-    @Override
-    public Train<VesselEntity> getTrain() {
-        return this.linkingHandler.train;
+    override fun checkDespawn() {
     }
 
-    @Override
-    public void checkDespawn() {
+    override fun linkEntities(player: Player, entity: Entity): Boolean {
+        if (entity !is VesselEntity) {
+            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.badTypes"), true)
+            return false
+        }
+        val firstTrain = this.getTrain()
+        val secondTrain = entity.getTrain()
 
-    }
-
-    public boolean linkEntities(Player player, Entity t) {
-        if(!(t instanceof VesselEntity target)){
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.badTypes"), true);
+        if (firstTrain == null || secondTrain == null) {
             return false;
         }
-        Train<VesselEntity> firstTrain =  this.getTrain();
-        Train<VesselEntity> secondTrain = target.getTrain();
-        if (this.distanceTo(target) > 15){
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.tooFar"), true);
-        } else if (firstTrain.getTug().isPresent() && secondTrain.getTug().isPresent()) {
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.noTwoTugs"), true);
-        } else if (secondTrain.equals(firstTrain)){
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.noLoops"), true);
-        } else if (firstTrain.getTug().isPresent()) {
-            var tail = firstTrain.getTail();
-            var head = secondTrain.getHead();
-            tail.setDominated(head);
-            head.setDominant(tail);
-            return true;
+
+        if (this.distanceTo(entity) > 15) {
+            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.tooFar"), true)
+        } else if (firstTrain.tug.isPresent && secondTrain.tug.isPresent) {
+            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.noTwoTugs"), true)
+        } else if (secondTrain == firstTrain) {
+            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.noLoops"), true)
+        } else if (firstTrain.tug.isPresent) {
+            val tail = firstTrain.tail
+            val head = secondTrain.head
+            tail.setDominated(head)
+            head.setDominant(tail)
+            return true
         } else {
-            var tail = secondTrain.getTail();
-            var head = firstTrain.getHead();
-            tail.setDominated(head);
-            head.setDominant(tail);
-            return true;
+            val tail = secondTrain.tail
+            val head = firstTrain.head
+            tail.setDominated(head)
+            head.setDominant(tail)
+            return true
         }
-        return false;
+        return false
     }
 
-    public void doChainMath(){
-        linkingHandler.leader.ifPresent((dominant) -> {
-                SpringPhysicsUtil.adjustSpringedEntities(dominant, this);
-                checkInsideBlocks();
-        });
-    }
-
-    @Override
-    public void remove(RemovalReason r) {
-        handleLinkableKill();
-        super.remove(r);
-    }
-
-    @Override
-    public void handleShearsCut() {
-        if (!this.level().isClientSide && linkingHandler.leader.isPresent()) {
-            spawnChain();
+    fun doChainMath() {
+        linkingHandler.leader.ifPresent { dominant: VesselEntity ->
+            SpringPhysicsUtil.adjustSpringedEntities(dominant, this)
+            checkInsideBlocks()
         }
-        linkingHandler.leader.ifPresent(LinkableEntity::removeDominated);
-        removeDominant();
     }
 
-    private void spawnChain() {
-        var stack = new ItemStack(ModItems.SPRING.get());
-        this.spawnAtLocation(stack);
+    override fun remove(r: RemovalReason) {
+        handleLinkableKill()
+        super.remove(r)
     }
 
-    @Nullable
-    public ItemStack getPickResult() {
-        return new ItemStack(getDropItem());
+    override fun handleShearsCut() {
+        if (!level().isClientSide && linkingHandler.leader.isPresent) {
+            spawnChain()
+        }
+        linkingHandler.leader.ifPresent { obj: VesselEntity -> obj.removeDominated() }
+        removeDominant()
     }
 
-    private void floatBoat() {
-        double d0 = (double) -0.04F;
-        double d1 = this.isNoGravity() ? 0.0D : (double) -0.04F;
-        double d2 = 0.0D;
+    private fun spawnChain() {
+        val stack = ItemStack(ModItems.SPRING.get())
+        this.spawnAtLocation(stack)
+    }
+
+    override fun getPickResult(): ItemStack? {
+        return ItemStack(dropItem)
+    }
+
+    private fun floatBoat() {
+        val d0 = -0.04
+        var d1 = if (this.isNoGravity) 0.0 else -0.04
+        var d2 = 0.0
         // MOB STUFF
-        float invFriction = 0.05F;
+        var invFriction = 0.05f
         if (this.oldStatus == Boat.Status.IN_AIR && this.status != Boat.Status.IN_AIR && this.status != Boat.Status.ON_LAND) {
-            this.waterLevel = this.getY(1.0D);
-            this.setPos(this.getX(), (double) (this.getWaterLevelAbove() - this.getBbHeight()) + 0.101D, this.getZ());
-            this.setDeltaMovement(this.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D));
-            this.lastYd = 0.0D;
-            this.status = Boat.Status.IN_WATER;
+            this.waterLevel = this.getY(1.0)
+            this.setPos(this.x, (this.waterLevelAbove - this.bbHeight).toDouble() + 0.101, this.z)
+            this.deltaMovement = deltaMovement.multiply(1.0, 0.0, 1.0)
+            this.lastYd = 0.0
+            this.status = Boat.Status.IN_WATER
         } else {
             if (this.status == Boat.Status.IN_WATER) {
-                d2 = (this.waterLevel - this.getY()) / (double) this.getBbHeight();
-                invFriction = 0.9F;
+                d2 = (this.waterLevel - this.y) / this.bbHeight.toDouble()
+                invFriction = 0.9f
             } else if (this.status == Boat.Status.UNDER_FLOWING_WATER) {
-                d1 = -7.0E-4D;
-                invFriction = 0.9F;
+                d1 = -7.0E-4
+                invFriction = 0.9f
             } else if (this.status == Boat.Status.UNDER_WATER) {
-                d2 = (double) 0.01F;
-                invFriction = 0.45F;
+                d2 = 0.01
+                invFriction = 0.45f
             } else if (this.status == Boat.Status.IN_AIR) {
-                invFriction = 0.9F;
+                invFriction = 0.9f
             } else if (this.status == Boat.Status.ON_LAND) {
-                invFriction = this.landFriction;
-                if (this.getControllingPassenger() instanceof Player) {
-                    this.landFriction /= 2.0F;
+                invFriction = this.landFriction
+                if (this.controllingPassenger is Player) {
+                    this.landFriction /= 2.0f
                 }
             }
 
-            Vec3 vector3d = this.getDeltaMovement();
-            this.setDeltaMovement(vector3d.x * (double) invFriction, vector3d.y + d1, vector3d.z * (double) invFriction);
-            if (d2 > 0.0D) {
-                Vec3 vector3d1 = this.getDeltaMovement();
-                this.setDeltaMovement(vector3d1.x, (vector3d1.y + d2 * 0.10153846016296973D) * 0.75D, vector3d1.z);
+            val vector3d = this.deltaMovement
+            this.setDeltaMovement(
+                vector3d.x * invFriction.toDouble(),
+                vector3d.y + d1,
+                vector3d.z * invFriction.toDouble()
+            )
+            if (d2 > 0.0) {
+                val vector3d1 = this.deltaMovement
+                this.setDeltaMovement(vector3d1.x, (vector3d1.y + d2 * 0.10153846016296973) * 0.75, vector3d1.z)
             }
         }
-
     }
 
-    private Boat.Status getStatus() {
-        Boat.Status Boat$status = this.isUnderwater();
-        if (Boat$status != null) {
-            this.waterLevel = this.getBoundingBox().maxY;
-            return Boat$status;
+    private fun getStatus(): Boat.Status {
+        val `Boat$status` = this.isUnderwater
+        if (`Boat$status` != null) {
+            this.waterLevel = this.boundingBox.maxY
+            return `Boat$status`
         } else if (this.checkInWater()) {
-            return Boat.Status.IN_WATER;
+            return Boat.Status.IN_WATER
         } else {
-            float f = this.getGroundFriction();
-            if (f > 0.0F) {
-                this.landFriction = f;
-                return Boat.Status.ON_LAND;
+            val f = this.groundFriction
+            if (f > 0.0f) {
+                this.landFriction = f
+                return Boat.Status.ON_LAND
             } else {
-                return Boat.Status.IN_AIR;
+                return Boat.Status.IN_AIR
             }
         }
     }
 
-    public float getWaterLevelAbove() {
-        AABB aabb = this.getBoundingBox();
-        int i = Mth.floor(aabb.minX);
-        int j = Mth.ceil(aabb.maxX);
-        int k = Mth.floor(aabb.maxY);
-        int l = Mth.ceil(aabb.maxY - this.lastYd);
-        int i1 = Mth.floor(aabb.minZ);
-        int j1 = Mth.ceil(aabb.maxZ);
-        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+    val waterLevelAbove: Float
+        get() {
+            val aabb = this.boundingBox
+            val i = Mth.floor(aabb.minX)
+            val j = Mth.ceil(aabb.maxX)
+            val k = Mth.floor(aabb.maxY)
+            val l = Mth.ceil(aabb.maxY - this.lastYd)
+            val i1 = Mth.floor(aabb.minZ)
+            val j1 = Mth.ceil(aabb.maxZ)
+            val `blockpos$mutableblockpos` = MutableBlockPos()
 
-        label39:
-        for(int k1 = k; k1 < l; ++k1) {
-            float f = 0.0F;
+            label39@ for (k1 in k until l) {
+                var f = 0.0f
 
-            for(int l1 = i; l1 < j; ++l1) {
-                for(int i2 = i1; i2 < j1; ++i2) {
-                    blockpos$mutableblockpos.set(l1, k1, i2);
-                    FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
-                    if (fluidstate.is(FluidTags.WATER)) {
-                        f = Math.max(f, fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
+                for (l1 in i until j) {
+                    for (i2 in i1 until j1) {
+                        `blockpos$mutableblockpos`[l1, k1] = i2
+                        val fluidstate =
+                            level().getFluidState(`blockpos$mutableblockpos`)
+                        if (fluidstate.`is`(FluidTags.WATER)) {
+                            f = max(
+                                f.toDouble(),
+                                fluidstate.getHeight(this.level(), `blockpos$mutableblockpos`).toDouble()
+                            ).toFloat()
+                        }
+
+                        if (f >= 1.0f) {
+                            continue@label39
+                        }
                     }
+                }
 
-                    if (f >= 1.0F) {
-                        continue label39;
-                    }
+                if (f < 1.0f) {
+                    return `blockpos$mutableblockpos`.y.toFloat() + f
                 }
             }
 
-            if (f < 1.0F) {
-                return (float)blockpos$mutableblockpos.getY() + f;
-            }
+            return (l + 1).toFloat()
         }
 
-        return (float)(l + 1);
-    }
+    val groundFriction: Float
+        /**
+         * Decides how much the boat should be gliding on the land (based on any slippery blocks)
+         */
+        get() {
+            val aabb = this.boundingBox
+            val aabb1 = AABB(aabb.minX, aabb.minY - 0.001, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ)
+            val i = Mth.floor(aabb1.minX) - 1
+            val j = Mth.ceil(aabb1.maxX) + 1
+            val k = Mth.floor(aabb1.minY) - 1
+            val l = Mth.ceil(aabb1.maxY) + 1
+            val i1 = Mth.floor(aabb1.minZ) - 1
+            val j1 = Mth.ceil(aabb1.maxZ) + 1
+            val voxelshape = Shapes.create(aabb1)
+            var f = 0.0f
+            var k1 = 0
+            val `blockpos$mutableblockpos` = MutableBlockPos()
 
-    /**
-     * Decides how much the boat should be gliding on the land (based on any slippery blocks)
-     */
-    public float getGroundFriction() {
-        AABB aabb = this.getBoundingBox();
-        AABB aabb1 = new AABB(aabb.minX, aabb.minY - 0.001D, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ);
-        int i = Mth.floor(aabb1.minX) - 1;
-        int j = Mth.ceil(aabb1.maxX) + 1;
-        int k = Mth.floor(aabb1.minY) - 1;
-        int l = Mth.ceil(aabb1.maxY) + 1;
-        int i1 = Mth.floor(aabb1.minZ) - 1;
-        int j1 = Mth.ceil(aabb1.maxZ) + 1;
-        VoxelShape voxelshape = Shapes.create(aabb1);
-        float f = 0.0F;
-        int k1 = 0;
-        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-
-        for(int l1 = i; l1 < j; ++l1) {
-            for(int i2 = i1; i2 < j1; ++i2) {
-                int j2 = (l1 != i && l1 != j - 1 ? 0 : 1) + (i2 != i1 && i2 != j1 - 1 ? 0 : 1);
-                if (j2 != 2) {
-                    for(int k2 = k; k2 < l; ++k2) {
-                        if (j2 <= 0 || k2 != k && k2 != l - 1) {
-                            blockpos$mutableblockpos.set(l1, k2, i2);
-                            BlockState blockstate = this.level().getBlockState(blockpos$mutableblockpos);
-                            if (!(blockstate.getBlock() instanceof WaterlilyBlock) && Shapes.joinIsNotEmpty(blockstate.getCollisionShape(this.level(), blockpos$mutableblockpos).move((double)l1, (double)k2, (double)i2), voxelshape, BooleanOp.AND)) {
-                                f += blockstate.getFriction(this.level(), blockpos$mutableblockpos, this);
-                                ++k1;
+            for (l1 in i until j) {
+                for (i2 in i1 until j1) {
+                    val j2 = (if (l1 != i && l1 != j - 1) 0 else 1) + (if (i2 != i1 && i2 != j1 - 1) 0 else 1)
+                    if (j2 != 2) {
+                        for (k2 in k until l) {
+                            if (j2 <= 0 || k2 != k && k2 != l - 1) {
+                                `blockpos$mutableblockpos`[l1, k2] = i2
+                                val blockstate =
+                                    level().getBlockState(`blockpos$mutableblockpos`)
+                                if (blockstate.block !is WaterlilyBlock && Shapes.joinIsNotEmpty(
+                                        blockstate.getCollisionShape(
+                                            this.level(),
+                                            `blockpos$mutableblockpos`
+                                        ).move(l1.toDouble(), k2.toDouble(), i2.toDouble()), voxelshape, BooleanOp.AND
+                                    )
+                                ) {
+                                    f += blockstate.getFriction(
+                                        this.level(),
+                                        `blockpos$mutableblockpos`,
+                                        this
+                                    )
+                                    ++k1
+                                }
                             }
                         }
                     }
                 }
             }
+
+            return f / k1.toFloat()
         }
 
-        return f / (float)k1;
-    }
 
+    private fun checkInWater(): Boolean {
+        val aabb = this.boundingBox
+        val i = Mth.floor(aabb.minX)
+        val j = Mth.ceil(aabb.maxX)
+        val k = Mth.floor(aabb.minY)
+        val l = Mth.ceil(aabb.minY + 0.001)
+        val i1 = Mth.floor(aabb.minZ)
+        val j1 = Mth.ceil(aabb.maxZ)
+        var flag = false
+        this.waterLevel = -Double.MAX_VALUE
+        val `blockpos$mutableblockpos` = MutableBlockPos()
 
-
-    private boolean checkInWater() {
-        AABB aabb = this.getBoundingBox();
-        int i = Mth.floor(aabb.minX);
-        int j = Mth.ceil(aabb.maxX);
-        int k = Mth.floor(aabb.minY);
-        int l = Mth.ceil(aabb.minY + 0.001D);
-        int i1 = Mth.floor(aabb.minZ);
-        int j1 = Mth.ceil(aabb.maxZ);
-        boolean flag = false;
-        this.waterLevel = -Double.MAX_VALUE;
-        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-
-        for(int k1 = i; k1 < j; ++k1) {
-            for(int l1 = k; l1 < l; ++l1) {
-                for(int i2 = i1; i2 < j1; ++i2) {
-                    blockpos$mutableblockpos.set(k1, l1, i2);
-                    FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
-                    if (fluidstate.is(FluidTags.WATER)) {
-                        float f = (float)l1 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos);
-                        this.waterLevel = Math.max((double)f, this.waterLevel);
-                        flag |= aabb.minY < (double)f;
+        for (k1 in i until j) {
+            for (l1 in k until l) {
+                for (i2 in i1 until j1) {
+                    `blockpos$mutableblockpos`[k1, l1] = i2
+                    val fluidstate = level().getFluidState(`blockpos$mutableblockpos`)
+                    if (fluidstate.`is`(FluidTags.WATER)) {
+                        val f = l1.toFloat() + fluidstate.getHeight(this.level(), `blockpos$mutableblockpos`)
+                        this.waterLevel = max(f.toDouble(), this.waterLevel)
+                        flag = flag or (aabb.minY < f.toDouble())
                     }
                 }
             }
         }
 
-        return flag;
+        return flag
     }
 
-    /**
-     * Decides whether the boat is currently underwater.
-     */
-    @Nullable
-    private Boat.Status isUnderwater() {
-        AABB aabb = this.getBoundingBox();
-        double d0 = aabb.maxY + 0.001D;
-        int i = Mth.floor(aabb.minX);
-        int j = Mth.ceil(aabb.maxX);
-        int k = Mth.floor(aabb.maxY);
-        int l = Mth.ceil(d0);
-        int i1 = Mth.floor(aabb.minZ);
-        int j1 = Mth.ceil(aabb.maxZ);
-        boolean flag = false;
-        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+    private val isUnderwater: Boat.Status?
+        /**
+         * Decides whether the boat is currently underwater.
+         */
+        get() {
+            val aabb = this.boundingBox
+            val d0 = aabb.maxY + 0.001
+            val i = Mth.floor(aabb.minX)
+            val j = Mth.ceil(aabb.maxX)
+            val k = Mth.floor(aabb.maxY)
+            val l = Mth.ceil(d0)
+            val i1 = Mth.floor(aabb.minZ)
+            val j1 = Mth.ceil(aabb.maxZ)
+            var flag = false
+            val `blockpos$mutableblockpos` = MutableBlockPos()
 
-        for(int k1 = i; k1 < j; ++k1) {
-            for(int l1 = k; l1 < l; ++l1) {
-                for(int i2 = i1; i2 < j1; ++i2) {
-                    blockpos$mutableblockpos.set(k1, l1, i2);
-                    FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
-                    if (fluidstate.is(FluidTags.WATER) && d0 < (double)((float)blockpos$mutableblockpos.getY() + fluidstate.getHeight(this.level(), blockpos$mutableblockpos))) {
-                        if (!fluidstate.isSource()) {
-                            return Boat.Status.UNDER_FLOWING_WATER;
+            for (k1 in i until j) {
+                for (l1 in k until l) {
+                    for (i2 in i1 until j1) {
+                        `blockpos$mutableblockpos`[k1, l1] = i2
+                        val fluidstate =
+                            level().getFluidState(`blockpos$mutableblockpos`)
+                        if (fluidstate.`is`(FluidTags.WATER) && d0 < (`blockpos$mutableblockpos`.y
+                                .toFloat() + fluidstate.getHeight(
+                                this.level(),
+                                `blockpos$mutableblockpos`
+                            )).toDouble()
+                        ) {
+                            if (!fluidstate.isSource) {
+                                return Boat.Status.UNDER_FLOWING_WATER
+                            }
+
+                            flag = true
                         }
-
-                        flag = true;
                     }
                 }
             }
+
+            return if (flag) Boat.Status.UNDER_WATER else null
         }
 
-        return flag ? Boat.Status.UNDER_WATER : null;
-    }
-
-    @Override
-    protected void jumpInLiquid(TagKey<Fluid> pFluidTag) {
-        if (this.getNavigation().canFloat()) {
-            super.jumpInLiquid(pFluidTag);
+    override fun jumpInLiquid(pFluidTag: TagKey<Fluid>) {
+        if (getNavigation().canFloat()) {
+            super.jumpInLiquid(pFluidTag)
         } else {
-            this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.3D, 0.0D));
+            this.deltaMovement = deltaMovement.add(0.0, 0.3, 0.0)
         }
-
     }
 
-    public boolean isInvulnerableTo(DamageSource pSource) {
-        if (ShippingConfig.Server.VESSEL_EXEMPT_DAMAGE_SOURCES.get().contains(pSource.getMsgId())){
-            return true;
+    override fun isInvulnerableTo(pSource: DamageSource): Boolean {
+        if (ShippingConfig.Server.VESSEL_EXEMPT_DAMAGE_SOURCES!!.get().contains(pSource.msgId)) {
+            return true
         }
 
-        return pSource.equals(this.level().damageSources().inWall()) || super.isInvulnerableTo(pSource);
+        return pSource == level().damageSources().inWall() || super.isInvulnerableTo(pSource)
     }
 
 
@@ -522,220 +524,248 @@ public abstract class VesselEntity extends WaterAnimal implements LinkableEntity
     }
 
      */
-
-    @Override
-    public boolean hurt(DamageSource damageSource, float amount) {
+    override fun hurt(damageSource: DamageSource, amount: Float): Boolean {
         if (this.isInvulnerableTo(damageSource)) {
-            return false;
-        } else if (!this.level().isClientSide && !this.isRemoved() && damageSource.getEntity() instanceof Player) {
-            int i = (int) Stream.of(linkingHandler.leader, linkingHandler.follower).filter(Optional::isPresent).count();
-            if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-                for (int j = 0; j < i; j++) {
-                    spawnChain();
+            return false
+        } else if (!level().isClientSide && !this.isRemoved && damageSource.entity is Player) {
+            val i = Stream.of(linkingHandler.leader, linkingHandler.follower)
+                .filter { obj: Optional<VesselEntity> -> obj.isPresent }.count().toInt()
+            if (level().gameRules.getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+                for (j in 0 until i) {
+                    spawnChain()
                 }
             }
-            this.remove(RemovalReason.KILLED);
-            return true;
+            this.remove(RemovalReason.KILLED)
+            return true
         } else {
-            return super.hurt(damageSource, amount);
+            return super.hurt(damageSource, amount)
         }
     }
 
     // LivingEntity override, to avoid jumping out of water
-    @Override
-    public void travel(Vec3 relative) {
-        if (this.isEffectiveAi() || this.isControlledByLocalInstance()) {
-            double d0;
-            AttributeInstance gravity = this.getAttribute(Attributes.GRAVITY);
-            boolean flag = this.getDeltaMovement().y <= 0.0D;
-            d0 = gravity.getValue();
+    override fun travel(relative: Vec3) {
+        if (this.isEffectiveAi || this.isControlledByLocalInstance) {
+            val d0: Double
+            val gravity = this.getAttribute(Attributes.GRAVITY)
+            val flag = deltaMovement.y <= 0.0
+            d0 = gravity!!.value
 
-            FluidState fluidstate = this.level().getFluidState(this.blockPosition());
-            if (this.isInWater() && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
-                double d8 = this.getY();
-                float f5 = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
-                float f6 = 0.02F;
-                float f7 = 0;
-                if (f7 > 3.0F) {
-                    f7 = 3.0F;
+            val fluidstate = level().getFluidState(this.blockPosition())
+            if (this.isInWater && this.isAffectedByFluids && !this.canStandOnFluid(fluidstate)) {
+                val d8 = this.y
+                var f5 = if (this.isSprinting) 0.9f else this.waterSlowDown
+                var f6 = 0.02f
+                var f7 = 0f
+                if (f7 > 3.0f) {
+                    f7 = 3.0f
                 }
 
                 if (!this.onGround()) {
-                    f7 *= 0.5F;
+                    f7 *= 0.5f
                 }
 
-                if (f7 > 0.0F) {
-                    f5 += (0.54600006F - f5) * f7 / 3.0F;
-                    f6 += (this.getSpeed() - f6) * f7 / 3.0F;
+                if (f7 > 0.0f) {
+                    f5 += (0.54600006f - f5) * f7 / 3.0f
+                    f6 += (this.speed - f6) * f7 / 3.0f
                 }
 
                 if (this.hasEffect(MobEffects.DOLPHINS_GRACE)) {
-                    f5 = 0.96F;
+                    f5 = 0.96f
                 }
 
-                f6 *= (float) swimSpeed();
-                this.moveRelative(f6, relative);
-                this.move(MoverType.SELF, this.getDeltaMovement());
-                Vec3 vector3d6 = this.getDeltaMovement();
+                f6 *= swimSpeed().toFloat()
+                this.moveRelative(f6, relative)
+                this.move(MoverType.SELF, this.deltaMovement)
+                var vector3d6 = this.deltaMovement
                 if (this.horizontalCollision && this.onClimbable()) {
-                    vector3d6 = new Vec3(vector3d6.x, 0.2D, vector3d6.z);
+                    vector3d6 = Vec3(vector3d6.x, 0.2, vector3d6.z)
                 }
 
-                this.setDeltaMovement(vector3d6.multiply((double) f5, (double) 0.8F, (double) f5));
-                Vec3 vector3d2 = this.getFluidFallingAdjustedMovement(d0, flag, this.getDeltaMovement());
-                this.setDeltaMovement(vector3d2);
+                this.deltaMovement = vector3d6.multiply(f5.toDouble(), 0.8, f5.toDouble())
+                val vector3d2 = this.getFluidFallingAdjustedMovement(d0, flag, this.deltaMovement)
+                this.deltaMovement = vector3d2
                 if (this.horizontalCollision) {
                     if (stuckCounter > 10) {
                         // destroy lilypads
-                        Direction direction = getDirection();
-                        BlockPos front = getOnPos().relative(direction).above();
-                        BlockPos left = front.relative(direction.getClockWise());
-                        BlockPos right = front.relative(direction.getCounterClockWise());
-                        for (BlockPos pos : Arrays.asList(front, left, right)){
-                            BlockState state = this.level().getBlockState(pos);
-                            if (state.is(Blocks.LILY_PAD)){
-                               this.level().destroyBlock(pos, true);
+                        val direction = direction
+                        val front = onPos.relative(direction).above()
+                        val left = front.relative(direction.clockWise)
+                        val right = front.relative(direction.counterClockWise)
+                        for (pos in Arrays.asList(front, left, right)) {
+                            val state = level().getBlockState(pos)
+                            if (state.`is`(Blocks.LILY_PAD)) {
+                                level().destroyBlock(pos, true)
                             }
                         }
-                        stuckCounter = 0;
+                        stuckCounter = 0
                     } else {
-                        stuckCounter++;
+                        stuckCounter++
                     }
                 } else {
 //                    stuckCounter = 0;
                 }
-            } else if (this.isInLava() && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
-                double d7 = this.getY();
-                this.moveRelative(0.02F, relative);
-                this.move(MoverType.SELF, this.getDeltaMovement());
-                if (this.getFluidHeight(FluidTags.LAVA) <= this.getFluidJumpThreshold()) {
-                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.5D, (double) 0.8F, 0.5D));
-                    Vec3 vector3d3 = this.getFluidFallingAdjustedMovement(d0, flag, this.getDeltaMovement());
-                    this.setDeltaMovement(vector3d3);
+            } else if (this.isInLava && this.isAffectedByFluids && !this.canStandOnFluid(fluidstate)) {
+                val d7 = this.y
+                this.moveRelative(0.02f, relative)
+                this.move(MoverType.SELF, this.deltaMovement)
+                if (this.getFluidHeight(FluidTags.LAVA) <= this.fluidJumpThreshold) {
+                    this.deltaMovement = deltaMovement.multiply(0.5, 0.8, 0.5)
+                    val vector3d3 = this.getFluidFallingAdjustedMovement(d0, flag, this.deltaMovement)
+                    this.deltaMovement = vector3d3
                 } else {
-                    this.setDeltaMovement(this.getDeltaMovement().scale(0.5D));
+                    this.deltaMovement = deltaMovement.scale(0.5)
                 }
 
-                if (!this.isNoGravity()) {
-                    this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -d0 / 4.0D, 0.0D));
+                if (!this.isNoGravity) {
+                    this.deltaMovement = deltaMovement.add(0.0, -d0 / 4.0, 0.0)
                 }
 
-                Vec3 vector3d4 = this.getDeltaMovement();
-                if (this.horizontalCollision && this.isFree(vector3d4.x, vector3d4.y + (double) 0.6F - this.getY() + d7, vector3d4.z)) {
-                    this.setDeltaMovement(vector3d4.x, (double) 0.3F, vector3d4.z);
+                val vector3d4 = this.deltaMovement
+                if (this.horizontalCollision && this.isFree(
+                        vector3d4.x,
+                        vector3d4.y + 0.6 - this.y + d7,
+                        vector3d4.z
+                    )
+                ) {
+                    this.setDeltaMovement(vector3d4.x, 0.3, vector3d4.z)
                 }
-            } else if (this.isFallFlying()) {
-                Vec3 vector3d = this.getDeltaMovement();
-                if (vector3d.y > -0.5D) {
-                    this.fallDistance = 1.0F;
-                }
-
-                Vec3 vector3d1 = this.getLookAngle();
-                float f = this.getXRot() * ((float) Math.PI / 180F);
-                double d1 = Math.sqrt(vector3d1.x * vector3d1.x + vector3d1.z * vector3d1.z);
-                double d3 = this.getDeltaMovement().horizontalDistance();
-                double d4 = vector3d1.length();
-                float f1 = Mth.cos(f);
-                f1 = (float) ((double) f1 * (double) f1 * Math.min(1.0D, d4 / 0.4D));
-                vector3d = this.getDeltaMovement().add(0.0D, d0 * (-1.0D + (double) f1 * 0.75D), 0.0D);
-                if (vector3d.y < 0.0D && d1 > 0.0D) {
-                    double d5 = vector3d.y * -0.1D * (double) f1;
-                    vector3d = vector3d.add(vector3d1.x * d5 / d1, d5, vector3d1.z * d5 / d1);
+            } else if (this.isFallFlying) {
+                var vector3d = this.deltaMovement
+                if (vector3d.y > -0.5) {
+                    this.fallDistance = 1.0f
                 }
 
-                if (f < 0.0F && d1 > 0.0D) {
-                    double d9 = d3 * (double) (-Mth.sin(f)) * 0.04D;
-                    vector3d = vector3d.add(-vector3d1.x * d9 / d1, d9 * 3.2D, -vector3d1.z * d9 / d1);
+                val vector3d1 = this.lookAngle
+                val f = this.xRot * (Math.PI.toFloat() / 180f)
+                val d1 = sqrt(vector3d1.x * vector3d1.x + vector3d1.z * vector3d1.z)
+                val d3 = deltaMovement.horizontalDistance()
+                val d4 = vector3d1.length()
+                var f1 = Mth.cos(f)
+                f1 = (f1.toDouble() * f1.toDouble() * min(1.0, d4 / 0.4)).toFloat()
+                vector3d = deltaMovement.add(0.0, d0 * (-1.0 + f1.toDouble() * 0.75), 0.0)
+                if (vector3d.y < 0.0 && d1 > 0.0) {
+                    val d5 = vector3d.y * -0.1 * f1.toDouble()
+                    vector3d = vector3d.add(vector3d1.x * d5 / d1, d5, vector3d1.z * d5 / d1)
                 }
 
-                if (d1 > 0.0D) {
-                    vector3d = vector3d.add((vector3d1.x / d1 * d3 - vector3d.x) * 0.1D, 0.0D, (vector3d1.z / d1 * d3 - vector3d.z) * 0.1D);
+                if (f < 0.0f && d1 > 0.0) {
+                    val d9 = d3 * (-Mth.sin(f)).toDouble() * 0.04
+                    vector3d = vector3d.add(-vector3d1.x * d9 / d1, d9 * 3.2, -vector3d1.z * d9 / d1)
                 }
 
-                this.setDeltaMovement(vector3d.multiply((double) 0.99F, (double) 0.98F, (double) 0.99F));
-                this.move(MoverType.SELF, this.getDeltaMovement());
-                if (this.horizontalCollision && !this.level().isClientSide) {
-                    double d10 = this.getDeltaMovement().horizontalDistance();
-                    double d6 = d3 - d10;
-                    float f2 = (float) (d6 * 10.0D - 3.0D);
-                    if (f2 > 0.0F) {
-                        this.hurt(this.level().damageSources().flyIntoWall(), f2);
+                if (d1 > 0.0) {
+                    vector3d = vector3d.add(
+                        (vector3d1.x / d1 * d3 - vector3d.x) * 0.1,
+                        0.0,
+                        (vector3d1.z / d1 * d3 - vector3d.z) * 0.1
+                    )
+                }
+
+                this.deltaMovement = vector3d.multiply(0.99, 0.98, 0.99)
+                this.move(MoverType.SELF, this.deltaMovement)
+                if (this.horizontalCollision && !level().isClientSide) {
+                    val d10 = deltaMovement.horizontalDistance()
+                    val d6 = d3 - d10
+                    val f2 = (d6 * 10.0 - 3.0).toFloat()
+                    if (f2 > 0.0f) {
+                        this.hurt(level().damageSources().flyIntoWall(), f2)
                     }
                 }
 
-                if (this.onGround() && !this.level().isClientSide) {
-                    this.setSharedFlag(7, false);
+                if (this.onGround() && !level().isClientSide) {
+                    this.setSharedFlag(7, false)
                 }
             } else {
-                BlockPos blockpos = this.getBlockPosBelowThatAffectsMyMovement();
-                float f3 = this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).getFriction(level(), this.getBlockPosBelowThatAffectsMyMovement(), this);
-                float f4 = this.onGround() ? f3 * 0.91F : 0.91F;
-                Vec3 vector3d5 = this.handleRelativeFrictionAndCalculateMovement(relative, f3);
-                double d2 = vector3d5.y;
+                val blockpos = this.blockPosBelowThatAffectsMyMovement
+                val f3 = level().getBlockState(this.blockPosBelowThatAffectsMyMovement).getFriction(
+                    level(),
+                    this.blockPosBelowThatAffectsMyMovement,
+                    this
+                )
+                val f4 = if (this.onGround()) f3 * 0.91f else 0.91f
+                val vector3d5 = this.handleRelativeFrictionAndCalculateMovement(relative, f3)
+                var d2 = vector3d5.y
                 if (this.hasEffect(MobEffects.LEVITATION)) {
-                    d2 += (0.05D * (double) (this.getEffect(MobEffects.LEVITATION).getAmplifier() + 1) - vector3d5.y) * 0.2D;
-                    this.fallDistance = 0.0F;
-                } else if (this.level().isClientSide && !this.level().hasChunkAt(blockpos)) {
-                    if (this.getY() > 0.0D) {
-                        d2 = -0.1D;
+                    d2 += (0.05 * (getEffect(MobEffects.LEVITATION)!!.amplifier + 1).toDouble() - vector3d5.y) * 0.2
+                    this.fallDistance = 0.0f
+                } else if (level().isClientSide && !level().hasChunkAt(blockpos)) {
+                    d2 = if (this.y > 0.0) {
+                        -0.1
                     } else {
-                        d2 = 0.0D;
+                        0.0
                     }
-                } else if (!this.isNoGravity()) {
-                    d2 -= d0;
+                } else if (!this.isNoGravity) {
+                    d2 -= d0
                 }
 
-                this.setDeltaMovement(vector3d5.x * (double) f4, d2 * (double) 0.98F, vector3d5.z * (double) f4);
+                this.setDeltaMovement(vector3d5.x * f4.toDouble(), d2 * 0.98, vector3d5.z * f4.toDouble())
             }
         }
 
-        this.calculateEntityAnimation(false);
+        this.calculateEntityAnimation(false)
     }
 
-    protected double swimSpeed() {
-        return this.getAttribute(SWIM_SPEED.getDelegate()).getValue();
+    protected open fun swimSpeed(): Double {
+        return getAttribute(NeoForgeMod.SWIM_SPEED.delegate)!!.value
     }
 
-    /**
-     * Grabs a list of connected vessels that provides inventory to this vessel
-     * For Example:
-     * Tug F F F C C C -- All F barges are linked to all C barges
-     * Tug F C F C F C -- Each F barge is linked to 1 C barge
-     */
-    public List<TrainInventoryProvider> getConnectedInventories() {
-        List<TrainInventoryProvider> result = new ArrayList<>();
+    val connectedInventories: List<TrainInventoryProvider>
+        /**
+         * Grabs a list of connected vessels that provides inventory to this vessel
+         * For Example:
+         * Tug F F F C C C -- All F barges are linked to all C barges
+         * Tug F C F C F C -- Each F barge is linked to 1 C barge
+         */
+        get() {
+            val result: MutableList<TrainInventoryProvider> = ArrayList()
 
-        var vessel = getFollower();
-        while (vessel.isPresent()) {
-            // TODO generalize this to all inventory providers
-            if (vessel.get() instanceof TrainInventoryProvider) {
-                break;
+            var vessel: Optional<VesselEntity> = getFollower()
+            while (vessel.isPresent) {
+                // TODO generalize this to all inventory providers
+                if (vessel.get() is TrainInventoryProvider) {
+                    break
+                }
+
+                vessel = vessel.get().getFollower()
             }
 
-            vessel = vessel.get().getFollower();
-        }
+            // vessel is either empty or is a chest barge
+            while (vessel.isPresent) {
+                if (vessel.get() is TrainInventoryProvider) {
+                    result.add(vessel as TrainInventoryProvider)
+                } else {
+                    break
+                }
 
-        // vessel is either empty or is a chest barge
-        while (vessel.isPresent()) {
-            if (vessel.get() instanceof TrainInventoryProvider e) {
-                result.add(e);
-            } else {
-                break;
+                vessel = vessel.get().getFollower()
             }
 
-            vessel = vessel.get().getFollower();
+            return result
         }
 
-        return result;
+
+    companion object {
+        @JvmField
+        val COLOR_DATA: EntityDataAccessor<Int> = SynchedEntityData.defineId(
+            VesselEntity::class.java, EntityDataSerializers.INT
+        )
+
+        private const val NAMETAG_RENDERING_DISTANCE = 15.0
+
+        val DOMINANT_ID: EntityDataAccessor<Int> = SynchedEntityData.defineId(
+            VesselEntity::class.java, EntityDataSerializers.INT
+        )
+        val DOMINATED_ID: EntityDataAccessor<Int> = SynchedEntityData.defineId(
+            VesselEntity::class.java, EntityDataSerializers.INT
+        )
+
+        @JvmStatic
+        fun setCustomAttributes(): AttributeSupplier.Builder {
+            return createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 20.0)
+                .add(Attributes.MOVEMENT_SPEED, 0.0)
+            //TODO .add(ForgeMod.NAMETAG_DISTANCE, NAMETAG_RENDERING_DISTANCE)
+            //TODO.add(ForgeMod.SWIM_SPEED.get(), 0.0D)
+        }
     }
-
-    public boolean isFrozen() {
-        return frozen;
-    }
-
-    public void setFrozen(boolean frozen) {
-        this.frozen = frozen;
-    }
-
-
 }

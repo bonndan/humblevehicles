@@ -1,116 +1,105 @@
-package dev.murad.shipping.entity.custom.train.wagon;
+package dev.murad.shipping.entity.custom.train.wagon
 
-import dev.murad.shipping.setup.ModEntityTypes;
-import dev.murad.shipping.setup.ModItems;
-import dev.murad.shipping.util.ItemHandlerVanillaContainerWrapper;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.*;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import dev.murad.shipping.setup.ModEntityTypes
+import dev.murad.shipping.setup.ModItems
+import dev.murad.shipping.util.ItemHandlerVanillaContainerWrapper
+import net.minecraft.core.Direction
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.*
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.ChestMenu
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.Level
+import net.neoforged.neoforge.items.ItemStackHandler
+import java.util.stream.IntStream
 
-import javax.annotation.Nullable;
-import java.util.stream.IntStream;
+class ChestCarEntity : AbstractWagonEntity, ItemHandlerVanillaContainerWrapper, WorldlyContainer, MenuProvider {
 
-public class ChestCarEntity extends AbstractWagonEntity implements ItemHandlerVanillaContainerWrapper, WorldlyContainer, MenuProvider {
-    protected final ItemStackHandler itemHandler = createHandler();
-    public ChestCarEntity(EntityType<ChestCarEntity> type, Level level) {
-        super(type, level);
-    }
+    protected val itemHandler: ItemStackHandler = createHandler()
 
-    public ChestCarEntity(EntityType<ChestCarEntity> type, Level level, Double x, Double y, Double z) {
-        super(type, level, x, y, z);
-    }
+    constructor(type: EntityType<ChestCarEntity>, level: Level) : super(type, level)
 
-    @Override
-    public void remove(RemovalReason r) {
-        if (!this.level().isClientSide) {
-            Containers.dropContents(this.level(), this, this);
+    constructor(type: EntityType<ChestCarEntity>, level: Level, x: Double, y: Double, z: Double) : super(
+        type,
+        level,
+        x,
+        y,
+        z
+    )
+
+    override fun remove(r: RemovalReason) {
+        if (!level().isClientSide) {
+            Containers.dropContents(this.level(), this, this)
         }
-        super.remove(r);
+        super.remove(r)
     }
 
-    private ItemStackHandler createHandler() {
-        return new ItemStackHandler(27);
+    private fun createHandler(): ItemStackHandler {
+        return ItemStackHandler(27)
     }
 
-    @Override
-    public @NotNull ItemStack getPickResult() {
-        if (this.getType().equals(ModEntityTypes.BARREL_CAR.get())) {
-            return new ItemStack(ModItems.BARREL_CAR.get());
+    override fun getPickResult(): ItemStack {
+        return if (this.type == ModEntityTypes.BARREL_CAR.get()) {
+            ItemStack(ModItems.BARREL_CAR.get())
         } else {
-            return new ItemStack(ModItems.CHEST_CAR.get());
+            ItemStack(ModItems.CHEST_CAR.get())
         }
     }
 
-    @Override
-    public InteractionResult interact(Player player, InteractionHand hand){
-        InteractionResult ret = super.interact(player, hand);
-        if (ret.consumesAction()) return ret;
+    override fun interact(player: Player, hand: InteractionHand): InteractionResult {
+        val ret = super.interact(player, hand)
+        if (ret.consumesAction()) return ret
 
-        if(!this.level().isClientSide){
-            player.openMenu(this);
+        if (!level().isClientSide) {
+            player.openMenu(this)
         }
-        return InteractionResult.CONSUME;
+        return InteractionResult.CONSUME
     }
 
-    @Nullable
-    public AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pInventory, Player pPlayer) {
-        if (pPlayer.isSpectator()) {
-            return null;
+    override fun createMenu(pContainerId: Int, pInventory: Inventory, pPlayer: Player): AbstractContainerMenu? {
+        return if (pPlayer.isSpectator) {
+            null
         } else {
-            return ChestMenu.threeRows(pContainerId, pInventory, this);
+            ChestMenu.threeRows(pContainerId, pInventory, this)
         }
     }
 
-    @Override
-    public boolean stillValid(@NotNull Player pPlayer) {
-        if (this.isRemoved()) {
-            return false;
+    override fun stillValid(pPlayer: Player): Boolean {
+        return if (this.isRemoved) {
+            false
         } else {
-            return !(this.distanceToSqr(pPlayer) > 64.0D);
+            !(this.distanceToSqr(pPlayer) > 64.0)
         }
     }
 
 
-    @Override
-    public ItemStackHandler getRawHandler() {
-        return itemHandler;
+    override fun getRawHandler(): ItemStackHandler {
+        return itemHandler
     }
 
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag t) {
-        super.addAdditionalSaveData(t);
-        t.put("inv", itemHandler.serializeNBT(registryAccess()));
+    public override fun addAdditionalSaveData(t: CompoundTag) {
+        super.addAdditionalSaveData(t)
+        t.put("inv", itemHandler.serializeNBT(registryAccess()))
     }
 
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag t) {
-        super.readAdditionalSaveData(t);
-        itemHandler.deserializeNBT(registryAccess(), t.getCompound("inv"));
+    public override fun readAdditionalSaveData(t: CompoundTag) {
+        super.readAdditionalSaveData(t)
+        itemHandler.deserializeNBT(registryAccess(), t.getCompound("inv"))
     }
 
     // hack to disable hoppers before docking complete
-
-    @Override
-    public int @NotNull [] getSlotsForFace(@NotNull Direction p_180463_1_) {
-        return IntStream.range(0, getContainerSize()).toArray();
+    override fun getSlotsForFace(p_180463_1_: Direction): IntArray {
+        return IntStream.range(0, containerSize).toArray()
     }
 
-    @Override
-    public boolean canPlaceItemThroughFace(int p_180462_1_, ItemStack p_180462_2_, @Nullable Direction p_180462_3_) {
-        return isDockable();
+    override fun canPlaceItemThroughFace(p_180462_1_: Int, p_180462_2_: ItemStack, p_180462_3_: Direction?): Boolean {
+        return isDockable
     }
 
-    @Override
-    public boolean canTakeItemThroughFace(int p_180461_1_, ItemStack p_180461_2_, Direction p_180461_3_) {
-        return isDockable();
+    override fun canTakeItemThroughFace(p_180461_1_: Int, p_180461_2_: ItemStack, p_180461_3_: Direction): Boolean {
+        return isDockable
     }
 }

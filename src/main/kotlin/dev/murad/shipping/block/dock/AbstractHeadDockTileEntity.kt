@@ -67,17 +67,14 @@ abstract class AbstractHeadDockTileEntity<T>(t: BlockEntityType<*>, pos: BlockPo
     protected abstract fun getRowDirection(facing: Direction): Direction
 
     private fun getTailDockPairs(tug: T): List<Pair<T, AbstractTailDockTileEntity<T>>> {
-        val barges = tug!!.train.asListOfTugged()
+
+        val barges = tug.getTrain()?.asListOfTugged() ?: emptyList()
         val docks = tailDocks
+
         return IntStream.range(
-            0, min(barges.size.toDouble(), docks.size.toDouble())
-                .toInt()
+            0, min(barges.size.toDouble(), docks.size.toDouble()).toInt()
         )
-            .mapToObj { i: Int ->
-                Pair(
-                    barges[i], docks[i]
-                )
-            }
+            .mapToObj { i -> Pair(barges[i], docks[i]) }
             .collect(Collectors.toList())
     }
 

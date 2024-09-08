@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState
 import java.util.*
 
 abstract class AbstractDockTileEntity<T>(p_i48289_1_: BlockEntityType<*>?, pos: BlockPos?, s: BlockState?) :
-    BlockEntity(p_i48289_1_, pos, s) where T : Entity?, T : LinkableEntity<T>? {
+    BlockEntity(p_i48289_1_, pos, s) where T : Entity, T : LinkableEntity<T> {
 
     abstract fun hold(vessel: T, direction: Direction): Boolean
 

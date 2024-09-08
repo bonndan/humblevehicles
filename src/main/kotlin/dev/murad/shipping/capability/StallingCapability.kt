@@ -6,18 +6,15 @@ import net.neoforged.neoforge.capabilities.EntityCapability
 
 interface StallingCapability {
 
-    val isDocked: Boolean
-
+    fun isDocked(): Boolean
     fun dock(x: Double, y: Double, z: Double)
     fun undock()
 
-    val isStalled: Boolean
-
+    fun isStalled(): Boolean
     fun stall()
     fun unstall()
 
-    val isFrozen: Boolean
-
+    fun isFrozen(): Boolean
     fun freeze()
     fun unfreeze()
 

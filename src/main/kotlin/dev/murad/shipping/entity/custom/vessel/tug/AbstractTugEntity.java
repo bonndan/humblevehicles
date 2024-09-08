@@ -506,7 +506,7 @@ public abstract class AbstractTugEntity extends VesselEntity implements
     @Override
     public void remove(RemovalReason r) {
         if (!this.level().isClientSide) {
-            var stack = new ItemStack(this.getDropItem());
+            var stack = new ItemStack(this.dropItem);
             if (this.hasCustomName()) {
                 //TODO stack.setHoverName(this.getCustomName());
             }
