@@ -418,13 +418,13 @@ public abstract class AbstractTugEntity extends VesselEntity implements
             if (navigation.getPath() == null || navigation.getPath().isDone()
             ) {
                 if (pathfindCooldown < 0 || navigation.getPath() != null) {  //only go on cooldown when the path was not completed
-                    navigation.moveTo(stop.getX(), this.getY(), stop.getZ(), 0.3);
+                    navigation.moveTo(stop.x, this.getY(), stop.z, 0.3);
                     pathfindCooldown = 20;
                 } else {
                     return;
                 }
             }
-            double distance = Math.abs(Math.hypot(this.getX() - (stop.getX() + 0.5), this.getZ() - (stop.getZ() + 0.5)));
+            double distance = Math.abs(Math.hypot(this.getX() - (stop.x + 0.5), this.getZ() - (stop.z + 0.5)));
             independentMotion = true;
             entityData.set(INDEPENDENT_MOTION, true);
 

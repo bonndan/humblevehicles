@@ -256,9 +256,9 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
             accelerate()
         } else {
             if (RailHelper.getRail(this.onPos.above(), this.level())
-                    .map { pos: BlockPos? -> railHelper.getShape(pos) }
-                    .map { obj: RailShape -> obj.name }
-                    .map { s: String -> s.contains("ASCENDING") }
+                    .map { pos -> railHelper.getShape(pos) }
+                    .map { obj -> obj.name }
+                    .map { s -> s.contains("ASCENDING") }
                     .orElse(true) && tickFuel()
             ) {
                 this.deltaMovement = Vec3.ZERO
@@ -290,10 +290,13 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
                 return@flatMap r.getPriorityDirectionsToCheck(level().getBlockState(block), prevExitTaken.opposite)
                     .stream()
-                    .map<Optional<Int>> { p: Direction? ->
+                    .map<Optional<Int>> { direction ->
                         railHelper.traverse(
-                            pos.relative(p), this.level(), p,
-                            { dir: Direction?, f: BlockPos -> checkLocoCollision(f) }, 2
+                            pos.relative(direction),
+                            this.level(),
+                            direction,
+                            { _, f: BlockPos -> checkLocoCollision(f) },
+                            2
                         )
                     }
                     .map<Boolean> { obj -> obj.isPresent }
@@ -454,13 +457,13 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
     private fun tickSpeedLimit() {
         if (speedRecomputeCooldown < 0 || speedLimit < 0) {
-            val dist = RailHelper.getRail(onPos.above(), this.level()).flatMap { pos: BlockPos? ->
+            val dist = RailHelper.getRail(onPos.above(), this.level()).flatMap { pos ->
                 railHelper.traverse(
                     pos,
                     this.level(),
                     this.direction,
-                    { direction: Direction?, p: BlockPos? ->
-                        val railoc = RailHelper.getRail(p, this.level())
+                    { _, blockPos ->
+                        val railoc = RailHelper.getRail(blockPos, this.level())
                         if (railoc.isEmpty) {
                             return@traverse true
                         }
@@ -517,8 +520,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
     protected val stalling: StallingCapability = object : StallingCapability {
 
-        override fun isDocked(): Boolean
-            = isDocked
+        override fun isDocked(): Boolean = isDocked
 
         override fun dock(x: Double, y: Double, z: Double) {
             isDocked = true
@@ -540,8 +542,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
             remainingStallTime = 0
         }
 
-        override fun isFrozen(): Boolean
-            = super@AbstractLocomotiveEntity.isFrozen()
+        override fun isFrozen(): Boolean = super@AbstractLocomotiveEntity.isFrozen()
 
         override fun freeze() {
             setFrozen(true)

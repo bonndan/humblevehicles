@@ -5,7 +5,6 @@ import com.mojang.datafixers.util.Pair
 import dev.murad.shipping.ShippingConfig
 import dev.murad.shipping.capability.StallingCapability
 import dev.murad.shipping.entity.Colorable
-import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity
 import dev.murad.shipping.entity.custom.train.locomotive.AbstractLocomotiveEntity
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.util.LinkableEntity
@@ -341,15 +340,15 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
         return yrot
     }
 
-    private fun yawHelper(r: Pair<Direction, Int>, e: Entity): Direction? {
+    private fun yawHelper(directionIntPair: Pair<Direction, Int>, e: Entity): Direction {
         var hordir: Direction? = null
-        if (r.second == 0) {
+        if (directionIntPair.second == 0) {
             val dirvec = Vec3(e.xo - this.xo, 0.0, e.zo - this.zo)
             hordir = Direction.fromDelta(dirvec.normalize().x.toInt(), 0, dirvec.normalize().z.toInt()) // may fail
         }
         // if still null
         if (hordir == null) {
-            hordir = r.first
+            return directionIntPair.first
         }
         return hordir
     }
@@ -492,7 +491,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
                 railHelper.traverseBi(this.onPos.above(), RailHelper.samePositionPredicate(parent), 5, this)
             // this is a fix to mitigate "bouncing" when trains start moving from a stopped position
             // todo: fix based on "docked" instead.
-            val tug = linkingHandler.train?.getTug()
+            val tug = linkingHandler.train?.tug
             val docked = tug?.isPresent == true && tug.get().deltaMovement == Vec3.ZERO
             val maxDist = if (docked) 1.0 else 1.2
             val minDist = 1.0
@@ -586,7 +585,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
                 RailHelper.getRail(car2.onPos.above(), car2.level())
                     .map { rp: BlockPos -> rp == p }.orElse(false)
             }, 5, car1
-        ).map { obj: Pair<Direction?, Int> -> obj.second }
+        ).map { obj -> obj.second }
     }
 
     private fun findClosestPair(

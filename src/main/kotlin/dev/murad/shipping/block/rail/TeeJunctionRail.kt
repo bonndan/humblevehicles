@@ -71,7 +71,7 @@ class TeeJunctionRail : BaseRailBlock, MultiShapeRail {
         return FLAT_AABB
     }
 
-    override fun getPriorityDirectionsToCheck(state: BlockState, entrance: Direction): Set<Direction?> {
+    override fun getPriorityDirectionsToCheck(state: BlockState, entrance: Direction): Set<Direction> {
         val c = getRailConfiguration(state)
         return if (entrance == c.poweredDirection) java.util.Set.of(c.unpoweredDirection) else setOf<Direction>()
     }
@@ -140,7 +140,7 @@ class TeeJunctionRail : BaseRailBlock, MultiShapeRail {
         return false
     }
 
-    override fun getPossibleOutputDirections(state: BlockState, inputSide: Direction): Set<Direction?>? {
+    override fun getPossibleOutputDirections(state: BlockState, inputSide: Direction): Set<Direction> {
         val c = getRailConfiguration(state)
         val powered = state.getValue(POWERED)
         val poss = c.getPossibleDirections(

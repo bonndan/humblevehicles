@@ -291,7 +291,7 @@ object ModItems {
 
     fun buildCreativeTab(event: BuildCreativeModeTabContentsEvent) {
         PRIVATE_TAB_REGISTRY.getOrDefault(event.tabKey, ArrayList())
-            .forEach(Consumer { supplier: Supplier<out Item> -> event.accept(supplier.get()) })
+            ?.forEach(Consumer { supplier: Supplier<out Item> -> event.accept(supplier.get()) })
     }
 
     private fun register(

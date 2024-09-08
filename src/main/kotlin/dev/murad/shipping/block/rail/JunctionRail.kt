@@ -94,20 +94,20 @@ class JunctionRail(pProperties: Properties) : BaseRailBlock(true, pProperties), 
         return `in`.axis.isHorizontal && `in`.opposite == out
     }
 
-    override fun getPossibleOutputDirections(state: BlockState, inputSide: Direction): Set<Direction?>? {
+    override fun getPossibleOutputDirections(state: BlockState, inputSide: Direction): Set<Direction> {
         if (inputSide.axis.isHorizontal) {
             return java.util.Set.of(inputSide.opposite)
         }
         return NO_POSSIBILITIES
     }
 
-    override fun getPriorityDirectionsToCheck(state: BlockState, entrance: Direction): Set<Direction?> {
+    override fun getPriorityDirectionsToCheck(state: BlockState, entrance: Direction): Set<Direction> {
         return if (entrance == Direction.EAST || entrance == Direction.WEST) {
             java.util.Set.of(
                 Direction.NORTH,
                 Direction.SOUTH
             )
-        } else setOf<Direction>()
+        } else setOf()
     }
 
     override fun getVanillaRailShapeFromDirection(
@@ -139,6 +139,6 @@ class JunctionRail(pProperties: Properties) : BaseRailBlock(true, pProperties), 
         // for compatibilty issues
         val RAIL_SHAPE: EnumProperty<RailShape> = RailShapeUtil.RAIL_SHAPE_STRAIGHT_FLAT
 
-        val NO_POSSIBILITIES: Set<Direction?> = setOf<Direction>()
+        val NO_POSSIBILITIES: Set<Direction> = setOf()
     }
 }

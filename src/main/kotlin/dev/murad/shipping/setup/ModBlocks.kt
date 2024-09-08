@@ -135,7 +135,7 @@ object ModBlocks {
     @JvmStatic
     fun buildCreativeTab(event: BuildCreativeModeTabContentsEvent) {
         PRIVATE_TAB_REGISTRY.getOrDefault(event.tabKey, ArrayList())
-            .forEach(Consumer { supplier: Supplier<BlockItem> -> event.accept(supplier.get()) })
+            ?.forEach(Consumer { supplier: Supplier<BlockItem> -> event.accept(supplier.get()) })
     }
 
     private fun <T : Block> registerBlock(name: String, block: Supplier<T>): Supplier<T> {

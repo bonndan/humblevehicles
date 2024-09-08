@@ -126,7 +126,7 @@ public class TugRouteItem extends Item {
         if (route.size() == 0) {
             return false;
         }
-        boolean removed = route.removeIf(v -> v.getX() == x && v.getZ() == z);
+        boolean removed = route.removeIf(v -> v.x == x && v.z == z);
         saveRoute(route, itemStack);
         return removed;
     }

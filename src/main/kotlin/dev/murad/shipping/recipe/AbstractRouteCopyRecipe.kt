@@ -11,9 +11,9 @@ import net.minecraft.world.item.crafting.RecipeSerializer
 import net.minecraft.world.level.Level
 import java.util.*
 
-abstract class AbstractRouteCopyRecipe(cat: CraftingBookCategory?, private val item: Item) : CustomRecipe(cat) {
+abstract class AbstractRouteCopyRecipe(cat: CraftingBookCategory, private val item: Item) : CustomRecipe(cat) {
 
-    abstract fun stackHasNodes(stack: ItemStack?): Boolean
+    abstract fun stackHasNodes(stack: ItemStack): Boolean
 
     abstract override fun getSerializer(): RecipeSerializer<*>
 

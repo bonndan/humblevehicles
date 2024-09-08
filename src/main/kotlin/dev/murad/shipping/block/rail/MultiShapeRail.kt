@@ -15,9 +15,9 @@ interface MultiShapeRail {
      */
     fun setRailState(state: BlockState, world: Level, pos: BlockPos, `in`: Direction, out: Direction): Boolean
 
-    fun getPossibleOutputDirections(state: BlockState, inputSide: Direction): Set<Direction?>?
+    fun getPossibleOutputDirections(state: BlockState, inputSide: Direction): Set<Direction>
 
-    fun getPriorityDirectionsToCheck(state: BlockState, entrance: Direction): Set<Direction?>
+    fun getPriorityDirectionsToCheck(state: BlockState, entrance: Direction): Set<Direction>
 
     /**
      * @param direction Direction of travel for the train

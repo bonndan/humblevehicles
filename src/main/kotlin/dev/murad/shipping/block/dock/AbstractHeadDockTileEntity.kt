@@ -21,7 +21,7 @@ import kotlin.math.min
 abstract class AbstractHeadDockTileEntity<T>(t: BlockEntityType<*>, pos: BlockPos, state: BlockState) :
     AbstractDockTileEntity<T>(t, pos, state) where T : Entity, T : LinkableEntity<T> {
 
-    protected fun handleItemHopper(tugEntity: T, hopper: HopperBlockEntity?): Boolean {
+    protected fun handleItemHopper(tugEntity: T, hopper: HopperBlockEntity): Boolean {
         if (tugEntity !is Container) {
             return false
         }
@@ -41,7 +41,7 @@ abstract class AbstractHeadDockTileEntity<T>(t: BlockEntityType<*>, pos: BlockPo
         }
 
         for (p in targetBlockPos) {
-            if (getHopper(p).map { hopper: HopperBlockEntity? -> handleItemHopper(tug, hopper) }
+            if (getHopper(p).map { hopper: HopperBlockEntity -> handleItemHopper(tug, hopper) }
                     .orElse(getVesselLoader(p).map { l: IVesselLoader -> l.hold<T>(tug as T, IVesselLoader.Mode.EXPORT) }
                         .orElse(false))) {
                 return true

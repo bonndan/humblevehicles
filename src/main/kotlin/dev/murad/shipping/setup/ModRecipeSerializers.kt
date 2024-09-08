@@ -18,9 +18,10 @@ object ModRecipeSerializers {
                 SimpleCraftingRecipeSerializer { cat -> createTugRouteCopyRecipe(cat) }
             })
 
-    private fun createTugRouteCopyRecipe(cat: CraftingBookCategory?) =
+    private fun createTugRouteCopyRecipe(cat: CraftingBookCategory) =
         object : AbstractRouteCopyRecipe(cat, ModItems.TUG_ROUTE.get()) {
-            override fun stackHasNodes(stack: ItemStack?): Boolean {
+
+            override fun stackHasNodes(stack: ItemStack): Boolean {
                 return !TugRouteItem.getRoute(stack).isEmpty()
             }
 
@@ -36,9 +37,10 @@ object ModRecipeSerializers {
                 SimpleCraftingRecipeSerializer<AbstractRouteCopyRecipe> { cat -> abstractLocoRouteCopyRecipe(cat) }
             })
 
-    private fun abstractLocoRouteCopyRecipe(cat: CraftingBookCategory?) =
+    private fun abstractLocoRouteCopyRecipe(cat: CraftingBookCategory) =
         object : AbstractRouteCopyRecipe(cat, ModItems.LOCO_ROUTE.get()) {
-            override fun stackHasNodes(stack: ItemStack?): Boolean {
+
+            override fun stackHasNodes(stack: ItemStack): Boolean {
                 return !LocoRouteItem.getRoute(stack).isEmpty()
             }
 
