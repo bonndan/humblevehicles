@@ -467,7 +467,7 @@ abstract class AbstractTugEntity(type: EntityType<out WaterAnimal>, world: Level
 
     override fun remove(r: RemovalReason) {
         if (!level().isClientSide) {
-            val stack: ItemStack = ItemStack(this.dropItem)
+            val stack: ItemStack = ItemStack(this.getDropItem())
             if (this.hasCustomName()) {
                 //TODO stack.setHoverName(this.getCustomName());
             }

@@ -1,216 +1,220 @@
-package dev.murad.shipping.entity.custom.vessel.barge;
+package dev.murad.shipping.entity.custom.vessel.barge
 
-import com.mojang.datafixers.util.Pair;
-import dev.murad.shipping.ShippingConfig;
-import dev.murad.shipping.setup.ModEntityTypes;
-import dev.murad.shipping.setup.ModItems;
-import dev.murad.shipping.util.InventoryUtils;
-import dev.murad.shipping.util.LinkableEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import org.jetbrains.annotations.NotNull;
+import com.mojang.datafixers.util.Pair
+import dev.murad.shipping.ShippingConfig
+import dev.murad.shipping.setup.ModEntityTypes
+import dev.murad.shipping.setup.ModItems
+import dev.murad.shipping.util.InventoryUtils.moveItemStackIntoHandler
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.storage.loot.BuiltInLootTables
+import net.minecraft.world.level.storage.loot.LootParams
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams
+import net.minecraft.world.phys.Vec3
+import java.util.Arrays
+import java.util.HashSet
+import java.util.LinkedList
+import java.util.Queue
+import java.util.function.Function
+import kotlin.math.floor
+import kotlin.math.min
 
-import java.util.*;
+class FishingBargeEntity : AbstractBargeEntity {
+    private var ticksDeployable = 0
+    private var fishCooldown = 0
+    private val overFishedCoords: MutableSet<Pair<Int, Int>> = HashSet<Pair<Int, Int>>()
+    private val overFishedQueue: Queue<Pair<Int, Int>> = LinkedList<Pair<Int, Int>>()
 
+    constructor(type: EntityType<out FishingBargeEntity?>, world: Level) : super(type, world)
 
-public class FishingBargeEntity extends AbstractBargeEntity {
-    private int ticksDeployable = 0;
-    private int fishCooldown = 0;
-    private final Set<Pair<Integer, Integer>> overFishedCoords = new HashSet<>();
-    private final Queue<Pair<Integer, Integer>> overFishedQueue = new LinkedList<>();
-
-    private static final ResourceLocation FISHING_LOOT_TABLE =
-            ResourceLocation.tryParse(ShippingConfig.Server.FISHING_LOOT_TABLE.get());
-
-    private static final int FISHING_COOLDOWN =
-            ShippingConfig.Server.FISHING_COOLDOWN.get();
-
-    private static final double FISHING_TREASURE_CHANCE =
-            ShippingConfig.Server.FISHING_TREASURE_CHANCE_MODIFIER.get();
-
-
-    public FishingBargeEntity(EntityType<? extends FishingBargeEntity> type, Level world) {
-        super(type, world);
-    }
-
-    public FishingBargeEntity(Level worldIn, double x, double y, double z) {
-        super(ModEntityTypes.FISHING_BARGE.get(), worldIn, x, y, z);
-    }
+    constructor(worldIn: Level, x: Double, y: Double, z: Double) : super(
+        ModEntityTypes.FISHING_BARGE.get(),
+        worldIn,
+        x,
+        y,
+        z
+    )
 
 
-    @Override
     // Only called on the server side
-    protected void doInteract(Player player) {
-        var size = getConnectedInventories().size();
+    override fun doInteract(player: Player?) {
+        val size = connectedInventories.size
 
-        player.displayClientMessage(
-                switch (size) {
-                    case 0 -> Component.translatable("global.littlelogistics.no_connected_inventory_barge");
-                    default -> Component.translatable("global.littlelogistics.connected_inventory", size);
-                }, false);
+        player?.displayClientMessage(
+            when (size) {
+                0 -> Component.translatable("global.littlelogistics.no_connected_inventory_barge")
+                else -> Component.translatable("global.littlelogistics.connected_inventory", size)
+            }, false
+        )
     }
 
-    @Override
-    public void remove(RemovalReason r) {
-        super.remove(r);
+    override fun remove(r: RemovalReason) {
+        super.remove(r)
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-        tickWaterOnSidesCheck();
+    override fun tick() {
+        super.tick()
+        tickWaterOnSidesCheck()
         if (!this.level().isClientSide && this.getStatus() == Status.DEPLOYED) {
             if (fishCooldown < 0) {
-                tickFish();
-                fishCooldown = FISHING_COOLDOWN;
+                tickFish()
+                fishCooldown = FISHING_COOLDOWN
             } else {
-                fishCooldown--;
+                fishCooldown--
             }
         }
     }
 
-    private void tickWaterOnSidesCheck() {
+    private fun tickWaterOnSidesCheck() {
         if (hasWaterOnSides()) {
-            ticksDeployable++;
+            ticksDeployable++
         } else {
-            ticksDeployable = 0;
+            ticksDeployable = 0
         }
     }
 
-    private double computeDepthPenalty() {
-        int count = 0;
-        for (BlockPos pos = this.getOnPos(); this.level().getBlockState(pos).getBlock().equals(Blocks.WATER); pos = pos.below()) {
-            count++;
+    private fun computeDepthPenalty(): Double {
+        var count = 0
+        var pos = this.onPos
+        while (this.level().getBlockState(pos).block == Blocks.WATER) {
+            count++
+            pos = pos.below()
         }
-        count = Math.min(count, 20);
-        return ((double) count) / 20.0;
+        count = min(count.toDouble(), 20.0).toInt()
+        return (count.toDouble()) / 20.0
     }
 
     // Only called on server side
-    private void tickFish() {
-        double overFishPenalty = isOverFished() ? 0.05 : 1;
-        double shallowPenalty = computeDepthPenalty();
-        double chance = 0.25 * overFishPenalty * shallowPenalty;
-        double treasure_chance = shallowPenalty > 0.4 ? chance * (shallowPenalty / 2)
-                * FISHING_TREASURE_CHANCE : 0;
-        double r = Math.random();
+    private fun tickFish() {
+        val overFishPenalty = if (isOverFished()) 0.05 else 1.0
+        val shallowPenalty = computeDepthPenalty()
+        val chance = 0.25 * overFishPenalty * shallowPenalty
+        val treasure_chance = if (shallowPenalty > 0.4) (chance * (shallowPenalty / 2)
+                * FISHING_TREASURE_CHANCE) else 0.0
+        val r = Math.random()
         if (r < chance) {
-            LootParams params = new LootParams.Builder((ServerLevel) this.level())
-                    .withParameter(LootContextParams.ORIGIN, this.position())
-                    .withParameter(LootContextParams.THIS_ENTITY, this)
-                    .withParameter(LootContextParams.TOOL, new ItemStack(Items.FISHING_ROD))
-                    .withParameter(LootContextParams.ATTACKING_ENTITY, this)
-                    .withParameter(LootContextParams.THIS_ENTITY, this)
-                    .create(LootContextParamSets.FISHING);
+            val params = LootParams.Builder(this.level() as ServerLevel)
+                .withParameter<Vec3?>(LootContextParams.ORIGIN, this.position())
+                .withParameter<Entity?>(LootContextParams.THIS_ENTITY, this)
+                .withParameter<ItemStack?>(LootContextParams.TOOL, ItemStack(Items.FISHING_ROD))
+                .withParameter<Entity?>(LootContextParams.ATTACKING_ENTITY, this)
+                .withParameter<Entity?>(LootContextParams.THIS_ENTITY, this)
+                .create(LootContextParamSets.FISHING)
 
-            LootTable loottable = this.level()
-                    .getServer()
-                    .reloadableRegistries()
-                    .getLootTable(r < treasure_chance ? BuiltInLootTables.FISHING_TREASURE : BuiltInLootTables.FISHING_FISH);
+            val loottable = this.level()
+                .server!!
+                .reloadableRegistries()
+                .getLootTable(if (r < treasure_chance) BuiltInLootTables.FISHING_TREASURE else BuiltInLootTables.FISHING_FISH)
 
-            List<ItemStack> list = loottable.getRandomItems(params);
+            val list: MutableList<ItemStack?> = loottable.getRandomItems(params)
 
-            var inventoryProviders = getConnectedInventories();
+            val inventoryProviders = connectedInventories
 
-            for (ItemStack stack : list) {
-                var leftOver = stack;
-                for (var provider : inventoryProviders) {
-                    if (leftOver.isEmpty()) {
-                        break;
+            for (stack in list) {
+                var leftOver: ItemStack = stack!!
+                for (provider in inventoryProviders) {
+                    if (leftOver.isEmpty) {
+                        break
                     }
 
-                    var itemHandler = provider.getTrainInventoryHandler();
-                    if (itemHandler.isPresent()) {
-                        leftOver = InventoryUtils.moveItemStackIntoHandler(itemHandler.get(), leftOver);
+                    val itemHandler = provider.getTrainInventoryHandler()
+                    if (itemHandler.isPresent) {
+                        leftOver = moveItemStackIntoHandler(itemHandler.get(), leftOver)
                     }
                 }
                 // void the stack if we end up not being able to put it in any connected inventory.
             }
 
             if (!isOverFished()) {
-                addOverFish();
+                addOverFish()
             }
         }
     }
 
-    private String overFishedString() {
-        return overFishedQueue.stream().map(t -> t.getFirst() + ":" + t.getSecond()).reduce("", (acc, curr) -> String.join(",", acc, curr));
+    private fun overFishedString(): String {
+        return overFishedQueue.stream()
+            .map<String> { t: Pair<Int, Int>? -> t!!.getFirst().toString() + ":" + t.getSecond() }
+            .reduce("") { acc, curr -> "$acc,$curr" }
     }
 
-    private void populateOverfish(String string) {
-        Arrays.stream(string.split(","))
-                .filter(s -> !s.isEmpty())
-                .map(s -> s.split(":"))
-                .map(arr -> new Pair(Integer.parseInt(arr[0]), Integer.parseInt(arr[1])))
-                .forEach(overFishedQueue::add);
-        overFishedCoords.addAll(overFishedQueue);
+    private fun populateOverfish(string: String) {
+        Arrays.stream<String?>(string.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
+            .filter { s -> !s.isEmpty() }
+            .map<Array<String>> { s -> s!!.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray() }
+            .map { arr -> Pair<Int, Int>(arr!![0].toInt(), arr[1]!!.toInt()) }
+            .forEach { e: Pair<Int, Int> -> overFishedQueue.add(e) }
+        overFishedCoords.addAll(overFishedQueue)
     }
 
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        compound.putString("overfish", overFishedString());
-        super.addAdditionalSaveData(compound);
+    override fun addAdditionalSaveData(compound: CompoundTag) {
+        compound.putString("overfish", overFishedString())
+        super.addAdditionalSaveData(compound)
     }
 
-    private void addOverFish() {
-        int x = (int) Math.floor(this.getX());
-        int z = (int) Math.floor(this.getZ());
-        overFishedCoords.add(new Pair<>(x, z));
-        overFishedQueue.add(new Pair<>(x, z));
-        if (overFishedQueue.size() > 30) {
-            overFishedCoords.remove(overFishedQueue.poll());
+    private fun addOverFish() {
+        val x = floor(this.x) as Int
+        val z = floor(this.z) as Int
+        overFishedCoords.add(Pair<Int, Int>(x, z))
+        overFishedQueue.add(Pair<Int, Int>(x, z))
+        if (overFishedQueue.size > 30) {
+            overFishedCoords.remove(overFishedQueue.poll())
         }
     }
 
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        populateOverfish(compound.getString("overfish"));
-        super.readAdditionalSaveData(compound);
+    override fun readAdditionalSaveData(compound: CompoundTag) {
+        populateOverfish(compound.getString("overfish"))
+        super.readAdditionalSaveData(compound)
     }
 
-    private boolean isOverFished() {
-        int x = (int) Math.floor(this.getX());
-        int z = (int) Math.floor(this.getZ());
-        return overFishedCoords.contains(new Pair<>(x, z));
+    private fun isOverFished(): Boolean {
+        val x = floor(this.x) as Int
+        val z = floor(this.z) as Int
+        return overFishedCoords.contains(Pair<Int, Int>(x, z))
     }
 
-    @Override
-    public Item getDropItem() {
-        return ModItems.FISHING_BARGE.get();
+    override fun getDropItem(): Item? {
+        return ModItems.FISHING_BARGE.get()
     }
 
-    public Status getStatus() {
-        return hasWaterOnSides() ? getNonStashedStatus() : Status.STASHED;
+    fun getStatus(): Status? {
+        return if (hasWaterOnSides()) getNonStashedStatus() else Status.STASHED
     }
 
-    private Status getNonStashedStatus() {
+    private fun getNonStashedStatus(): Status {
         if (ticksDeployable < 40) {
-            return Status.TRANSITION;
+            return Status.TRANSITION
         } else {
-            return this.applyWithDominant(LinkableEntity::hasWaterOnSides)
-                    .reduce(true, Boolean::logicalAnd)
-                    ? Status.DEPLOYED : Status.TRANSITION;
+            return if (this.applyWithDominant<Boolean>(Function { obj -> obj!!.hasWaterOnSides() })
+                    .reduce(true) { a: Boolean, b: Boolean -> java.lang.Boolean.logicalAnd(a, b) }
+            )
+                Status.DEPLOYED
+            else
+                Status.TRANSITION
         }
     }
 
-    public enum Status {
+    enum class Status {
         STASHED,
         DEPLOYED,
         TRANSITION
+    }
+
+    companion object {
+        private val FISHING_LOOT_TABLE = ResourceLocation.tryParse(ShippingConfig.Server.FISHING_LOOT_TABLE!!.get())
+
+        private val FISHING_COOLDOWN: Int = ShippingConfig.Server.FISHING_COOLDOWN!!.get()
+
+        private val FISHING_TREASURE_CHANCE: Double = ShippingConfig.Server.FISHING_TREASURE_CHANCE_MODIFIER!!.get()
     }
 }

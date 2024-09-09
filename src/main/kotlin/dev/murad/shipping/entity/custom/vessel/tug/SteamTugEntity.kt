@@ -89,11 +89,9 @@ class SteamTugEntity : AbstractTugEntity {
         }
     }
 
-    override val dropItem: Item
-        get() {
-            return ModItems.STEAM_TUG.get()
-        }
-
+    override fun getDropItem(): Item? {
+        return ModItems.STEAM_TUG.get()
+    }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
         burnTime = if (compound.contains("burn")) compound.getInt("burn") else 0

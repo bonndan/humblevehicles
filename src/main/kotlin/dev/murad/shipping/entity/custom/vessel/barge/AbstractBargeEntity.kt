@@ -17,10 +17,10 @@ import net.minecraft.world.phys.Vec3
 import java.util.*
 
 
-abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity?>, world: Level) :
+abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, world: Level) :
     VesselEntity(type, world) {
     constructor(
-        type: EntityType<out AbstractBargeEntity?>,
+        type: EntityType<out AbstractBargeEntity>,
         worldIn: Level,
         x: Double,
         y: Double,
@@ -37,7 +37,7 @@ abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity?>, w
         return false
     }
 
-    abstract override val dropItem: Item?
+    abstract override fun getDropItem(): Item?
 
     public override fun mobInteract(player: Player, hand: InteractionHand): InteractionResult {
         if (!level().isClientSide) {
@@ -96,9 +96,13 @@ abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity?>, w
         }
     }
 
+    override fun getTrain(): Train<VesselEntity> {
+        return getLinkingHandler().train!!
+    }
+
     override fun remove(r: RemovalReason) {
         if (!level().isClientSide) {
-            val stack = ItemStack(this.dropItem)
+            val stack = ItemStack(this.getDropItem())
             if (this.hasCustomName()) {
                 //stack.setHoverName(this.getCustomName());
             }

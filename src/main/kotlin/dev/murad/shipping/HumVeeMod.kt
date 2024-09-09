@@ -67,8 +67,7 @@ class HumVeeMod(modBus: IEventBus, container: ModContainer) {
 
         private val LOGGER: Logger = LoggerFactory.getLogger(HumVeeMod::class.java)
 
-        @JvmStatic
-        fun entityTexture(suffix: String?): ResourceLocation? {
+        fun entityTexture(suffix: String): ResourceLocation {
             return ResourceLocation.fromNamespaceAndPath(MOD_ID, String.format("textures/entity/%s", suffix))
         }
     }

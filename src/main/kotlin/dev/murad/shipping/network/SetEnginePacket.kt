@@ -1,30 +1,36 @@
-package dev.murad.shipping.network;
+package dev.murad.shipping.network
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import io.netty.buffer.ByteBuf
+import net.minecraft.network.codec.ByteBufCodecs
+import net.minecraft.network.codec.StreamCodec
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import java.util.function.BiFunction
 
-import static dev.murad.shipping.network.VehiclePacketHandler.LOCATION;
+@JvmRecord
+data class SetEnginePacket(val locoId: Int, val state: Boolean) : CustomPacketPayload {
 
-public record SetEnginePacket(int locoId, boolean state) implements CustomPacketPayload {
+    override fun type(): CustomPacketPayload.Type<out CustomPacketPayload?> {
+        return TYPE
+    }
 
-    public static final Type<SetEnginePacket> TYPE = new Type<>(LOCATION);
 
-    // Each pair of elements defines the stream codec of the element to encode/decode and the getter for the element to encode
-    // 'name' will be encoded and decoded as a string
-    // 'age' will be encoded and decoded as an integer
-    // The final parameter takes in the previous parameters in the order they are provided to construct the payload object
-    public static final StreamCodec<ByteBuf, SetEnginePacket> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT,
-            SetEnginePacket::locoId,
-            ByteBufCodecs.BOOL,
-            SetEnginePacket::state,
-            SetEnginePacket::new
-    );
+    companion object {
+        @JvmField
+        val TYPE: CustomPacketPayload.Type<SetEnginePacket?> =
+            CustomPacketPayload.Type<SetEnginePacket?>(VehiclePacketHandler.LOCATION)
 
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+        // Each pair of elements defines the stream codec of the element to encode/decode and the getter for the element to encode
+        // 'name' will be encoded and decoded as a string
+        // 'age' will be encoded and decoded as an integer
+        // The final parameter takes in the previous parameters in the order they are provided to construct the payload object
+        @JvmField
+        val STREAM_CODEC: StreamCodec<ByteBuf?, SetEnginePacket?> =
+            StreamCodec.composite<ByteBuf?, SetEnginePacket?, Int?, Boolean?>(
+                ByteBufCodecs.VAR_INT,
+                SetEnginePacket::locoId,
+                ByteBufCodecs.BOOL,
+                SetEnginePacket::state,
+                BiFunction { locoId: Int?, state: Boolean? -> SetEnginePacket(locoId!!, state!!) }
+            )
     }
 }

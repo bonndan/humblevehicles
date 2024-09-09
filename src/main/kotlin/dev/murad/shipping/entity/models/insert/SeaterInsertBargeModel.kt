@@ -1,50 +1,67 @@
-package dev.murad.shipping.entity.models.insert;
+package dev.murad.shipping.entity.models.insert
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.murad.shipping.HumVeeMod;
-import dev.murad.shipping.entity.Colorable;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.NotNull;
+import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.blaze3d.vertex.VertexConsumer
+import dev.murad.shipping.HumVeeMod
+import dev.murad.shipping.entity.Colorable
+import net.minecraft.client.model.EntityModel
+import net.minecraft.client.model.geom.ModelLayerLocation
+import net.minecraft.client.model.geom.ModelPart
+import net.minecraft.client.model.geom.PartPose
+import net.minecraft.client.model.geom.builders.CubeListBuilder
+import net.minecraft.client.model.geom.builders.LayerDefinition
+import net.minecraft.client.model.geom.builders.MeshDefinition
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.entity.Entity
 
-public class SeaterInsertBargeModel<T extends Entity & Colorable> extends EntityModel<T> {
-    // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "seater_insert_barge_model"), "main");
-    private final ModelPart bb_main;
+class SeaterInsertBargeModel<T>(root: ModelPart) : EntityModel<T>() where T : Entity, T : Colorable {
+    private val bb_main: ModelPart
 
-    public SeaterInsertBargeModel(ModelPart root) {
-        this.bb_main = root.getChild("bb_main");
+    init {
+        this.bb_main = root.getChild("bb_main")
     }
 
-    public static LayerDefinition createBodyLayer() {
-        MeshDefinition meshdefinition = new MeshDefinition();
-        PartDefinition partdefinition = meshdefinition.getRoot();
-
-        partdefinition.addOrReplaceChild("bb_main", CubeListBuilder.create()
-                        .texOffs(0, 19).addBox(-5.0F, -29.0F, -5.0F, 9.0F, 1.0F, 10.0F)
-                        .texOffs(9, 22).addBox(-5.0F, -35.0F, -5.0F, 1.0F, 6.0F, 10.0F)
-                        .texOffs(11, 23).addBox(-4.0F, -31.0F, -5.0F, 8.0F, 2.0F, 1.0F)
-                        .texOffs(11, 24).addBox(-4.0F, -31.0F, 4.0F, 8.0F, 2.0F, 1.0F)
-                        .texOffs(0, 49).addBox(-4.0F, -32.0F, -6.0F, 8.0F, 1.0F, 2.0F)
-                        .texOffs(0, 49).addBox(-4.0F, -32.0F, 4.0F, 8.0F, 1.0F, 2.0F),
-                PartPose.offset(0.0F, 24.0F, 0.0F));
-
-        return LayerDefinition.create(meshdefinition, 64, 64);
+    override fun renderToBuffer(
+        pPoseStack: PoseStack,
+        pBuffer: VertexConsumer,
+        pPackedLight: Int,
+        pPackedOverlay: Int,
+        pColor: Int
+    ) {
+        bb_main.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay)
     }
 
-    @Override
-    public void renderToBuffer(@NotNull PoseStack pPoseStack, @NotNull VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, int pColor) {
-        bb_main.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay);
+    override fun setupAnim(
+        pEntity: T?,
+        pLimbSwing: Float,
+        pLimbSwingAmount: Float,
+        pAgeInTicks: Float,
+        pNetHeadYaw: Float,
+        pHeadPitch: Float
+    ) {
     }
 
-    @Override
-    public void setupAnim(T pEntity, float pLimbSwing, float pLimbSwingAmount, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
+    companion object {
+        // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
+        val LAYER_LOCATION: ModelLayerLocation =
+            ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "seater_insert_barge_model"), "main")
 
+        fun createBodyLayer(): LayerDefinition {
+            val meshdefinition = MeshDefinition()
+            val partdefinition = meshdefinition.getRoot()
+
+            partdefinition.addOrReplaceChild(
+                "bb_main", CubeListBuilder.create()
+                    .texOffs(0, 19).addBox(-5.0f, -29.0f, -5.0f, 9.0f, 1.0f, 10.0f)
+                    .texOffs(9, 22).addBox(-5.0f, -35.0f, -5.0f, 1.0f, 6.0f, 10.0f)
+                    .texOffs(11, 23).addBox(-4.0f, -31.0f, -5.0f, 8.0f, 2.0f, 1.0f)
+                    .texOffs(11, 24).addBox(-4.0f, -31.0f, 4.0f, 8.0f, 2.0f, 1.0f)
+                    .texOffs(0, 49).addBox(-4.0f, -32.0f, -6.0f, 8.0f, 1.0f, 2.0f)
+                    .texOffs(0, 49).addBox(-4.0f, -32.0f, 4.0f, 8.0f, 1.0f, 2.0f),
+                PartPose.offset(0.0f, 24.0f, 0.0f)
+            )
+
+            return LayerDefinition.create(meshdefinition, 64, 64)
+        }
     }
 }

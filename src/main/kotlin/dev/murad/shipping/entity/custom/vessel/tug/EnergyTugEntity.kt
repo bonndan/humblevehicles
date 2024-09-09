@@ -40,9 +40,10 @@ class EnergyTugEntity : AbstractTugEntity {
         internalBattery.setEnergy(0)
     }
 
-    override val dropItem: Item
+    override fun getDropItem(): Item? {
         // todo: Store contents?
-        get() = ModItems.ENERGY_TUG.get()
+        return ModItems.ENERGY_TUG.get()
+    }
 
     override fun createContainerProvider(): MenuProvider {
         return object : MenuProvider {
@@ -138,8 +139,8 @@ class EnergyTugEntity : AbstractTugEntity {
         return itemHandler.getStackInSlot(0).isEmpty
     }
 
-    override fun getItem(p_70301_1_: Int): ItemStack {
-        return itemHandler.getStackInSlot(p_70301_1_)
+    override fun getItem(pSlot: Int): ItemStack {
+        return itemHandler.getStackInSlot(pSlot)
     }
 
 

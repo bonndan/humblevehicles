@@ -1,53 +1,55 @@
-package dev.murad.shipping.network;
+package dev.murad.shipping.network
 
-import dev.murad.shipping.HumVeeMod;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
+import com.mojang.datafixers.util.Function3
+import dev.murad.shipping.HumVeeMod
+import io.netty.buffer.ByteBuf
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.codec.ByteBufCodecs
+import net.minecraft.network.codec.StreamCodec
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import net.minecraft.resources.ResourceLocation
+import java.util.function.Function
 
-public class SetRouteTagPacket implements CustomPacketPayload {
-    public final int routeChecksum;
-    public final boolean isOffhand;
-    public final CompoundTag tag;
+class SetRouteTagPacket(private val routeChecksum: Int, private val isOffhand: Boolean, private val tag: CompoundTag?) : CustomPacketPayload {
 
-    public SetRouteTagPacket(int routeChecksum, boolean isOffhand, CompoundTag tag) {
-        this.routeChecksum = routeChecksum;
-        this.isOffhand = isOffhand;
-        this.tag = tag;
+    override fun type(): CustomPacketPayload.Type<out CustomPacketPayload?> {
+        return TYPE
     }
 
-    public static final CustomPacketPayload.Type<SetRouteTagPacket> TYPE = new CustomPacketPayload.Type<>(
+    fun getRouteChecksum(): Int {
+        return routeChecksum
+    }
+
+    fun isOffhand(): Boolean {
+        return isOffhand
+    }
+
+    fun getTag(): CompoundTag? {
+        return tag
+    }
+
+    companion object {
+        @JvmField
+        val TYPE: CustomPacketPayload.Type<SetRouteTagPacket?> = CustomPacketPayload.Type<SetRouteTagPacket?>(
             ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "tug_route_channel")
-    );
+        )
 
-    public static final StreamCodec<ByteBuf, SetRouteTagPacket> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT,
-            SetRouteTagPacket::getRouteChecksum,
-            ByteBufCodecs.BOOL,
-            SetRouteTagPacket::isOffhand,
-            ByteBufCodecs.COMPOUND_TAG,
-            SetRouteTagPacket::getTag,
-            SetRouteTagPacket::new
-    );
-
-    @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
-        return TYPE;
-    }
-
-    public int getRouteChecksum() {
-        return routeChecksum;
-    }
-
-    public boolean isOffhand() {
-        return isOffhand;
-    }
-
-    public CompoundTag getTag() {
-        return tag;
+        @JvmField
+        val STREAM_CODEC: StreamCodec<ByteBuf?, SetRouteTagPacket?> =
+            StreamCodec.composite<ByteBuf?, SetRouteTagPacket?, Int?, Boolean?, CompoundTag?>(
+                ByteBufCodecs.VAR_INT,
+                Function { obj: SetRouteTagPacket? -> obj!!.getRouteChecksum() },
+                ByteBufCodecs.BOOL,
+                Function { obj: SetRouteTagPacket? -> obj!!.isOffhand() },
+                ByteBufCodecs.COMPOUND_TAG,
+                Function { obj: SetRouteTagPacket? -> obj!!.getTag() },
+                Function3 { routeChecksum: Int?, isOffhand: Boolean?, tag: CompoundTag? ->
+                    SetRouteTagPacket(
+                        routeChecksum!!,
+                        isOffhand!!,
+                        tag
+                    )
+                }
+            )
     }
 }

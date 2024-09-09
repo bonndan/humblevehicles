@@ -1,10 +1,8 @@
-package dev.murad.shipping.entity;
+package dev.murad.shipping.entity
 
-import javax.annotation.Nullable;
+interface Colorable {
 
-public interface Colorable {
-    @Nullable
-    Integer getColor();
+    fun getColor(): Int?
 
-    void setColor(@Nullable Integer color);
+    fun setColor(color: Int?)
 }

@@ -64,7 +64,7 @@ object ModItems {
         {
             VesselItem(
                 Item.Properties()
-            ) { level: Level?, x: Double, y: Double, z: Double ->
+            ) { level: Level, x: Double, y: Double, z: Double ->
                 ChestBargeEntity(
                     ModEntityTypes.CHEST_BARGE.get(),
                     level,
@@ -83,7 +83,7 @@ object ModItems {
         {
             VesselItem(
                 Item.Properties()
-            ) { level: Level?, x: Double, y: Double, z: Double ->
+            ) { level: Level, x: Double, y: Double, z: Double ->
                 ChestBargeEntity(
                     ModEntityTypes.BARREL_BARGE.get(),
                     level,
@@ -93,7 +93,7 @@ object ModItems {
                 )
             }
         },
-        java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     //    public static final Supplier<Item> CHUNK_LOADER_BARGE = register("chunk_loader_barge",
@@ -102,7 +102,7 @@ object ModItems {
     val FISHING_BARGE: Supplier<Item> = register(
         "fishing_barge",
         {
-            VesselItem(Item.Properties()) { worldIn: Level?, x: Double, y: Double, z: Double ->
+            VesselItem(Item.Properties()) { worldIn: Level, x: Double, y: Double, z: Double ->
                 FishingBargeEntity(
                     worldIn,
                     x,
@@ -117,7 +117,7 @@ object ModItems {
     val FLUID_BARGE: Supplier<Item> = register(
         "fluid_barge",
         {
-            VesselItem(Item.Properties()) { worldIn: Level?, x: Double, y: Double, z: Double ->
+            VesselItem(Item.Properties()) { worldIn: Level, x: Double, y: Double, z: Double ->
                 FluidTankBargeEntity(
                     worldIn,
                     x,
@@ -132,7 +132,7 @@ object ModItems {
     val SEATER_BARGE: Supplier<Item> = register(
         "seater_barge",
         {
-            VesselItem(Item.Properties()) { worldIn: Level?, x: Double, y: Double, z: Double ->
+            VesselItem(Item.Properties()) { worldIn: Level, x: Double, y: Double, z: Double ->
                 SeaterBargeEntity(
                     worldIn,
                     x,

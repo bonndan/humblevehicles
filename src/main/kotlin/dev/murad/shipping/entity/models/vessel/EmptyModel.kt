@@ -1,45 +1,61 @@
-package dev.murad.shipping.entity.models.vessel;
+package dev.murad.shipping.entity.models.vessel
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.murad.shipping.HumVeeMod;
-import dev.murad.shipping.entity.Colorable;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
+import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.blaze3d.vertex.VertexConsumer
+import dev.murad.shipping.HumVeeMod
+import dev.murad.shipping.entity.Colorable
+import net.minecraft.client.model.EntityModel
+import net.minecraft.client.model.geom.ModelLayerLocation
+import net.minecraft.client.model.geom.ModelPart
+import net.minecraft.client.model.geom.PartPose
+import net.minecraft.client.model.geom.builders.CubeListBuilder
+import net.minecraft.client.model.geom.builders.LayerDefinition
+import net.minecraft.client.model.geom.builders.MeshDefinition
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.entity.Entity
 
-public class EmptyModel<T extends Entity & Colorable> extends EntityModel<T> {
-    // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "base_barge_model_closed"), "main");
-    private final ModelPart bb_main;
+class EmptyModel<T>(root: ModelPart) : EntityModel<T>() where T : Entity, T : Colorable {
+    private val bb_main: ModelPart
 
-    public EmptyModel(ModelPart root) {
-        this.bb_main = root.getChild("bb_main");
+    init {
+        this.bb_main = root.getChild("bb_main")
     }
 
-    public static LayerDefinition createBodyLayer() {
-        MeshDefinition meshdefinition = new MeshDefinition();
-        PartDefinition partdefinition = meshdefinition.getRoot();
-
-        PartDefinition bb_main = partdefinition.addOrReplaceChild("bb_main", CubeListBuilder.create(), PartPose.offset(0.0F, 23.0F, 0.0F));
-
-        return LayerDefinition.create(meshdefinition, 64, 64);
+    override fun setupAnim(
+        entity: T?,
+        limbSwing: Float,
+        limbSwingAmount: Float,
+        ageInTicks: Float,
+        netHeadYaw: Float,
+        headPitch: Float
+    ) {
     }
 
-    @Override
-    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
+    override fun renderToBuffer(
+        pPoseStack: PoseStack?,
+        pBuffer: VertexConsumer?,
+        pPackedLight: Int,
+        pPackedOverlay: Int,
+        pColor: Int
+    ) {
     }
 
-    @Override
-    public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, int pColor) {
+    companion object {
+        // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
+        val LAYER_LOCATION: ModelLayerLocation =
+            ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "base_barge_model_closed"), "main")
 
+        fun createBodyLayer(): LayerDefinition {
+            val meshdefinition = MeshDefinition()
+            val partdefinition = meshdefinition.getRoot()
+
+            val bb_main = partdefinition.addOrReplaceChild(
+                "bb_main",
+                CubeListBuilder.create(),
+                PartPose.offset(0.0f, 23.0f, 0.0f)
+            )
+
+            return LayerDefinition.create(meshdefinition, 64, 64)
+        }
     }
 }

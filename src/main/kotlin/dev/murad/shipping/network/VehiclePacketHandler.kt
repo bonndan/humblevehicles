@@ -1,71 +1,74 @@
-package dev.murad.shipping.network;
+package dev.murad.shipping.network
 
-import dev.murad.shipping.HumVeeMod;
-import dev.murad.shipping.entity.custom.HeadVehicle;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import dev.murad.shipping.HumVeeMod
+import dev.murad.shipping.entity.custom.HeadVehicle
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.entity.player.Player
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.neoforge.network.PacketDistributor
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
+import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler
+import net.neoforged.neoforge.network.handling.IPayloadContext
+import net.neoforged.neoforge.network.handling.IPayloadHandler
+import java.util.Optional
+import java.util.function.Consumer
+import java.util.function.Function
 
-import java.util.Optional;
+object VehiclePacketHandler {
 
-public final class VehiclePacketHandler {
-
-    public static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "locomotive_channel");
-
+    val LOCATION: ResourceLocation = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "locomotive_channel")
 
     @SubscribeEvent
-    public static void register(final RegisterPayloadHandlersEvent event) {
-
-        final PayloadRegistrar registrar = event.registrar("1");
-        registrar.playBidirectional(
-                SetEnginePacket.TYPE,
-                SetEnginePacket.STREAM_CODEC,
-                new DirectionalPayloadHandler<>(
-                        VehiclePacketHandler::handleSetEngine,
-                        VehiclePacketHandler::handleSetEngine
-                )
-        );
-        registrar.playBidirectional(
-                EnrollVehiclePacket.TYPE,
-                EnrollVehiclePacket.STREAM_CODEC,
-                new DirectionalPayloadHandler<>(
-                        VehiclePacketHandler::handleEnrollVehicle,
-                        VehiclePacketHandler::handleEnrollVehicle
-                )
-        );
+    fun register(event: RegisterPayloadHandlersEvent) {
+        val registrar = event.registrar("1")
+        registrar.playBidirectional<SetEnginePacket>(
+            SetEnginePacket.TYPE,
+            SetEnginePacket.STREAM_CODEC,
+            DirectionalPayloadHandler<SetEnginePacket>(
+                IPayloadHandler { obj, operation -> handleSetEngine(obj, operation) },
+                IPayloadHandler { obj, operation -> handleSetEngine(obj, operation) }
+            )
+        )
+        registrar.playBidirectional<EnrollVehiclePacket>(
+            EnrollVehiclePacket.TYPE,
+            EnrollVehiclePacket.STREAM_CODEC,
+            DirectionalPayloadHandler<EnrollVehiclePacket>(
+                IPayloadHandler { obj, operation -> handleEnrollVehicle(obj, operation) },
+                IPayloadHandler { obj, operation -> handleEnrollVehicle(obj, operation) }
+            )
+        )
     }
 
-    public static void send(CustomPacketPayload payload) {
-        PacketDistributor.sendToServer(payload);
+    fun send(payload: CustomPacketPayload) {
+        PacketDistributor.sendToServer(payload)
     }
 
-
-    public static void handleSetEngine(SetEnginePacket operation, IPayloadContext ctx) {
+    fun handleSetEngine(operation: SetEnginePacket, ctx: IPayloadContext) {
         ctx.enqueueWork(
-                () -> Optional.of(ctx).map(IPayloadContext::player).ifPresent(serverPlayer -> {
-                    var loco = serverPlayer.level().getEntity(operation.locoId());
-                    if (loco != null && loco.distanceTo(serverPlayer) < 6 && loco instanceof HeadVehicle l) {
-                        l.setEngineOn(operation.state());
-                    }
-                })
-        );
-
+            Runnable {
+                Optional.of<IPayloadContext>(ctx).map<Player?>(Function { obj: IPayloadContext? -> obj!!.player() })
+                    .ifPresent(Consumer { serverPlayer: Player? ->
+                        val loco = serverPlayer!!.level().getEntity(operation.locoId)
+                        if (loco != null && loco.distanceTo(serverPlayer) < 6 && loco is HeadVehicle) {
+                            loco.setEngineOn(operation.state)
+                        }
+                    })
+            }
+        )
     }
 
-    public static void handleEnrollVehicle(EnrollVehiclePacket operation, IPayloadContext ctx) {
+    fun handleEnrollVehicle(operation: EnrollVehiclePacket, ctx: IPayloadContext) {
         ctx.enqueueWork(
-                () -> Optional.of(ctx).map(IPayloadContext::player).ifPresent(serverPlayer -> {
-                    var loco = serverPlayer.level().getEntity(operation.locoId());
-                    if (loco != null && loco.distanceTo(serverPlayer) < 6 && loco instanceof HeadVehicle l) {
-                        l.enroll(serverPlayer.getUUID());
-                    }
-                })
-        );
-
+            Runnable {
+                Optional.of<IPayloadContext?>(ctx).map<Player?>(Function { obj: IPayloadContext? -> obj!!.player() })
+                    .ifPresent(Consumer { serverPlayer: Player? ->
+                        val loco = serverPlayer!!.level().getEntity(operation.locoId)
+                        if (loco != null && loco.distanceTo(serverPlayer) < 6 && loco is HeadVehicle) {
+                            loco.enroll(serverPlayer.getUUID())
+                        }
+                    })
+            }
+        )
     }
 }

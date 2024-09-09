@@ -1,21 +1,17 @@
-package dev.murad.shipping.entity.custom;
+package dev.murad.shipping.entity.custom
 
+import net.neoforged.neoforge.items.ItemStackHandler
+import java.util.Optional
 
-import net.neoforged.neoforge.items.ItemStackHandler;
-
-import java.util.Optional;
 
 /**
  * A train inventory provider is a barge or a car that provides inventories
  * to other barges or cars ahead of it.
  */
-public interface TrainInventoryProvider {
-
+interface TrainInventoryProvider {
     // TODO: fluid provider
-
     // TODO: energy provider
-
-    default Optional<ItemStackHandler> getTrainInventoryHandler() {
-        return Optional.empty();
+    fun getTrainInventoryHandler(): Optional<ItemStackHandler> {
+        return Optional.empty<ItemStackHandler>()
     }
 }

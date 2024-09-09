@@ -1,79 +1,95 @@
-package dev.murad.shipping.entity.render.barge;
+package dev.murad.shipping.entity.render.barge
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import dev.murad.shipping.entity.custom.vessel.barge.FishingBargeEntity;
-import dev.murad.shipping.entity.render.ModelPack;
-import dev.murad.shipping.entity.render.ModelSupplier;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import com.mojang.blaze3d.vertex.PoseStack
+import dev.murad.shipping.entity.custom.vessel.barge.FishingBargeEntity
+import dev.murad.shipping.entity.render.ModelPack
+import dev.murad.shipping.entity.render.ModelSupplier
+import net.minecraft.client.model.EntityModel
+import net.minecraft.client.model.geom.ModelLayerLocation
+import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.entity.EntityRendererProvider
+import net.minecraft.resources.ResourceLocation
 
-public class FishingBargeRenderer<T extends FishingBargeEntity> extends MultipartVesselRenderer<T> {
+class FishingBargeRenderer<T : FishingBargeEntity> protected constructor(
+    context: EntityRendererProvider.Context,
+    baseModelPack: ModelPack<T>,
+    stashedInsertModelPack: ModelPack<T>,
+    transitionInsertModelPack: ModelPack<T>,
+    deployedInsertModelPack: ModelPack<T>,
+    trimModelPack: ModelPack<T>
+) : MultipartVesselRenderer<T>(context, baseModelPack, stashedInsertModelPack, trimModelPack) {
 
-    private final EntityModel<T> transitionInsertModel, deployedInsertModel;
+    private val transitionInsertModel: EntityModel<T>
+    private val deployedInsertModel: EntityModel<T>
 
-    private final ResourceLocation transitionInsertTextureLocation, deployedInsertTextureLocation;
+    private val transitionInsertTextureLocation: ResourceLocation
+    private val deployedInsertTextureLocation: ResourceLocation
 
-    protected FishingBargeRenderer(EntityRendererProvider.Context context,
-                                   ModelPack<T> baseModelPack,
-                                   ModelPack<T> stashedInsertModelPack,
-                                   ModelPack<T> transitionInsertModelPack,
-                                   ModelPack<T> deployedInsertModelPack,
-                                   ModelPack<T> trimModelPack) {
-        super(context, baseModelPack, stashedInsertModelPack, trimModelPack);
+    init {
+        this.transitionInsertModel =
+            transitionInsertModelPack.supplier.supply(context.bakeLayer(transitionInsertModelPack.location))
+        this.transitionInsertTextureLocation = transitionInsertModelPack.texture
 
-        this.transitionInsertModel = transitionInsertModelPack.supplier().supply(context.bakeLayer(transitionInsertModelPack.location()));
-        this.transitionInsertTextureLocation = transitionInsertModelPack.texture();
-
-        this.deployedInsertModel = deployedInsertModelPack.supplier().supply(context.bakeLayer(deployedInsertModelPack.location()));
-        this.deployedInsertTextureLocation = deployedInsertModelPack.texture();
+        this.deployedInsertModel =
+            deployedInsertModelPack.supplier.supply(context.bakeLayer(deployedInsertModelPack.location))
+        this.deployedInsertTextureLocation = deployedInsertModelPack.texture
     }
 
-    @Override
-    protected void renderInsertModel(T vesselEntity, PoseStack matrixStack, MultiBufferSource buffer, int packedLight, int overlay) {
-        var model = switch(vesselEntity.getStatus()) {
-            case STASHED -> getInsertModel();
-            case DEPLOYED -> deployedInsertModel;
-            case TRANSITION -> transitionInsertModel;
-        };
+    override fun renderInsertModel(
+        vesselEntity: T,
+        matrixStack: PoseStack,
+        buffer: MultiBufferSource,
+        packedLight: Int,
+        overlay: Int
+    ) {
+        val model: EntityModel<T> = when (vesselEntity.getStatus()!!) {
+            FishingBargeEntity.Status.STASHED -> getInsertModel()
+            FishingBargeEntity.Status.DEPLOYED -> deployedInsertModel
+            FishingBargeEntity.Status.TRANSITION -> transitionInsertModel
+        }
 
-        var texture = switch(vesselEntity.getStatus()) {
-            case STASHED -> getInsertTextureLocation();
-            case DEPLOYED -> deployedInsertTextureLocation;
-            case TRANSITION -> transitionInsertTextureLocation;
-        };
+        val texture: ResourceLocation = when (vesselEntity.getStatus()!!) {
+            FishingBargeEntity.Status.STASHED -> getInsertTextureLocation()
+            FishingBargeEntity.Status.DEPLOYED -> deployedInsertTextureLocation
+            FishingBargeEntity.Status.TRANSITION -> transitionInsertTextureLocation
+        }
 
-        model.renderToBuffer(matrixStack, buffer.getBuffer(model.renderType(texture)), packedLight, overlay, 1);
+        model.renderToBuffer(matrixStack, buffer.getBuffer(model.renderType(texture)), packedLight, overlay, 1)
     }
 
-    public static class Builder<T extends FishingBargeEntity> extends MultipartVesselRenderer.Builder<T> {
-        private ModelPack<T> transitionInsertModelPack;
-        private ModelPack<T> deployedInsertModelPack;
+    class Builder<T : FishingBargeEntity>(context: EntityRendererProvider.Context) :
+        MultipartVesselRenderer.Builder<T>(context) {
 
+        private lateinit var transitionInsertModelPack: ModelPack<T>
+        private lateinit var deployedInsertModelPack: ModelPack<T>
 
-        public Builder(EntityRendererProvider.Context context) {
-            super(context);
+        fun transitionInsertModel(
+            supplier: ModelSupplier<T>,
+            location: ModelLayerLocation,
+            texture: ResourceLocation
+        ): Builder<T> {
+            this.transitionInsertModelPack = ModelPack<T>(supplier, location, texture)
+            return this
         }
 
-        public Builder<T> transitionInsertModel(ModelSupplier<T> supplier,
-                                                ModelLayerLocation location,
-                                                ResourceLocation texture) {
-            this.transitionInsertModelPack = new ModelPack<>(supplier, location, texture);
-            return this;
+        fun deployedInsertModel(
+            supplier: ModelSupplier<T>,
+            location: ModelLayerLocation,
+            texture: ResourceLocation
+        ): Builder<T> {
+            this.deployedInsertModelPack = ModelPack<T>(supplier, location, texture)
+            return this
         }
 
-        public Builder<T> deployedInsertModel(ModelSupplier<T> supplier,
-                                             ModelLayerLocation location,
-                                             ResourceLocation texture) {
-            this.deployedInsertModelPack = new ModelPack<>(supplier, location, texture);
-            return this;
-        }
-
-        public FishingBargeRenderer<T> build() {
-            return new FishingBargeRenderer<>(context, baseModelPack, insertModelPack, transitionInsertModelPack, deployedInsertModelPack, trimModelPack);
+        override fun build(): FishingBargeRenderer<T> {
+            return FishingBargeRenderer<T>(
+                context,
+                baseModelPack,
+                insertModelPack,
+                transitionInsertModelPack,
+                deployedInsertModelPack,
+                trimModelPack
+            )
         }
     }
-
 }

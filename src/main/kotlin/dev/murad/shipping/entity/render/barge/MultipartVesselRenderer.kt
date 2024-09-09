@@ -1,172 +1,197 @@
-package dev.murad.shipping.entity.render.barge;
+package dev.murad.shipping.entity.render.barge
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import dev.murad.shipping.HumVeeMod;
-import dev.murad.shipping.entity.custom.vessel.VesselEntity;
-import dev.murad.shipping.entity.models.vessel.EmptyModel;
-import dev.murad.shipping.entity.render.ModelPack;
-import dev.murad.shipping.entity.render.ModelSupplier;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.DyeColor;
-import org.jetbrains.annotations.NotNull;
+import com.mojang.blaze3d.vertex.PoseStack
+import dev.murad.shipping.HumVeeMod.Companion.entityTexture
+import dev.murad.shipping.entity.custom.vessel.VesselEntity
+import dev.murad.shipping.entity.models.vessel.EmptyModel
+import dev.murad.shipping.entity.render.ModelPack
+import dev.murad.shipping.entity.render.ModelSupplier
+import net.minecraft.client.model.EntityModel
+import net.minecraft.client.model.geom.ModelLayerLocation
+import net.minecraft.client.model.geom.ModelPart
+import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.entity.EntityRendererProvider
+import net.minecraft.client.renderer.entity.LivingEntityRenderer
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.item.DyeColor
 
-public class MultipartVesselRenderer<T extends VesselEntity> extends AbstractVesselRenderer<T> {
-
+open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
+    context: EntityRendererProvider.Context,
+    baseModelPack: ModelPack<T>,
+    insertModelPack: ModelPack<T>,
+    trimModelPack: ModelPack<T>
+) : AbstractVesselRenderer<T>(context) {
     // TODO: de-uglify
-    private float rotation = 90f;
+    private var rotation = 90f
 
-    private final EntityModel<T> baseModel, insertModel, trimModel;
+    private val baseModel: EntityModel<T> = baseModelPack.supplier.supply(context.bakeLayer(baseModelPack.location))
+    private val insertModel: EntityModel<T> = insertModelPack.supplier.supply(context.bakeLayer(insertModelPack.location))
+    private val trimModel: EntityModel<T> = trimModelPack.supplier.supply(context.bakeLayer(trimModelPack.location))
 
-    private final ResourceLocation baseTextureLocation, insertTextureLocation, trimTextureLocation;
+    private val baseTextureLocation: ResourceLocation = baseModelPack.texture
+    private val insertTextureLocation: ResourceLocation = insertModelPack.texture
+    private val trimTextureLocation: ResourceLocation = trimModelPack.texture
 
-    protected MultipartVesselRenderer(EntityRendererProvider.Context context,
-                                      ModelPack<T> baseModelPack,
-                                      ModelPack<T> insertModelPack,
-                                      ModelPack<T> trimModelPack) {
-        super(context);
-        this.baseModel = baseModelPack.supplier().supply(context.bakeLayer(baseModelPack.location()));
-        this.baseTextureLocation = baseModelPack.texture();
-
-        this.insertModel = insertModelPack.supplier().supply(context.bakeLayer(insertModelPack.location()));
-        this.insertTextureLocation = insertModelPack.texture();
-
-        this.trimModel = trimModelPack.supplier().supply(context.bakeLayer(trimModelPack.location()));
-        this.trimTextureLocation = trimModelPack.texture();
+    /**
+     * Don't directly use this method, use the multipart methods instead
+     */
+    @Deprecated("")
+    override fun getModel(entity: T): EntityModel<T> {
+        return baseModel
     }
 
     /**
      * Don't directly use this method, use the multipart methods instead
      */
-    @Override
-    @Deprecated
-    EntityModel<T> getModel(T entity) {
-        return baseModel;
+    @Deprecated("")
+    override fun getTextureLocation(pEntity: T): ResourceLocation {
+        return baseTextureLocation
     }
 
-    /**
-     * Don't directly use this method, use the multipart methods instead
-     */
-    @Override
-    @Deprecated
-    public @NotNull ResourceLocation getTextureLocation(@NotNull T pEntity) {
-        return baseTextureLocation;
+    override fun renderModel(vesselEntity: T, matrixStack: PoseStack, buffer: MultiBufferSource, packedLight: Int) {
+        val overlay = LivingEntityRenderer.getOverlayCoords(vesselEntity, 0f)
+        renderBaseModel(vesselEntity, matrixStack, buffer, packedLight, overlay)
+        renderInsertModel(vesselEntity, matrixStack, buffer, packedLight, overlay)
+        renderTrimModel(vesselEntity, matrixStack, buffer, packedLight, overlay)
     }
 
-    @Override
-    protected void renderModel(T vesselEntity, PoseStack matrixStack, MultiBufferSource buffer, int packedLight) {
-        int overlay = LivingEntityRenderer.getOverlayCoords(vesselEntity, 0);
-        renderBaseModel(vesselEntity, matrixStack, buffer, packedLight, overlay);
-        renderInsertModel(vesselEntity, matrixStack, buffer, packedLight, overlay);
-        renderTrimModel(vesselEntity, matrixStack, buffer, packedLight, overlay);
+    protected fun renderBaseModel(
+        vesselEntity: T?,
+        matrixStack: PoseStack,
+        buffer: MultiBufferSource,
+        packedLight: Int,
+        overlay: Int
+    ) {
+        baseModel.renderToBuffer(
+            matrixStack,
+            buffer.getBuffer(baseModel.renderType(baseTextureLocation)),
+            packedLight, overlay,
+            1
+        )
     }
 
-    protected void renderBaseModel(T vesselEntity, PoseStack matrixStack, MultiBufferSource buffer, int packedLight, int overlay) {
-        baseModel.renderToBuffer(matrixStack,
-                buffer.getBuffer(baseModel.renderType(baseTextureLocation)),
-                packedLight, overlay,
-                1);
+    protected open fun renderInsertModel(
+        vesselEntity: T,
+        matrixStack: PoseStack,
+        buffer: MultiBufferSource,
+        packedLight: Int,
+        overlay: Int
+    ) {
+        insertModel.renderToBuffer(
+            matrixStack,
+            buffer.getBuffer(insertModel.renderType(insertTextureLocation)),
+            packedLight, overlay,
+            1
+        )
     }
 
-    protected void renderInsertModel(T vesselEntity, PoseStack matrixStack, MultiBufferSource buffer, int packedLight, int overlay) {
-        insertModel.renderToBuffer(matrixStack,
-                buffer.getBuffer(insertModel.renderType(insertTextureLocation)),
-                packedLight, overlay,
-                1);
+    protected fun renderTrimModel(
+        vesselEntity: T?,
+        matrixStack: PoseStack,
+        buffer: MultiBufferSource,
+        packedLight: Int,
+        overlay: Int
+    ) {
+        val colorId = vesselEntity!!.getColor()
+        val color = (if (colorId == null) DyeColor.RED else DyeColor.byId(colorId)).getTextureDiffuseColor()
+
+        trimModel.renderToBuffer(
+            matrixStack,
+            buffer.getBuffer(trimModel.renderType(trimTextureLocation)),
+            packedLight, overlay,
+            color
+        )
     }
 
-    protected void renderTrimModel(T vesselEntity, PoseStack matrixStack, MultiBufferSource buffer, int packedLight, int overlay) {
-        var colorId = vesselEntity.getColor();
-        var color = (colorId == null ? DyeColor.RED : DyeColor.byId(colorId)).getTextureDiffuseColor();
-
-        trimModel.renderToBuffer(matrixStack,
-                buffer.getBuffer(trimModel.renderType(trimTextureLocation)),
-                packedLight, overlay,
-                color);
+    fun derotate(): MultipartVesselRenderer<T> {
+        this.rotation = 0f
+        return this
     }
 
-    public MultipartVesselRenderer<T> derotate() {
-        this.rotation = 0;
-        return this;
+    override fun getModelYrot(): Float {
+        return rotation
     }
 
-    protected float getModelYrot() {
-        return rotation;
+    fun getRotation(): Float {
+        return rotation
     }
 
-    public float getRotation() {
-        return rotation;
+    fun getBaseModel(): EntityModel<T> {
+        return baseModel
     }
 
-    public EntityModel<T> getBaseModel() {
-        return baseModel;
+    fun getInsertModel(): EntityModel<T> {
+        return insertModel
     }
 
-    public EntityModel<T> getInsertModel() {
-        return insertModel;
+    fun getTrimModel(): EntityModel<T> {
+        return trimModel
     }
 
-    public EntityModel<T> getTrimModel() {
-        return trimModel;
+    fun getBaseTextureLocation(): ResourceLocation {
+        return baseTextureLocation
     }
 
-    public ResourceLocation getBaseTextureLocation() {
-        return baseTextureLocation;
+    fun getInsertTextureLocation(): ResourceLocation {
+        return insertTextureLocation
     }
 
-    public ResourceLocation getInsertTextureLocation() {
-        return insertTextureLocation;
+    fun getTrimTextureLocation(): ResourceLocation {
+        return trimTextureLocation
     }
 
-    public ResourceLocation getTrimTextureLocation() {
-        return trimTextureLocation;
-    }
+    open class Builder<T : VesselEntity>(context: EntityRendererProvider.Context) {
 
-    public static class Builder<T extends VesselEntity> {
-        protected final EntityRendererProvider.Context context;
+        protected val context: EntityRendererProvider.Context
 
-        protected ModelPack<T> baseModelPack;
-        protected ModelPack<T> insertModelPack;
-        protected ModelPack<T> trimModelPack;
+        protected lateinit var baseModelPack: ModelPack<T>
+        protected lateinit var insertModelPack: ModelPack<T>
+        protected lateinit var trimModelPack: ModelPack<T>
 
 
-        public Builder(EntityRendererProvider.Context context) {
-            this.context = context;
+        init {
+            this.context = context
         }
 
-        public Builder<T> baseModel(ModelSupplier<T> supplier,
-                                    ModelLayerLocation location,
-                                    ResourceLocation texture) {
-            this.baseModelPack = new ModelPack<>(supplier, location, texture);
-            return this;
+        fun baseModel(
+            supplier: ModelSupplier<T>,
+            location: ModelLayerLocation,
+            texture: ResourceLocation
+        ): Builder<T> {
+            this.baseModelPack = ModelPack<T>(supplier, location, texture)
+            return this
         }
 
-        public Builder<T> insertModel(ModelSupplier<T> supplier,
-                                      ModelLayerLocation location,
-                                      ResourceLocation texture) {
-            this.insertModelPack = new ModelPack<>(supplier, location, texture);
-            return this;
+        fun insertModel(
+            supplier: ModelSupplier<T>,
+            location: ModelLayerLocation,
+            texture: ResourceLocation
+        ): Builder<T> {
+            this.insertModelPack = ModelPack<T>(supplier, location, texture)
+            return this
         }
 
-        public Builder<T> emptyInsert() {
-            insertModel(EmptyModel::new, EmptyModel.LAYER_LOCATION, HumVeeMod.entityTexture("emptytexture.png"));
-            return this;
+        fun emptyInsert(): Builder<T> {
+            insertModel(
+                ModelSupplier { root -> EmptyModel(root) },
+                EmptyModel.Companion.LAYER_LOCATION,
+                entityTexture("emptytexture.png")
+            )
+            return this
         }
 
 
-        public Builder<T> trimModel(ModelSupplier<T> supplier,
-                                      ModelLayerLocation location,
-                                      ResourceLocation texture) {
-            this.trimModelPack = new ModelPack<>(supplier, location, texture);
-            return this;
+        fun trimModel(
+            supplier: ModelSupplier<T>,
+            location: ModelLayerLocation,
+            texture: ResourceLocation
+        ): Builder<T> {
+            this.trimModelPack = ModelPack<T>(supplier, location, texture)
+            return this
         }
 
-        public MultipartVesselRenderer<T> build() {
-            return new MultipartVesselRenderer<>(context, baseModelPack, insertModelPack, trimModelPack);
+        open fun build(): MultipartVesselRenderer<T> {
+            return MultipartVesselRenderer<T>(context, baseModelPack, insertModelPack, trimModelPack)
         }
     }
 }

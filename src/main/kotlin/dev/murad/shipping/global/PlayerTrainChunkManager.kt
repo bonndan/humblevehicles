@@ -25,6 +25,7 @@ import java.util.stream.Collectors
 import java.util.stream.Stream
 
 class PlayerTrainChunkManager : SavedData {
+
     private val enrolled: MutableSet<Entity> = HashSet()
     private val tickets: MutableSet<ChunkPos> = HashSet()
     private val toLoad: MutableSet<ChunkPos> = HashSet()
@@ -126,16 +127,15 @@ class PlayerTrainChunkManager : SavedData {
         }
     }
 
-    val entityPositions: List<EntityPosition>
-        get() = enrolled.stream().map { entity: Entity ->
+    val entityPositions: MutableList<EntityPosition>
+        get() = enrolled.map { entity: Entity ->
             EntityPosition(
                 entity.type.toString(),
                 entity.id,
                 entity.position(),
                 Vec3(entity.xOld, entity.yOld, entity.zOld)
             )
-        }
-            .collect(Collectors.toList())
+        }.toMutableList()
 
     private fun onChanged() {
         val required: MutableSet<ChunkPos> = HashSet()

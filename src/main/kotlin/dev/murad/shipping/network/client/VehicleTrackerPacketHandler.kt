@@ -1,49 +1,44 @@
-package dev.murad.shipping.network.client;
+package dev.murad.shipping.network.client
 
-import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import net.minecraft.server.level.ServerPlayer
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.neoforge.network.PacketDistributor
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
+import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler
+import net.neoforged.neoforge.network.handling.IPayloadContext
+import net.neoforged.neoforge.network.handling.IPayloadHandler
+import java.util.ArrayList
 
-import java.util.ArrayList;
-import java.util.List;
+object VehicleTrackerPacketHandler {
 
-public class VehicleTrackerPacketHandler {
-
-
-    public static List<EntityPosition> toRender = new ArrayList<>();
-    public static String toRenderDimension = "";
+    var toRender: MutableList<EntityPosition> = ArrayList<EntityPosition>()
+    var toRenderDimension: String = ""
 
     @SubscribeEvent
-    public static void register(final RegisterPayloadHandlersEvent event) {
-
-        final PayloadRegistrar registrar = event.registrar("1");
-        registrar.playBidirectional(
-                VehicleTrackerClientPacket.TYPE,
-                VehicleTrackerClientPacket.STREAM_CODEC,
-                new DirectionalPayloadHandler<>(
-                        VehicleTrackerPacketHandler::handleData,
-                        VehicleTrackerPacketHandler::handleData
-                )
-        );
-
+    fun register(event: RegisterPayloadHandlersEvent) {
+        val registrar = event.registrar("1")
+        registrar.playBidirectional<VehicleTrackerClientPacket>(
+            VehicleTrackerClientPacket.Companion.TYPE,
+            VehicleTrackerClientPacket.Companion.STREAM_CODEC,
+            DirectionalPayloadHandler<VehicleTrackerClientPacket?>(
+                IPayloadHandler { obj, packet: IPayloadContext -> handleData(obj, packet) },
+                IPayloadHandler { obj, packet: IPayloadContext -> handleData(obj, packet) }
+            )
+        )
     }
 
-    public static void handleData(VehicleTrackerClientPacket packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            VehicleTrackerPacketHandler.toRender = packet.parse();
-            VehicleTrackerPacketHandler.toRenderDimension = packet.dimension();
-        });
+    fun handleData(packet: VehicleTrackerClientPacket, ctx: IPayloadContext) {
+        ctx.enqueueWork(Runnable {
+            toRender = packet.parse()
+            toRenderDimension = packet.dimension
+        })
     }
 
-    public static void flush() {
-        toRender.clear();
+    fun flush() {
+        toRender.clear()
     }
 
-    public static void sendToPlayer(VehicleTrackerClientPacket vehicleTrackerClientPacket, ServerPlayer serverPlayer) {
-        PacketDistributor.sendToPlayer(serverPlayer, vehicleTrackerClientPacket);
+    fun sendToPlayer(vehicleTrackerClientPacket: VehicleTrackerClientPacket, serverPlayer: ServerPlayer) {
+        PacketDistributor.sendToPlayer(serverPlayer, vehicleTrackerClientPacket)
     }
 }

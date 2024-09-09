@@ -1,45 +1,64 @@
-package dev.murad.shipping.entity.models.insert;
+package dev.murad.shipping.entity.models.insert
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.murad.shipping.HumVeeMod;
-import dev.murad.shipping.entity.Colorable;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
+import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.blaze3d.vertex.VertexConsumer
+import dev.murad.shipping.HumVeeMod
+import dev.murad.shipping.entity.Colorable
+import net.minecraft.client.model.EntityModel
+import net.minecraft.client.model.geom.ModelLayerLocation
+import net.minecraft.client.model.geom.ModelPart
+import net.minecraft.client.model.geom.PartPose
+import net.minecraft.client.model.geom.builders.CubeListBuilder
+import net.minecraft.client.model.geom.builders.LayerDefinition
+import net.minecraft.client.model.geom.builders.MeshDefinition
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.entity.Entity
 
-public class CubeInsertBargeModel<T extends Entity & Colorable> extends EntityModel<T> {
-	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "cube_insert_barge_model"), "main");
-	private final ModelPart bb_main;
+class CubeInsertBargeModel<T>(root: ModelPart) : EntityModel<T>() where T : Entity, T : Colorable {
 
-	public CubeInsertBargeModel(ModelPart root) {
-		this.bb_main = root.getChild("bb_main");
-	}
+    private val bb_main: ModelPart
 
-	public static LayerDefinition createBodyLayer() {
-		MeshDefinition meshdefinition = new MeshDefinition();
-		PartDefinition bb_main = meshdefinition.getRoot()
-				.addOrReplaceChild("bb_main",
-					CubeListBuilder.create()
-						.texOffs(0, 0)
-							.addBox(-5.0F, -12.0F, -5.0F, 10.0F, 10.0F, 10.0F),
-					PartPose.ZERO);
+    init {
+        this.bb_main = root.getChild("bb_main")
+    }
 
-		return LayerDefinition.create(meshdefinition, 64, 64);
-	}
+    override fun setupAnim(
+        entity: T?,
+        limbSwing: Float,
+        limbSwingAmount: Float,
+        ageInTicks: Float,
+        netHeadYaw: Float,
+        headPitch: Float
+    ) {
+    }
 
-	@Override
-	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    override fun renderToBuffer(
+        pPoseStack: PoseStack?,
+        pBuffer: VertexConsumer?,
+        pPackedLight: Int,
+        pPackedOverlay: Int,
+        pColor: Int
+    ) {
+        bb_main.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay)
+    }
 
-	}
+    companion object {
+        // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
+        val LAYER_LOCATION: ModelLayerLocation =
+            ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "cube_insert_barge_model"), "main")
 
-	@Override
-	public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, int pColor) {
-		bb_main.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay);
-	}
+        fun createBodyLayer(): LayerDefinition {
+            val meshdefinition = MeshDefinition()
+            val bb_main = meshdefinition.getRoot()
+                .addOrReplaceChild(
+                    "bb_main",
+                    CubeListBuilder.create()
+                        .texOffs(0, 0)
+                        .addBox(-5.0f, -12.0f, -5.0f, 10.0f, 10.0f, 10.0f),
+                    PartPose.ZERO
+                )
+
+            return LayerDefinition.create(meshdefinition, 64, 64)
+        }
+    }
 }

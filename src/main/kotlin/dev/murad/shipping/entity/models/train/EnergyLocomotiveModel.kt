@@ -1,86 +1,128 @@
-package dev.murad.shipping.entity.models.train;
+package dev.murad.shipping.entity.models.train
+
+import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.blaze3d.vertex.VertexConsumer
+import dev.murad.shipping.HumVeeMod
+import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity
+import net.minecraft.client.model.EntityModel
+import net.minecraft.client.model.geom.ModelLayerLocation
+import net.minecraft.client.model.geom.ModelPart
+import net.minecraft.client.model.geom.PartPose
+import net.minecraft.client.model.geom.builders.CubeDeformation
+import net.minecraft.client.model.geom.builders.CubeListBuilder
+import net.minecraft.client.model.geom.builders.LayerDefinition
+import net.minecraft.client.model.geom.builders.MeshDefinition
+import net.minecraft.resources.ResourceLocation
 
 // Made with Blockbench 4.1.1
 // Exported for Minecraft version 1.17 with Mojang mappings
 // Paste this class into your mod and generate all required imports
 
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.murad.shipping.HumVeeMod;
-import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
+class EnergyLocomotiveModel<T : AbstractTrainCarEntity>(root: ModelPart) : EntityModel<T>() {
+    private val bone: ModelPart
+    private val bone2: ModelPart
+    private val bone3: ModelPart
+    private val bone4: ModelPart
+    private val bb_main: ModelPart
 
-
-public class EnergyLocomotiveModel<T extends AbstractTrainCarEntity> extends EntityModel<T> {
-    // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "energy_locomotive_model"), "main");
-    private final ModelPart bone;
-    private final ModelPart bone2;
-    private final ModelPart bone3;
-    private final ModelPart bone4;
-    private final ModelPart bb_main;
-
-    public EnergyLocomotiveModel(ModelPart root) {
-        this.bone = root.getChild("bone");
-        this.bone2 = root.getChild("bone2");
-        this.bone3 = root.getChild("bone3");
-        this.bone4 = root.getChild("bone4");
-        this.bb_main = root.getChild("bb_main");
+    init {
+        this.bone = root.getChild("bone")
+        this.bone2 = root.getChild("bone2")
+        this.bone3 = root.getChild("bone3")
+        this.bone4 = root.getChild("bone4")
+        this.bb_main = root.getChild("bb_main")
     }
 
-    public static LayerDefinition createBodyLayer() {
-        MeshDefinition meshdefinition = new MeshDefinition();
-        PartDefinition partdefinition = meshdefinition.getRoot();
-
-        PartDefinition bone = partdefinition.addOrReplaceChild("bone", CubeListBuilder.create().texOffs(0, 0).addBox(4.0F, -4.0F, -9.0F, 2.0F, 2.0F, 5.0F)
-                .texOffs(11, 4).addBox(4.0F, -3.0F, -6.0F, 1.0F, 3.0F, 3.0F)
-                .texOffs(9, 11).addBox(4.0F, -3.0F, -10.0F, 1.0F, 3.0F, 3.0F), PartPose.offset(0.0F, 24.0F, 0.0F));
-
-        PartDefinition bone2 = partdefinition.addOrReplaceChild("bone2", CubeListBuilder.create().texOffs(0, 0).addBox(4.0F, -4.0F, -9.0F, 2.0F, 2.0F, 5.0F)
-                .texOffs(11, 4).addBox(4.0F, -3.0F, -6.0F, 1.0F, 3.0F, 3.0F)
-                .texOffs(9, 11).addBox(4.0F, -3.0F, -10.0F, 1.0F, 3.0F, 3.0F), PartPose.offset(0.0F, 24.0F, 11.0F));
-
-        PartDefinition bone3 = partdefinition.addOrReplaceChild("bone3", CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-6.0F, -4.0F, -9.0F, 2.0F, 2.0F, 5.0F).mirror(false)
-                .texOffs(11, 4).mirror().addBox(-5.0F, -3.0F, -6.0F, 1.0F, 3.0F, 3.0F).mirror(false)
-                .texOffs(9, 11).mirror().addBox(-5.0F, -3.0F, -10.0F, 1.0F, 3.0F, 3.0F).mirror(false), PartPose.offset(0.0F, 24.0F, 11.0F));
-
-        PartDefinition bone4 = partdefinition.addOrReplaceChild("bone4", CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-6.0F, -4.0F, -9.0F, 2.0F, 2.0F, 5.0F).mirror(false)
-                .texOffs(11, 4).mirror().addBox(-5.0F, -3.0F, -6.0F, 1.0F, 3.0F, 3.0F).mirror(false)
-                .texOffs(9, 11).mirror().addBox(-5.0F, -3.0F, -10.0F, 1.0F, 3.0F, 3.0F).mirror(false), PartPose.offset(0.0F, 24.0F, 0.0F));
-
-        PartDefinition bb_main = partdefinition.addOrReplaceChild("bb_main", CubeListBuilder.create().texOffs(0, 0).addBox(-6.0F, -13.0F, -12.0F, 12.0F, 9.0F, 20.0F)
-                .texOffs(0, 29).addBox(-6.0F, -16.0F, -9.0F, 12.0F, 3.0F, 17.0F)
-                .texOffs(39, 30).addBox(-4.0F, -4.0F, -11.0F, 8.0F, 3.0F, 19.0F)
-                .texOffs(0, 14).addBox(-1.0F, -17.0F, -10.0F, 2.0F, 2.0F, 2.0F)
-                .texOffs(9, 0).addBox(-1.0F, -17.0F, -10.0F, 2.0F, 2.0F, 2.0F, new CubeDeformation(0.25F))
-                .texOffs(0, 7).addBox(4.0F, -4.0F, -3.0F, 2.0F, 3.0F, 4.0F)
-                .texOffs(0, 29).addBox(-1.0F, -5.0F, 8.0F, 2.0F, 2.0F, 2.0F)
-                .texOffs(0, 7).addBox(-6.0F, -4.0F, -3.0F, 2.0F, 3.0F, 4.0F), PartPose.offset(0.0F, 24.0F, 0.0F));
-
-        PartDefinition cube_r1 = bb_main.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(0, 30).addBox(0.0F, 0.0F, -9.5F, 0.0F, 1.0F, 19.0F), PartPose.offsetAndRotation(6.0F, -4.0F, -1.5F, 0.0F, 0.0F, -0.0436F));
-
-        PartDefinition cube_r2 = bb_main.addOrReplaceChild("cube_r2", CubeListBuilder.create().texOffs(44, 0).addBox(-6.0F, 0.0F, 0.0F, 12.0F, 3.0F, 0.0F), PartPose.offsetAndRotation(0.0F, -4.0F, -12.0F, -0.7854F, 0.0F, 0.0F));
-
-        return LayerDefinition.create(meshdefinition, 128, 128);
+    override fun setupAnim(
+        entity: T?,
+        limbSwing: Float,
+        limbSwingAmount: Float,
+        ageInTicks: Float,
+        netHeadYaw: Float,
+        headPitch: Float
+    ) {
     }
 
-    @Override
-    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
+    override fun renderToBuffer(
+        poseStack: PoseStack?,
+        buffer: VertexConsumer?,
+        packedLight: Int,
+        packedOverlay: Int,
+        pColor: Int
+    ) {
+        bone.render(poseStack, buffer, packedLight, packedOverlay, pColor)
+        bone2.render(poseStack, buffer, packedLight, packedOverlay, pColor)
+        bone3.render(poseStack, buffer, packedLight, packedOverlay, pColor)
+        bone4.render(poseStack, buffer, packedLight, packedOverlay, pColor)
+        bb_main.render(poseStack, buffer, packedLight, packedOverlay, pColor)
     }
 
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int pColor) {
-        bone.render(poseStack, buffer, packedLight, packedOverlay, pColor);
-        bone2.render(poseStack, buffer, packedLight, packedOverlay, pColor);
-        bone3.render(poseStack, buffer, packedLight, packedOverlay, pColor);
-        bone4.render(poseStack, buffer, packedLight, packedOverlay, pColor);
-        bb_main.render(poseStack, buffer, packedLight, packedOverlay, pColor);
+    companion object {
+        // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
+        val LAYER_LOCATION: ModelLayerLocation = ModelLayerLocation(
+            ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "energy_locomotive_model"),
+            "main"
+        )
+
+        fun createBodyLayer(): LayerDefinition {
+            val meshdefinition = MeshDefinition()
+            val partdefinition = meshdefinition.getRoot()
+
+            val bone = partdefinition.addOrReplaceChild(
+                "bone", CubeListBuilder.create().texOffs(0, 0).addBox(4.0f, -4.0f, -9.0f, 2.0f, 2.0f, 5.0f)
+                    .texOffs(11, 4).addBox(4.0f, -3.0f, -6.0f, 1.0f, 3.0f, 3.0f)
+                    .texOffs(9, 11).addBox(4.0f, -3.0f, -10.0f, 1.0f, 3.0f, 3.0f), PartPose.offset(0.0f, 24.0f, 0.0f)
+            )
+
+            val bone2 = partdefinition.addOrReplaceChild(
+                "bone2", CubeListBuilder.create().texOffs(0, 0).addBox(4.0f, -4.0f, -9.0f, 2.0f, 2.0f, 5.0f)
+                    .texOffs(11, 4).addBox(4.0f, -3.0f, -6.0f, 1.0f, 3.0f, 3.0f)
+                    .texOffs(9, 11).addBox(4.0f, -3.0f, -10.0f, 1.0f, 3.0f, 3.0f), PartPose.offset(0.0f, 24.0f, 11.0f)
+            )
+
+            val bone3 = partdefinition.addOrReplaceChild(
+                "bone3",
+                CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-6.0f, -4.0f, -9.0f, 2.0f, 2.0f, 5.0f)
+                    .mirror(false)
+                    .texOffs(11, 4).mirror().addBox(-5.0f, -3.0f, -6.0f, 1.0f, 3.0f, 3.0f).mirror(false)
+                    .texOffs(9, 11).mirror().addBox(-5.0f, -3.0f, -10.0f, 1.0f, 3.0f, 3.0f).mirror(false),
+                PartPose.offset(0.0f, 24.0f, 11.0f)
+            )
+
+            val bone4 = partdefinition.addOrReplaceChild(
+                "bone4",
+                CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-6.0f, -4.0f, -9.0f, 2.0f, 2.0f, 5.0f)
+                    .mirror(false)
+                    .texOffs(11, 4).mirror().addBox(-5.0f, -3.0f, -6.0f, 1.0f, 3.0f, 3.0f).mirror(false)
+                    .texOffs(9, 11).mirror().addBox(-5.0f, -3.0f, -10.0f, 1.0f, 3.0f, 3.0f).mirror(false),
+                PartPose.offset(0.0f, 24.0f, 0.0f)
+            )
+
+            val bb_main = partdefinition.addOrReplaceChild(
+                "bb_main", CubeListBuilder.create().texOffs(0, 0).addBox(-6.0f, -13.0f, -12.0f, 12.0f, 9.0f, 20.0f)
+                    .texOffs(0, 29).addBox(-6.0f, -16.0f, -9.0f, 12.0f, 3.0f, 17.0f)
+                    .texOffs(39, 30).addBox(-4.0f, -4.0f, -11.0f, 8.0f, 3.0f, 19.0f)
+                    .texOffs(0, 14).addBox(-1.0f, -17.0f, -10.0f, 2.0f, 2.0f, 2.0f)
+                    .texOffs(9, 0).addBox(-1.0f, -17.0f, -10.0f, 2.0f, 2.0f, 2.0f, CubeDeformation(0.25f))
+                    .texOffs(0, 7).addBox(4.0f, -4.0f, -3.0f, 2.0f, 3.0f, 4.0f)
+                    .texOffs(0, 29).addBox(-1.0f, -5.0f, 8.0f, 2.0f, 2.0f, 2.0f)
+                    .texOffs(0, 7).addBox(-6.0f, -4.0f, -3.0f, 2.0f, 3.0f, 4.0f), PartPose.offset(0.0f, 24.0f, 0.0f)
+            )
+
+            val cube_r1 = bb_main.addOrReplaceChild(
+                "cube_r1",
+                CubeListBuilder.create().texOffs(0, 30).addBox(0.0f, 0.0f, -9.5f, 0.0f, 1.0f, 19.0f),
+                PartPose.offsetAndRotation(6.0f, -4.0f, -1.5f, 0.0f, 0.0f, -0.0436f)
+            )
+
+            val cube_r2 = bb_main.addOrReplaceChild(
+                "cube_r2",
+                CubeListBuilder.create().texOffs(44, 0).addBox(-6.0f, 0.0f, 0.0f, 12.0f, 3.0f, 0.0f),
+                PartPose.offsetAndRotation(0.0f, -4.0f, -12.0f, -0.7854f, 0.0f, 0.0f)
+            )
+
+            return LayerDefinition.create(meshdefinition, 128, 128)
+        }
     }
 }

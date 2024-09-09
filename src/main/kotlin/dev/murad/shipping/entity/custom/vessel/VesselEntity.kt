@@ -122,7 +122,7 @@ abstract class VesselEntity protected constructor(type: EntityType<out WaterAnim
     override fun readAdditionalSaveData(compound: CompoundTag) {
         linkingHandler.readAdditionalSaveData(compound)
         if (compound.contains("Color", Tag.TAG_INT.toInt())) {
-            color = compound.getInt("Color")
+            setColor(compound.getInt("Color"))
         }
         super.readAdditionalSaveData(compound)
     }
@@ -130,7 +130,7 @@ abstract class VesselEntity protected constructor(type: EntityType<out WaterAnim
     override fun addAdditionalSaveData(compound: CompoundTag) {
         linkingHandler.addAdditionalSaveData(compound)
 
-        val color = color
+        val color = getColor()
         if (color != null) {
             compound.putInt("Color", color)
         }
@@ -194,7 +194,7 @@ abstract class VesselEntity protected constructor(type: EntityType<out WaterAnim
         this.airSupply = 300
     }
 
-    abstract val dropItem: Item?
+    abstract fun getDropItem(): Item?
 
 
     override fun getFollower(): Optional<VesselEntity> {
@@ -269,7 +269,7 @@ abstract class VesselEntity protected constructor(type: EntityType<out WaterAnim
     }
 
     override fun getPickResult(): ItemStack? {
-        return ItemStack(dropItem)
+        return ItemStack(getDropItem())
     }
 
     private fun floatBoat() {

@@ -141,7 +141,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
         super.readAdditionalSaveData(compound)
 
         if (compound.contains("Color", Tag.TAG_INT.toInt())) {
-            color = compound.getInt("Color")
+            setColor(compound.getInt("Color"))
         }
 
         linkingHandler.readAdditionalSaveData(compound)
@@ -150,7 +150,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
     override fun addAdditionalSaveData(compound: CompoundTag) {
         super.addAdditionalSaveData(compound)
 
-        val color = color
+        val color = getColor()
         if (color != null) {
             compound.putInt("Color", color)
         }

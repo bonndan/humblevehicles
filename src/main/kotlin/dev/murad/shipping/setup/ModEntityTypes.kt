@@ -23,10 +23,8 @@ object ModEntityTypes {
     @JvmField
     val CHEST_BARGE: Supplier<EntityType<ChestBargeEntity>> =
         ENTITIES.register("barge", Supplier<EntityType<ChestBargeEntity>> {
-            EntityType.Builder.of({ type: EntityType<ChestBargeEntity>, world: Level? ->
-                ChestBargeEntity(
-                    type, world
-                )
+            EntityType.Builder.of({ type: EntityType<ChestBargeEntity>, world: Level ->
+                ChestBargeEntity(type, world)
             }, MobCategory.MISC).sized(0.6f, 0.9f).clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "barge").toString())
         })
@@ -34,8 +32,8 @@ object ModEntityTypes {
     @JvmField
     val BARREL_BARGE: Supplier<EntityType<ChestBargeEntity>> =
         ENTITIES.register("barrel_barge", Supplier<EntityType<ChestBargeEntity>> {
-            EntityType.Builder.of<ChestBargeEntity?>(
-                { type: EntityType<ChestBargeEntity?>?, world: Level? -> ChestBargeEntity(type, world) },
+            EntityType.Builder.of<ChestBargeEntity>(
+                { type: EntityType<ChestBargeEntity>, world: Level -> ChestBargeEntity(type, world) },
                 MobCategory.MISC
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "barrel_barge").toString())
@@ -45,11 +43,8 @@ object ModEntityTypes {
     val CHUNK_LOADER_BARGE: Supplier<EntityType<ChunkLoaderBargeEntity>> =
         ENTITIES.register("chunk_loader_barge", Supplier<EntityType<ChunkLoaderBargeEntity>> {
             EntityType.Builder.of(
-                { type: EntityType<ChunkLoaderBargeEntity>, world: Level? ->
-                    ChunkLoaderBargeEntity(
-                        type, world
-                    )
-                }, MobCategory.MISC
+                { type: EntityType<ChunkLoaderBargeEntity>, world: Level -> ChunkLoaderBargeEntity(type, world) },
+                MobCategory.MISC
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "chunk_loader_barge").toString())
         })
@@ -58,7 +53,7 @@ object ModEntityTypes {
     val FISHING_BARGE: Supplier<EntityType<FishingBargeEntity>> =
         ENTITIES.register("fishing_barge", Supplier<EntityType<FishingBargeEntity>> {
             EntityType.Builder.of(
-                { type: EntityType<FishingBargeEntity>, world: Level? -> FishingBargeEntity(type, world) },
+                { type: EntityType<FishingBargeEntity>, world: Level -> FishingBargeEntity(type, world) },
                 MobCategory.MISC
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "fishing_barge").toString())
@@ -68,7 +63,7 @@ object ModEntityTypes {
     val FLUID_TANK_BARGE: Supplier<EntityType<FluidTankBargeEntity>> =
         ENTITIES.register("fluid_barge", Supplier<EntityType<FluidTankBargeEntity>> {
             EntityType.Builder.of(
-                { type: EntityType<FluidTankBargeEntity>, world: Level? -> FluidTankBargeEntity(type, world) },
+                { type: EntityType<FluidTankBargeEntity>, world: Level -> FluidTankBargeEntity(type, world) },
                 MobCategory.MISC
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "fluid_barge").toString())
@@ -78,7 +73,7 @@ object ModEntityTypes {
     val SEATER_BARGE: Supplier<EntityType<SeaterBargeEntity>> =
         ENTITIES.register("seater_barge", Supplier<EntityType<SeaterBargeEntity>> {
             EntityType.Builder.of(
-                { type: EntityType<SeaterBargeEntity>, world: Level? -> SeaterBargeEntity(type, world) },
+                { type: EntityType<SeaterBargeEntity>, world: Level -> SeaterBargeEntity(type, world) },
                 MobCategory.MISC
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "seater_barge").toString())
@@ -88,7 +83,7 @@ object ModEntityTypes {
     val VACUUM_BARGE: Supplier<EntityType<VacuumBargeEntity>> =
         ENTITIES.register("vacuum_barge", Supplier<EntityType<VacuumBargeEntity>> {
             EntityType.Builder.of(
-                { type: EntityType<VacuumBargeEntity>, world: Level? -> VacuumBargeEntity(type, world) },
+                { type: EntityType<VacuumBargeEntity>, world: Level -> VacuumBargeEntity(type, world) },
                 MobCategory.MISC
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "vacuum_barge").toString())

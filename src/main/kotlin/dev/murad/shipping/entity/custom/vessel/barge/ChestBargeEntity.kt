@@ -1,153 +1,136 @@
-package dev.murad.shipping.entity.custom.vessel.barge;
+package dev.murad.shipping.entity.custom.vessel.barge
 
-import dev.murad.shipping.entity.custom.TrainInventoryProvider;
-import dev.murad.shipping.setup.ModEntityTypes;
-import dev.murad.shipping.setup.ModItems;
-import dev.murad.shipping.util.InventoryUtils;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.Container;
-import net.minecraft.world.Containers;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import dev.murad.shipping.entity.custom.TrainInventoryProvider
+import dev.murad.shipping.setup.ModEntityTypes
+import dev.murad.shipping.setup.ModItems
+import dev.murad.shipping.util.InventoryUtils.isEmpty
+import net.minecraft.core.Direction
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.Container
+import net.minecraft.world.Containers
+import net.minecraft.world.MenuProvider
+import net.minecraft.world.WorldlyContainer
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.ChestMenu
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.Level
+import net.neoforged.neoforge.items.ItemStackHandler
+import java.util.Optional
+import java.util.stream.IntStream
 
-import javax.annotation.Nullable;
-import java.util.Optional;
-import java.util.stream.IntStream;
+class ChestBargeEntity : AbstractBargeEntity, Container, MenuProvider, WorldlyContainer, TrainInventoryProvider {
 
-public class ChestBargeEntity extends AbstractBargeEntity implements Container, MenuProvider, WorldlyContainer, TrainInventoryProvider {
-    protected final ItemStackHandler itemHandler = new ItemStackHandler(27);
+    protected val itemHandler: ItemStackHandler = ItemStackHandler(27)
 
-    public ChestBargeEntity(EntityType<? extends ChestBargeEntity> type, Level world) {
-        super(type, world);
-    }
+    constructor(type: EntityType<out ChestBargeEntity>, world: Level) : super(type, world)
 
-    public ChestBargeEntity(EntityType<? extends ChestBargeEntity> type, Level world, double x, double y, double z) {
-        super(type, world, x, y, z);
-    }
+    constructor(type: EntityType<out ChestBargeEntity>, world: Level, x: Double, y: Double, z: Double) : super(
+        type,
+        world,
+        x,
+        y,
+        z
+    )
 
-    @Override
-    public void remove(RemovalReason r) {
+    override fun remove(r: RemovalReason) {
         if (!this.level().isClientSide) {
-            Containers.dropContents(this.level(), this, this);
+            Containers.dropContents(this.level(), this, this)
         }
-        super.remove(r);
+        super.remove(r)
     }
 
-    @Override
-    public Item getDropItem() {
-        if (this.getType().equals(ModEntityTypes.BARREL_BARGE.get())) {
-            return ModItems.BARREL_BARGE.get();
+
+    override fun getDropItem(): Item? {
+        if (this.getType() == ModEntityTypes.BARREL_BARGE.get()) {
+            return ModItems.BARREL_BARGE.get()
         } else {
-            return ModItems.CHEST_BARGE.get();
+            return ModItems.CHEST_BARGE.get()
         }
     }
 
-    protected void doInteract(Player player) {
-        player.openMenu(this);
+    override fun doInteract(player: Player?) {
+        player?.openMenu(this)
     }
 
-    @Override
-    public int getContainerSize() {
-        return this.itemHandler.getSlots();
+    override fun getContainerSize(): Int {
+        return this.itemHandler.getSlots()
     }
 
-    @Override
-    public boolean isEmpty() {
-        return InventoryUtils.isEmpty(this.itemHandler);
+    override fun isEmpty(): Boolean {
+        return isEmpty(this.itemHandler)
     }
 
-    @Override
-    public @NotNull ItemStack getItem(int slot) {
-        return this.itemHandler.getStackInSlot(slot);
+    override fun getItem(slot: Int): ItemStack {
+        return this.itemHandler.getStackInSlot(slot)
     }
 
-    @Override
-    public @NotNull ItemStack removeItem(int slot, int count) {
-        return itemHandler.extractItem(slot, count, false);
+    override fun removeItem(slot: Int, count: Int): ItemStack {
+        return itemHandler.extractItem(slot, count, false)
     }
 
-    @Override
-    public @NotNull ItemStack removeItemNoUpdate(int slot) {
-        ItemStack itemstack = itemHandler.getStackInSlot(slot);
+    override fun removeItemNoUpdate(slot: Int): ItemStack {
+        val itemstack = itemHandler.getStackInSlot(slot)
         if (itemstack.isEmpty()) {
-            return ItemStack.EMPTY;
+            return ItemStack.EMPTY
         } else {
-            this.itemHandler.setStackInSlot(slot, ItemStack.EMPTY);
-            return itemstack;
+            this.itemHandler.setStackInSlot(slot, ItemStack.EMPTY)
+            return itemstack
         }
     }
 
-    @Override
-    public void setItem(int slot, @NotNull ItemStack stack) {
-        itemHandler.setStackInSlot(slot, stack);
+    override fun setItem(slot: Int, stack: ItemStack) {
+        itemHandler.setStackInSlot(slot, stack)
     }
 
-    @Override
-    public void setChanged() {
+    override fun setChanged() {
     }
 
-    @Override
-    public boolean stillValid(Player player) {
+    override fun stillValid(player: Player?): Boolean {
         if (this.isRemoved()) {
-            return false;
+            return false
         } else {
-            return !(player.distanceToSqr(this) > 64.0D);
+            return !(player!!.distanceToSqr(this) > 64.0)
         }
     }
 
-    @Override
-    public void clearContent() {
+    override fun clearContent() {
     }
 
-    @Nullable
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pInventory, Player pPlayer) {
+    override fun createMenu(pContainerId: Int, pInventory: Inventory?, pPlayer: Player): AbstractContainerMenu? {
         if (pPlayer.isSpectator()) {
-            return null;
+            return null
         } else {
-            return ChestMenu.threeRows(pContainerId, pInventory, this);
+            return ChestMenu.threeRows(pContainerId, pInventory, this)
         }
     }
 
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.put("Items", itemHandler.serializeNBT(registryAccess()));
+    override fun addAdditionalSaveData(tag: CompoundTag) {
+        super.addAdditionalSaveData(tag)
+        tag.put("Items", itemHandler.serializeNBT(registryAccess()))
     }
 
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        itemHandler.deserializeNBT(registryAccess(), tag.getCompound("Items"));
+    override fun readAdditionalSaveData(tag: CompoundTag) {
+        super.readAdditionalSaveData(tag)
+        itemHandler.deserializeNBT(registryAccess(), tag.getCompound("Items"))
     }
 
-    @Override
-    public int[] getSlotsForFace(Direction face) {
-        return IntStream.range(0, getContainerSize()).toArray();
+    override fun getSlotsForFace(face: Direction): IntArray {
+        return IntStream.range(0, getContainerSize()).toArray()
     }
 
-    @Override
-    public boolean canPlaceItemThroughFace(int p_180462_1_, ItemStack item, @Nullable Direction p_180462_3_) {
-        return isDockable();
+    override fun canPlaceItemThroughFace(p_180462_1_: Int, item: ItemStack, p_180462_3_: Direction?): Boolean {
+        return isDockable
     }
 
-    @Override
-    public boolean canTakeItemThroughFace(int p_180461_1_, ItemStack item, Direction p_180461_3_) {
-        return isDockable();
+    override fun canTakeItemThroughFace(p_180461_1_: Int, item: ItemStack, p_180461_3_: Direction): Boolean {
+        return isDockable
     }
 
-    @Override
-    public Optional<ItemStackHandler> getTrainInventoryHandler() {
-        return Optional.of(itemHandler);
+    override fun getTrainInventoryHandler(): Optional<ItemStackHandler> {
+        return Optional.of<ItemStackHandler>(itemHandler)
     }
 }

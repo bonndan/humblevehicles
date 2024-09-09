@@ -1,89 +1,121 @@
-package dev.murad.shipping.entity.models.insert;
+package dev.murad.shipping.entity.models.insert
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.murad.shipping.HumVeeMod;
-import dev.murad.shipping.entity.Colorable;
-import dev.murad.shipping.entity.custom.vessel.barge.FishingBargeEntity;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
+import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.blaze3d.vertex.VertexConsumer
+import dev.murad.shipping.HumVeeMod
+import dev.murad.shipping.entity.Colorable
+import dev.murad.shipping.entity.custom.vessel.barge.FishingBargeEntity
+import net.minecraft.client.model.EntityModel
+import net.minecraft.client.model.geom.ModelLayerLocation
+import net.minecraft.client.model.geom.ModelPart
+import net.minecraft.client.model.geom.PartPose
+import net.minecraft.client.model.geom.builders.CubeListBuilder
+import net.minecraft.client.model.geom.builders.LayerDefinition
+import net.minecraft.client.model.geom.builders.MeshDefinition
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.entity.Entity
 
-public class FishingInsertBargeModel<T extends Entity & Colorable> extends EntityModel<T> {
-    // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-    public static final ModelLayerLocation STASHED_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "fishing_insert_barge_model_stashed"), "main");
-    public static final ModelLayerLocation TRANSITION_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "fishing_insert_barge_model_transition"), "main");
-    public static final ModelLayerLocation DEPLOYED_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "fishing_insert_barge_model_deployed"), "main");
-    private final ModelPart armsLeft;
-    private final ModelPart armsRight;
+class FishingInsertBargeModel<T>(root: ModelPart) : EntityModel<T>() where T : Entity, T : Colorable {
+    private val armsLeft: ModelPart
+    private val armsRight: ModelPart
 
-    public FishingInsertBargeModel(ModelPart root) {
-        this.armsLeft = root.getChild("arms_left");
-        this.armsRight = root.getChild("arms_right");
+    init {
+        this.armsLeft = root.getChild("arms_left")
+        this.armsRight = root.getChild("arms_right")
     }
 
-    public static LayerDefinition createBodyLayer(FishingBargeEntity.Status status) {
-        MeshDefinition meshdefinition = new MeshDefinition();
-        PartDefinition partdefinition = meshdefinition.getRoot();
-
-        float armAngle = switch (status) {
-            case STASHED -> 0.0F;
-            case TRANSITION -> 0.6109F;
-            case DEPLOYED -> 1.5708F;
-        };
-
-        float armY = switch (status) {
-            case STASHED -> -10.0F;
-            case TRANSITION -> -9.8192F;
-            case DEPLOYED -> -9.0F;
-        };
-
-        float armZ = switch (status) {
-            case STASHED -> 0.0F;
-            case TRANSITION -> 0.5736F;
-            case DEPLOYED -> 1.0F;
-        };
-
-        float netOffsetZ = switch (status) {
-            case STASHED, TRANSITION -> 0.0F;
-            case DEPLOYED -> 1.0F;
-        };
-
-        partdefinition.addOrReplaceChild("arms_left", CubeListBuilder.create()
-                                .texOffs(0, 0).addBox(-6.0F, armY, -1 + armZ, 1.0F, 9.0F, 2.0F)
-                                .texOffs(0, 0).addBox(5.0F, armY, -1 + armZ, 1.0F, 9.0F, 2.0F),
-                        PartPose.offsetAndRotation(0.0F, -3.0F, -4.0F, armAngle, 0.0F, 0.0F))
-                .addOrReplaceChild("net_left", CubeListBuilder.create()
-                                .texOffs(12, 11).addBox(-5.0F, -1.0F, -4.0F, 10.0F, 4.0F, 7.0F)
-                                .texOffs(6, 0).addBox(-5.0F, -1.0F, -1.0F, 1.0F, 4.0F, 2.0F)
-                                .texOffs(6, 0).addBox(4.0F, -1.0F, -1.0F, 1.0F, 4.0F, 2.0F),
-                        PartPose.offsetAndRotation(0.0F, -7.0F, -netOffsetZ, -armAngle, 0.0F, 0.0F));
-
-        partdefinition.addOrReplaceChild("arms_right", CubeListBuilder.create()
-                                .texOffs(0, 0).addBox(-6.0F, armY, -1 - armZ, 1.0F, 9.0F, 2.0F)
-                                .texOffs(0, 0).addBox(5.0F, armY, -1 - armZ, 1.0F, 9.0F, 2.0F),
-                        PartPose.offsetAndRotation(0.0F, -3.0F, 4.0F, -armAngle, 0.0F, 0.0F))
-                .addOrReplaceChild("net_right", CubeListBuilder.create()
-                                .texOffs(12, 0).addBox(-5.0F, -1.0F, -3.0F, 10.0F, 4.0F, 7.0F)
-                                .texOffs(6, 0).addBox(-5.0F, -1.0F, -1.0F, 1.0F, 4.0F, 2.0F)
-                                .texOffs(6, 0).addBox(4.0F, -1.0F, -1.0F, 1.0F, 4.0F, 2.0F),
-                        PartPose.offsetAndRotation(0.0F, -7.0F, netOffsetZ, armAngle, 0.0F, 0.0F));
-
-        return LayerDefinition.create(meshdefinition, 64, 64);
+    override fun setupAnim(
+        entity: T?,
+        limbSwing: Float,
+        limbSwingAmount: Float,
+        ageInTicks: Float,
+        netHeadYaw: Float,
+        headPitch: Float
+    ) {
     }
 
-    @Override
-    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
+    override fun renderToBuffer(
+        pPoseStack: PoseStack?,
+        pBuffer: VertexConsumer?,
+        pPackedLight: Int,
+        pPackedOverlay: Int,
+        pColor: Int
+    ) {
+        armsLeft.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay)
+        armsRight.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay)
     }
 
-    @Override
-    public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, int pColor) {
-        armsLeft.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay);
-        armsRight.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay);
+    companion object {
+        // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
+        val STASHED_LOCATION: ModelLayerLocation = ModelLayerLocation(
+            ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "fishing_insert_barge_model_stashed"),
+            "main"
+        )
+        val TRANSITION_LOCATION: ModelLayerLocation = ModelLayerLocation(
+            ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "fishing_insert_barge_model_transition"),
+            "main"
+        )
+        val DEPLOYED_LOCATION: ModelLayerLocation = ModelLayerLocation(
+            ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "fishing_insert_barge_model_deployed"),
+            "main"
+        )
+
+        fun createBodyLayer(status: FishingBargeEntity.Status): LayerDefinition {
+            val meshdefinition = MeshDefinition()
+            val partdefinition = meshdefinition.getRoot()
+
+            val armAngle = when (status) {
+                FishingBargeEntity.Status.STASHED -> 0.0f
+                FishingBargeEntity.Status.TRANSITION -> 0.6109f
+                FishingBargeEntity.Status.DEPLOYED -> 1.5708f
+            }
+
+            val armY = when (status) {
+                FishingBargeEntity.Status.STASHED -> -10.0f
+                FishingBargeEntity.Status.TRANSITION -> -9.8192f
+                FishingBargeEntity.Status.DEPLOYED -> -9.0f
+            }
+
+            val armZ = when (status) {
+                FishingBargeEntity.Status.STASHED -> 0.0f
+                FishingBargeEntity.Status.TRANSITION -> 0.5736f
+                FishingBargeEntity.Status.DEPLOYED -> 1.0f
+            }
+
+            val netOffsetZ = when (status) {
+                FishingBargeEntity.Status.STASHED, FishingBargeEntity.Status.TRANSITION -> 0.0f
+                FishingBargeEntity.Status.DEPLOYED -> 1.0f
+            }
+
+            partdefinition.addOrReplaceChild(
+                "arms_left", CubeListBuilder.create()
+                    .texOffs(0, 0).addBox(-6.0f, armY, -1 + armZ, 1.0f, 9.0f, 2.0f)
+                    .texOffs(0, 0).addBox(5.0f, armY, -1 + armZ, 1.0f, 9.0f, 2.0f),
+                PartPose.offsetAndRotation(0.0f, -3.0f, -4.0f, armAngle, 0.0f, 0.0f)
+            )
+                .addOrReplaceChild(
+                    "net_left", CubeListBuilder.create()
+                        .texOffs(12, 11).addBox(-5.0f, -1.0f, -4.0f, 10.0f, 4.0f, 7.0f)
+                        .texOffs(6, 0).addBox(-5.0f, -1.0f, -1.0f, 1.0f, 4.0f, 2.0f)
+                        .texOffs(6, 0).addBox(4.0f, -1.0f, -1.0f, 1.0f, 4.0f, 2.0f),
+                    PartPose.offsetAndRotation(0.0f, -7.0f, -netOffsetZ, -armAngle, 0.0f, 0.0f)
+                )
+
+            partdefinition.addOrReplaceChild(
+                "arms_right", CubeListBuilder.create()
+                    .texOffs(0, 0).addBox(-6.0f, armY, -1 - armZ, 1.0f, 9.0f, 2.0f)
+                    .texOffs(0, 0).addBox(5.0f, armY, -1 - armZ, 1.0f, 9.0f, 2.0f),
+                PartPose.offsetAndRotation(0.0f, -3.0f, 4.0f, -armAngle, 0.0f, 0.0f)
+            )
+                .addOrReplaceChild(
+                    "net_right", CubeListBuilder.create()
+                        .texOffs(12, 0).addBox(-5.0f, -1.0f, -3.0f, 10.0f, 4.0f, 7.0f)
+                        .texOffs(6, 0).addBox(-5.0f, -1.0f, -1.0f, 1.0f, 4.0f, 2.0f)
+                        .texOffs(6, 0).addBox(4.0f, -1.0f, -1.0f, 1.0f, 4.0f, 2.0f),
+                    PartPose.offsetAndRotation(0.0f, -7.0f, netOffsetZ, armAngle, 0.0f, 0.0f)
+                )
+
+            return LayerDefinition.create(meshdefinition, 64, 64)
+        }
     }
 }
