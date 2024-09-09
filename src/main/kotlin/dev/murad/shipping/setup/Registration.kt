@@ -48,14 +48,16 @@ object Registration {
         ENTITIES.register(eventBus)
         SOUND_EVENTS.register(eventBus)
 
+        //TODO static calls used to ensure correct loading sequence
         ModItems.register()
-
+        ModBlocks.register()
+        ModEntityTypes.register()
         ModTileEntitiesTypes.register()
         ModRecipeSerializers.register()
         ModMenuTypes.register()
-        eventBus.register(TugRoutePacketHandler::class.java)
-        eventBus.register(VehicleTrackerPacketHandler::class.java)
-        eventBus.register(VehiclePacketHandler::class.java)
+        eventBus.register(TugRoutePacketHandler)
+        eventBus.register(VehicleTrackerPacketHandler)
+        eventBus.register(VehiclePacketHandler)
         ModSounds.register()
         eventBus.addListener { event: RegisterCapabilitiesEvent? -> CauldronFluidContent.registerCapabilities(event) }
 

@@ -20,11 +20,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
+import net.neoforged.neoforge.common.ModConfigSpec
 import net.neoforged.neoforge.items.ItemStackHandler
 
 class EnergyTugEntity : AbstractTugEntity {
     private val itemHandler = createHandler()
-    private val internalBattery = ReadWriteEnergyStorage(MAX_ENERGY, MAX_TRANSFER, Int.MAX_VALUE)
+    private val internalBattery = ReadWriteEnergyStorage(MAX_ENERGY.get(), MAX_TRANSFER.get(), Int.MAX_VALUE)
 
     constructor(type: EntityType<out WaterAnimal>, world: Level) : super(type, world) {
         internalBattery.setEnergy(0)
@@ -122,7 +123,7 @@ class EnergyTugEntity : AbstractTugEntity {
             val capability = getEnergyCapabilityInSlot(0, itemHandler)
             if (capability != null) {
                 // simulate first
-                var toExtract = capability.extractEnergy(MAX_TRANSFER, true)
+                var toExtract = capability.extractEnergy(MAX_TRANSFER.get(), true)
                 toExtract = internalBattery.receiveEnergy(toExtract, false)
                 capability.extractEnergy(toExtract, false)
             }
@@ -132,7 +133,7 @@ class EnergyTugEntity : AbstractTugEntity {
     }
 
     override fun tickFuel(): Boolean {
-        return internalBattery.extractEnergy(ENERGY_USAGE, false) > 0
+        return internalBattery.extractEnergy(ENERGY_USAGE.get(), false) > 0
     }
 
     override fun isEmpty(): Boolean {
@@ -155,9 +156,9 @@ class EnergyTugEntity : AbstractTugEntity {
     }
 
     companion object {
-        private val MAX_ENERGY: Int = ShippingConfig.Server.ENERGY_TUG_BASE_CAPACITY!!.get()
-        private val MAX_TRANSFER: Int = ShippingConfig.Server.ENERGY_TUG_BASE_MAX_CHARGE_RATE!!.get()
-        private val ENERGY_USAGE: Int = ShippingConfig.Server.ENERGY_TUG_BASE_ENERGY_USAGE!!.get()
+        private val MAX_ENERGY: ModConfigSpec.ConfigValue<Int> = ShippingConfig.Server.ENERGY_TUG_BASE_CAPACITY!!
+        private val MAX_TRANSFER: ModConfigSpec.ConfigValue<Int> = ShippingConfig.Server.ENERGY_TUG_BASE_MAX_CHARGE_RATE!!
+        private val ENERGY_USAGE: ModConfigSpec.ConfigValue<Int> = ShippingConfig.Server.ENERGY_TUG_BASE_ENERGY_USAGE!!
 
         fun setCustomAttributes(): AttributeSupplier.Builder {
             return AbstractTugEntity.setCustomAttributes()

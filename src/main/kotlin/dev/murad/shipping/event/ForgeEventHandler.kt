@@ -35,10 +35,8 @@ object ForgeEventHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    fun onWorldTick(event: LevelTickEvent) {
-        if (event is LevelTickEvent.Pre) {
-            return
-        }
+    fun onWorldTick(event: LevelTickEvent.Post) {
+
         // Don't do anything client side
         if (event.level is ServerLevel ) {
             val server = event.level.getServer()

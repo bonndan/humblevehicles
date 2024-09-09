@@ -23,7 +23,6 @@ import net.minecraft.world.level.material.MapColor
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.function.Consumer
 import java.util.function.Supplier
 
 
@@ -135,7 +134,7 @@ object ModBlocks {
     @JvmStatic
     fun buildCreativeTab(event: BuildCreativeModeTabContentsEvent) {
         PRIVATE_TAB_REGISTRY.getOrDefault(event.tabKey, ArrayList())
-            ?.forEach(Consumer { supplier: Supplier<BlockItem> -> event.accept(supplier.get()) })
+            .forEach { supplier: Supplier<BlockItem> -> event.accept(supplier.get()) }
     }
 
     private fun <T : Block> registerBlock(name: String, block: Supplier<T>): Supplier<T> {
@@ -155,8 +154,12 @@ object ModBlocks {
             PRIVATE_TAB_REGISTRY.putInsert(tab, item)
         }
 
-        logger.info("Registered block ${ret.get().name}")
+        logger.info("Registered block ${name}")
 
         return ret
+    }
+
+    fun register() {
+
     }
 }

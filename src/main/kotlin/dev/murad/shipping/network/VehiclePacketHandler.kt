@@ -17,7 +17,7 @@ import java.util.function.Function
 
 object VehiclePacketHandler {
 
-    val LOCATION: ResourceLocation = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "locomotive_channel")
+
 
     @SubscribeEvent
     fun register(event: RegisterPayloadHandlersEvent) {

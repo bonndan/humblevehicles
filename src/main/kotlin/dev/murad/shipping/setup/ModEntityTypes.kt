@@ -20,6 +20,10 @@ import java.util.function.Supplier
 
 object ModEntityTypes {
 
+    fun register() {
+
+    }
+
     @JvmField
     val CHEST_BARGE: Supplier<EntityType<ChestBargeEntity>> =
         ENTITIES.register("barge", Supplier<EntityType<ChestBargeEntity>> {

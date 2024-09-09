@@ -40,8 +40,6 @@ class HumVeeMod(modBus: IEventBus, container: ModContainer) {
         container.registerConfig(ModConfig.Type.CLIENT, ShippingConfig.Client.SPEC, "humblevehicles-client.toml")
         container.registerConfig(ModConfig.Type.SERVER, ShippingConfig.Server.SPEC, "humblevehicles-server.toml")
 
-        // Register ourselves for server and other game events we are interested in
-        modBus.register(this)
     }
 
     private fun doClientStuff(event: FMLClientSetupEvent) {

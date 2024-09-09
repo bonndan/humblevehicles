@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.state.BlockState
 import java.util.function.Supplier
 
 object ModTileEntitiesTypes {
+
     val TUG_DOCK: Supplier<BlockEntityType<TugDockTileEntity>> = register(
         "tug_dock",
         { pos: BlockPos, state: BlockState -> TugDockTileEntity(pos, state) },
