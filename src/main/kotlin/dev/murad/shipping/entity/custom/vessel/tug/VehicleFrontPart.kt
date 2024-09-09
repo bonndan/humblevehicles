@@ -1,96 +1,88 @@
-package dev.murad.shipping.entity.custom.vessel.tug;
+package dev.murad.shipping.entity.custom.vessel.tug
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.LeadItem;
-import net.neoforged.neoforge.entity.PartEntity;
+import net.minecraft.core.BlockPos
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResult
+import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityDimensions
+import net.minecraft.world.entity.Pose
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.LeadItem
+import net.neoforged.neoforge.entity.PartEntity
 
-import javax.annotation.Nullable;
-import java.util.Objects;
-
-public class VehicleFrontPart extends PartEntity<Entity> {
-    public VehicleFrontPart(Entity parent) {
-        super(parent);
-        this.refreshDimensions();
+class VehicleFrontPart(parent: Entity) : PartEntity<Entity?>(parent) {
+    init {
+        this.refreshDimensions()
     }
 
-    public boolean hurt(DamageSource pSource, float pAmount) {
-        return this.isInvulnerableTo(pSource) ? false : getParent().hurt(pSource, pAmount);
-
+    override fun hurt(pSource: DamageSource, pAmount: Float): Boolean {
+        return if (this.isInvulnerableTo(pSource)) false
+        else parent?.hurt(pSource, pAmount) == true
     }
 
-    public boolean is(Entity pEntity) {
-        return this == pEntity || getParent() == pEntity;
+    override fun `is`(pEntity: Entity): Boolean {
+        return this === pEntity || getParent() === pEntity
     }
 
-    @Nullable
-    public ItemStack getPickResult() {
-        return getParent().getPickResult();
+    override fun getPickResult(): ItemStack? {
+        return getParent()!!.getPickResult()
     }
 
-    public EntityDimensions getDimensions(Pose pPose) {
-        return this.getParent().getDimensions(pPose);
+    override fun getDimensions(pPose: Pose): EntityDimensions {
+        return getParent()!!.getDimensions(pPose)
     }
 
-    public boolean shouldBeSaved() {
-        return true;
+    override fun shouldBeSaved(): Boolean {
+        return true
     }
 
-    public void updatePosition(Entity tugEntity){
-        double oldX = this.getX();
-        double oldY = this.getY();
-        double oldZ = this.getZ();
-        double x = tugEntity.getX() + tugEntity.getDirection().getStepX() * getParent().getBoundingBox().getXsize();
-        double z = tugEntity.getZ() + tugEntity.getDirection().getStepZ() * getParent().getBoundingBox().getXsize();
-        double y = tugEntity.getY();
-        this.setPos(x, y, z);
-        this.zOld = oldZ;
-        this.zo = oldZ;
-        this.xOld = oldX;
-        this.xo = oldX;
-        this.yOld = oldY;
-        this.yo = oldY;
+    fun updatePosition(tugEntity: Entity) {
+        val oldX: Double = this.getX()
+        val oldY: Double = this.getY()
+        val oldZ: Double = this.getZ()
+        val x: Double = tugEntity.getX() + tugEntity.getDirection().getStepX() * getParent()!!.getBoundingBox().getXsize()
+        val z: Double = tugEntity.getZ() + tugEntity.getDirection().getStepZ() * getParent()!!.getBoundingBox().getXsize()
+        val y: Double = tugEntity.getY()
+        this.setPos(x, y, z)
+        this.zOld = oldZ
+        this.zo = oldZ
+        this.xOld = oldX
+        this.xo = oldX
+        this.yOld = oldY
+        this.yo = oldY
     }
 
-    public boolean isPickable() {
-        return !this.isRemoved();
+    override fun isPickable(): Boolean {
+        return !this.isRemoved()
     }
 
-    public BlockPos getPos(){
-        return getOnPos();
-    }
-
-    @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
-        if (getParent() instanceof AbstractTugEntity tugEntity){
-            if (player.getItemInHand(hand).getItem() instanceof LeadItem || Objects.equals(tugEntity.getLeashHolder(), player)) {
-                return tugEntity.interact(player, hand);
-            }
-        return tugEntity.mobInteract(player, hand);
-        } else {
-            return getParent().interact(player, hand);
+    val pos: BlockPos
+        get() {
+            return getOnPos()
         }
+
+    override fun interact(player: Player, hand: InteractionHand): InteractionResult {
+        if (parent is AbstractTugEntity) {
+            val tugEntity = parent as AbstractTugEntity
+            if (player.getItemInHand(hand).getItem() is LeadItem || tugEntity.getLeashHolder() == player) {
+                return tugEntity.interact(player, hand)
+            }
+            return tugEntity.mobInteract(player, hand)
+        }
+
+        return parent!!.interact(player, hand)
     }
 
-    @Override
-    protected void defineSynchedData(SynchedEntityData.Builder pBuilder) {
-
+    override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
     }
 
-    @Override
-    protected void readAdditionalSaveData(CompoundTag pCompound) {
-
+    override fun readAdditionalSaveData(pCompound: CompoundTag) {
     }
 
-    @Override
-    protected void addAdditionalSaveData(CompoundTag pCompound) {
-
+    override fun addAdditionalSaveData(pCompound: CompoundTag) {
     }
 }

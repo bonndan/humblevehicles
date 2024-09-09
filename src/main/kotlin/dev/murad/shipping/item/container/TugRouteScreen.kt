@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger
 
 class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Component) :
     AbstractContainerScreen<TugRouteContainer?>(menu, inventory, title) {
-    private val stack: ItemStack?
+    private val stack: ItemStack
 
     init {
         this.imageWidth = 256

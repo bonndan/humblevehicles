@@ -55,7 +55,7 @@ object SpringPhysicsUtil {
         }
 
         val distSq = dominant!!.distanceToSqr(dominated)
-        val maxDstSq = dominant.getTrain().tug.map { tug: T -> if ((tug as AbstractTugEntity).isDocked) 1.0 else 1.2 }
+        val maxDstSq = dominant.getTrain().tug.map { tug: T -> if ((tug as AbstractTugEntity).isDocked()) 1.0 else 1.2 }
             .orElse(1.2)
 
         val frontAnchor = dominant.position()

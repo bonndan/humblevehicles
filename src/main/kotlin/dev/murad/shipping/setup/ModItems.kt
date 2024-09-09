@@ -147,7 +147,7 @@ object ModItems {
     val VACUUM_BARGE: Supplier<Item> = register(
         "vacuum_barge",
         {
-            VesselItem(Item.Properties()) { worldIn: Level?, x: Double, y: Double, z: Double ->
+            VesselItem(Item.Properties()) { worldIn, x: Double, y: Double, z: Double ->
                 VacuumBargeEntity(
                     worldIn,
                     x,
@@ -162,8 +162,8 @@ object ModItems {
     val STEAM_TUG: Supplier<Item> = register(
         "tug",
         {
-            VesselItem(Item.Properties()) { worldIn: Level?, x: Double, y: Double, z: Double ->
-                SteamTugEntity(worldIn, x, y, z)
+            VesselItem(Item.Properties()) { worldIn, x: Double, y: Double, z: Double ->
+                SteamTugEntity(worldIn!!, x, y, z)
             }
         }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
@@ -172,7 +172,7 @@ object ModItems {
     val ENERGY_TUG: Supplier<Item> = register(
         "energy_tug",
         {
-            VesselItem(Item.Properties()) { worldIn: Level?, x: Double, y: Double, z: Double ->
+            VesselItem(Item.Properties()) { worldIn, x: Double, y: Double, z: Double ->
                 EnergyTugEntity(
                     worldIn,
                     x,

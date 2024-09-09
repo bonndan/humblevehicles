@@ -1,694 +1,680 @@
-package dev.murad.shipping.entity.custom.vessel.tug;
+package dev.murad.shipping.entity.custom.vessel.tug
 
-import dev.murad.shipping.ShippingConfig;
-import dev.murad.shipping.block.dock.TugDockTileEntity;
-import dev.murad.shipping.block.guiderail.TugGuideRailBlock;
-import dev.murad.shipping.capability.StallingCapability;
-import dev.murad.shipping.entity.accessor.DataAccessor;
-import dev.murad.shipping.entity.custom.HeadVehicle;
-import dev.murad.shipping.entity.custom.vessel.VesselEntity;
-import dev.murad.shipping.entity.navigation.TugPathNavigator;
-import dev.murad.shipping.item.TugRouteItem;
-import dev.murad.shipping.setup.ModBlocks;
-import dev.murad.shipping.setup.ModItems;
-import dev.murad.shipping.setup.ModSounds;
-import dev.murad.shipping.util.*;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.*;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.animal.WaterAnimal;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.entity.PartEntity;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import dev.murad.shipping.ShippingConfig
+import dev.murad.shipping.block.dock.TugDockTileEntity
+import dev.murad.shipping.block.guiderail.TugGuideRailBlock.Companion.getArrowsDirection
+import dev.murad.shipping.capability.StallingCapability
+import dev.murad.shipping.entity.accessor.DataAccessor
+import dev.murad.shipping.entity.custom.HeadVehicle
+import dev.murad.shipping.entity.custom.vessel.VesselEntity
+import dev.murad.shipping.entity.navigation.TugPathNavigator
+import dev.murad.shipping.item.TugRouteItem
+import dev.murad.shipping.item.TugRouteItem.Companion.getRoute
+import dev.murad.shipping.setup.ModBlocks
+import dev.murad.shipping.setup.ModItems
+import dev.murad.shipping.setup.ModSounds
+import dev.murad.shipping.util.*
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
+import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.core.particles.SimpleParticleType
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
+import net.minecraft.network.syncher.EntityDataAccessor
+import net.minecraft.network.syncher.EntityDataSerializers
+import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.RandomSource
+import net.minecraft.world.*
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier
+import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.entity.ai.goal.Goal
+import net.minecraft.world.entity.ai.navigation.PathNavigation
+import net.minecraft.world.entity.animal.WaterAnimal
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.DyeColor
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.phys.Vec3
+import net.neoforged.neoforge.entity.PartEntity
+import net.neoforged.neoforge.items.ItemStackHandler
+import java.util.*
+import java.util.function.Consumer
+import java.util.function.Function
+import java.util.function.Predicate
+import java.util.function.Supplier
+import java.util.stream.IntStream
+import kotlin.math.abs
+import kotlin.math.floor
+import kotlin.math.hypot
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
+abstract class AbstractTugEntity(type: EntityType<out WaterAnimal>, world: Level) :
+    VesselEntity(type, world), LinkableEntityHead<VesselEntity>, Container, WorldlyContainer, HeadVehicle {
 
-public abstract class AbstractTugEntity extends VesselEntity implements
-        LinkableEntityHead<VesselEntity>, Container, WorldlyContainer, HeadVehicle
-{
-
-    protected final ChunkManagerEnrollmentHandler enrollmentHandler;
+    protected val enrollmentHandler: ChunkManagerEnrollmentHandler
 
     // CONTAINER STUFF
-    protected final ItemStackHandler routeItemHandler = createRouteItemHandler();
-    protected boolean contentsChanged = false;
-    protected boolean docked = false;
-    protected int remainingStallTime = 0;
-    private double swimSpeedMult = 1;
+    private val routeItemHandler: ItemStackHandler = createRouteItemHandler()
+    private var contentsChanged: Boolean = false
+    private var isDocked: Boolean = false
+    fun isDocked() : Boolean = isDocked
+    private var remainingStallTime: Int = 0
+    private var swimSpeedMult: Double = 1.0
 
-    protected boolean engineOn = true;
+    private var engineOn: Boolean = true
 
-    private int dockCheckCooldown = 0;
-    private boolean independentMotion = false;
-    private int pathfindCooldown = 0;
-    private VehicleFrontPart frontHitbox;
-    private static final EntityDataAccessor<Boolean> INDEPENDENT_MOTION = SynchedEntityData.defineId(AbstractTugEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<String> OWNER = SynchedEntityData.defineId(AbstractTugEntity.class, EntityDataSerializers.STRING);
+    private var dockCheckCooldown: Int = 0
+    private var independentMotion: Boolean = false
+    private var pathfindCooldown: Int = 0
+    private val frontHitbox: VehicleFrontPart
 
+    private var path: TugRoute?
 
-    public boolean allowDockInterface() {
-        return isDocked();
+    protected fun getPath(): TugRoute? = path
+
+    private var nextStop: Int = 0
+
+    protected fun getNextStop(): Int = nextStop
+
+    constructor(type: EntityType<out WaterAnimal>, worldIn: Level, x: Double, y: Double, z: Double) : this(
+        type,
+        worldIn
+    ) {
+        this.setPos(x, y, z)
+        this.xo = x
+        this.yo = y
+        this.zo = z
     }
 
-    protected TugRoute path;
-    protected int nextStop;
-
-    public AbstractTugEntity(EntityType<? extends WaterAnimal> type, Level world) {
-        super(type, world);
-        this.blocksBuilding = true;
-        linkingHandler.train = (new Train<>(this));
-        this.path = new TugRoute();
-        frontHitbox = new VehicleFrontPart(this);
-        enrollmentHandler = new ChunkManagerEnrollmentHandler(this);
+    override fun allowDockInterface(): Boolean {
+        return isDocked
     }
 
-    public AbstractTugEntity(EntityType type, Level worldIn, double x, double y, double z) {
-        this(type, worldIn);
-        this.setPos(x, y, z);
-        this.xo = x;
-        this.yo = y;
-        this.zo = z;
-    }
-
-    @Override
-    public ResourceLocation getRouteIcon() {
-        return ModItems.TUG_ROUTE_ICON;
+    override fun getRouteIcon(): ResourceLocation {
+        return ModItems.TUG_ROUTE_ICON
     }
 
 
     // CONTAINER STUFF
-    @Override
-    public void dropLeash(boolean p_110160_1_, boolean p_110160_2_) {
-        navigation.recomputePath();
-        super.dropLeash(p_110160_1_, p_110160_2_);
+    override fun dropLeash(p_110160_1_: Boolean, p_110160_2_: Boolean) {
+        navigation.recomputePath()
+        super.dropLeash(p_110160_1_, p_110160_2_)
     }
 
 
-    public abstract DataAccessor getDataAccessor();
+    abstract fun getDataAccessor(): DataAccessor
 
-    private ItemStackHandler createRouteItemHandler() {
-        return new ItemStackHandler() {
-            @Override
-            protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
-                return 1;
+    private fun createRouteItemHandler(): ItemStackHandler {
+        return object : ItemStackHandler() {
+            override fun getStackLimit(slot: Int, stack: ItemStack): Int {
+                return 1
             }
 
-            @Override
-            protected void onContentsChanged(int slot) {
-                contentsChanged = true;
+            override fun onContentsChanged(slot: Int) {
+                contentsChanged = true
             }
 
-            @Override
-            public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return stack.getItem() instanceof TugRouteItem;
+            override fun isItemValid(slot: Int, stack: ItemStack): Boolean {
+                return stack.getItem() is TugRouteItem
             }
-        };
-    }
-
-    @Override
-    public String owner() {
-        return entityData.get(OWNER);
-    }
-
-    @Override
-    public boolean isPushedByFluid() {
-        return true;
-    }
-
-    protected abstract MenuProvider createContainerProvider();
-
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        if (compound.contains("inv")) {
-            ItemStackHandler old = new ItemStackHandler();
-            old.deserializeNBT(this.registryAccess(), compound.getCompound("inv"));
-            routeItemHandler.setStackInSlot(0, old.getStackInSlot(0));
-        } else {
-            routeItemHandler.deserializeNBT(this.registryAccess(), compound.getCompound("routeHandler"));
         }
-        nextStop = compound.contains("next_stop") ? compound.getInt("next_stop") : 0;
-        engineOn = !compound.contains("engineOn") || compound.getBoolean("engineOn");
-        contentsChanged = true;
-        enrollmentHandler.load(compound);
-        super.readAdditionalSaveData(compound);
     }
 
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        compound.putInt("next_stop", nextStop);
-        compound.putBoolean("engineOn", engineOn);
-        compound.put("routeHandler", routeItemHandler.serializeNBT(this.registryAccess()));
-        enrollmentHandler.save(compound);
-        super.addAdditionalSaveData(compound);
+    override fun owner(): String? {
+        return entityData.get(OWNER)
     }
 
-    private void tickRouteCheck() {
+    override fun isPushedByFluid(): Boolean {
+        return true
+    }
+
+    protected abstract fun createContainerProvider(): MenuProvider
+
+    override fun readAdditionalSaveData(compound: CompoundTag) {
+        if (compound.contains("inv")) {
+            val old: ItemStackHandler = ItemStackHandler()
+            old.deserializeNBT(this.registryAccess(), compound.getCompound("inv"))
+            routeItemHandler.setStackInSlot(0, old.getStackInSlot(0))
+        } else {
+            routeItemHandler.deserializeNBT(this.registryAccess(), compound.getCompound("routeHandler"))
+        }
+        nextStop = if (compound.contains("next_stop")) compound.getInt("next_stop") else 0
+        engineOn = !compound.contains("engineOn") || compound.getBoolean("engineOn")
+        contentsChanged = true
+        enrollmentHandler.load(compound)
+        super.readAdditionalSaveData(compound)
+    }
+
+    override fun addAdditionalSaveData(compound: CompoundTag) {
+        compound.putInt("next_stop", nextStop)
+        compound.putBoolean("engineOn", engineOn)
+        compound.put("routeHandler", routeItemHandler.serializeNBT(this.registryAccess()))
+        enrollmentHandler.save(compound)
+        super.addAdditionalSaveData(compound)
+    }
+
+    private fun tickRouteCheck() {
         if (contentsChanged) {
-            ItemStack stack = routeItemHandler.getStackInSlot(0);
-            this.setPath(TugRouteItem.getRoute(stack));
-            contentsChanged = false;
+            val stack: ItemStack = routeItemHandler.getStackInSlot(0)
+            this.setPath(getRoute(stack))
+            contentsChanged = false
         }
 
         // fix for currently borked worlds
-        if (nextStop >= this.path.size()) {
-            this.nextStop = 0;
+        if (nextStop >= path!!.size) {
+            this.nextStop = 0
         }
     }
 
-    protected abstract boolean tickFuel();
+    protected abstract fun tickFuel(): Boolean
 
-    public static AttributeSupplier.Builder setCustomAttributes() {
-        return VesselEntity.setCustomAttributes()
-                .add(Attributes.FOLLOW_RANGE, 200);
+    protected fun onDock() {
+        this.playSound(ModSounds.TUG_DOCKING.get(), 0.6f, 1.0f)
     }
 
-    protected void onDock() {
-        this.playSound(ModSounds.TUG_DOCKING.get(), 0.6f, 1.0f);
+    protected open fun onUndock() {
+        this.playSound(ModSounds.TUG_UNDOCKING.get(), 0.6f, 1.5f)
     }
 
-    protected void onUndock() {
-        this.playSound(ModSounds.TUG_UNDOCKING.get(), 0.6f, 1.5f);
-    }
+    private val sideDirections: List<Direction>
+        // MOB STUFF
+        get() {
+            return if (this.getDirection() == Direction.NORTH || this.getDirection() == Direction.SOUTH) Arrays.asList(
+                Direction.EAST,
+                Direction.WEST
+            ) else Arrays.asList(
+                Direction.NORTH,
+                Direction.SOUTH
+            )
+        }
 
-    // MOB STUFF
 
-    private List<Direction> getSideDirections() {
-        return this.getDirection() == Direction.NORTH || this.getDirection() == Direction.SOUTH ?
-                Arrays.asList(Direction.EAST, Direction.WEST) :
-                Arrays.asList(Direction.NORTH, Direction.SOUTH);
-    }
+    private fun tickCheckDock() {
+        Optional.ofNullable<StallingCapability>(getCapability(StallingCapability.STALLING_CAPABILITY))
+            .ifPresent { cap: StallingCapability ->
+                val x: Int = floor(this.getX()) as Int
+                val y: Int = floor(this.getY()) as Int
+                val z: Int = floor(this.getZ()) as Int
 
+                val docked: Boolean = cap.isDocked()
 
-    private void tickCheckDock() {
-        Optional.ofNullable(getCapability(StallingCapability.STALLING_CAPABILITY)).ifPresent(cap -> {
-            int x = (int) Math.floor(this.getX());
-            int y = (int) Math.floor(this.getY());
-            int z = (int) Math.floor(this.getZ());
+                if (docked && dockCheckCooldown > 0) {
+                    dockCheckCooldown--
+                    this.setDeltaMovement(Vec3.ZERO)
+                    this.moveTo(x + 0.5, getY(), z + 0.5)
+                    return@ifPresent
+                }
 
-            boolean docked = cap.isDocked;
-
-            if (docked && dockCheckCooldown > 0) {
-                dockCheckCooldown--;
-                this.setDeltaMovement(Vec3.ZERO);
-                this.moveTo(x + 0.5, getY(), z + 0.5);
-                return;
-            }
-
-            // Check docks
-            boolean shouldDock = this.getSideDirections()
+                // Check docks
+                val shouldDock: Boolean = sideDirections
                     .stream()
-                    .map((curr) ->
-                            Optional.ofNullable(level().getBlockEntity(new BlockPos(x + curr.getStepX(), y, z + curr.getStepZ())))
-                                    .filter(entity -> entity instanceof TugDockTileEntity)
-                                    .map(entity -> (TugDockTileEntity) entity)
-                                    .map(dock -> dock.hold(this, curr))
-                                    .orElse(false))
-                    .reduce(false, (acc, curr) -> acc || curr);
+                    .map { curr: Direction ->
+                        Optional.ofNullable(
+                            level().getBlockEntity(
+                                BlockPos(
+                                    x + curr.getStepX(),
+                                    y,
+                                    z + curr.getStepZ()
+                                )
+                            )
+                        )
+                            .filter(Predicate { entity: BlockEntity? -> entity is TugDockTileEntity })
+                            .map(Function { entity: BlockEntity -> entity as TugDockTileEntity })
+                            .map(Function { dock: TugDockTileEntity -> dock.hold(this, curr) })
+                            .orElse(false)
+                    }
+                    .reduce(false) { acc: Boolean, curr: Boolean -> acc || curr }
 
-            boolean changedDock = !docked && shouldDock;
-            boolean changedUndock = docked && !shouldDock;
+                val changedDock: Boolean = !docked && shouldDock
+                val changedUndock: Boolean = docked && !shouldDock
 
-            if (shouldDock) {
-                dockCheckCooldown = 20; // todo: magic number
-                cap.dock(x + 0.5, getY(), z + 0.5);
-            } else {
-                dockCheckCooldown = 0;
-                cap.undock();
+                if (shouldDock) {
+                    dockCheckCooldown = 20 // todo: magic number
+                    cap.dock(x + 0.5, getY(), z + 0.5)
+                } else {
+                    dockCheckCooldown = 0
+                    cap.undock()
+                }
+
+                if (changedDock) onDock()
+                if (changedUndock) onUndock()
             }
-
-            if (changedDock) onDock();
-            if (changedUndock) onUndock();
-        });
     }
 
-    protected void makeSmoke() {
-        Level world = this.level();
+    protected open fun makeSmoke() {
+        val world: Level = this.level()
         if (world != null) {
-            BlockPos blockpos = this.getOnPos().above().above();
-            RandomSource random = world.random;
+            val blockpos: BlockPos = getOnPos().above().above()
+            val random: RandomSource = world.random
             if (random.nextFloat() < ShippingConfig.Client.TUG_SMOKE_MODIFIER.get()) {
-                for (int i = 0; i < random.nextInt(2) + 2; ++i) {
-                    makeParticles(world, blockpos, this);
+                for (i in 0 until random.nextInt(2) + 2) {
+                    makeParticles(world, blockpos, this)
                 }
             }
         }
     }
 
-    public static void makeParticles(Level level, BlockPos pos, Entity entity) {
-        RandomSource random = level.getRandom();
-        Supplier<Boolean> h = () -> random.nextDouble() < 0.5;
-
-        var dx = (entity.getX() - entity.xOld) / 12.0;
-        var dy = (entity.getY() - entity.yOld) / 12.0;
-        var dz = (entity.getZ() - entity.zOld) / 12.0;
-
-        double xDrift = (h.get() ? 1 : -1) * random.nextDouble() * 2;
-        double zDrift = (h.get() ? 1 : -1) * random.nextDouble() * 2;
-
-        var particleType = random.nextBoolean() ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
-
-        level.addAlwaysVisibleParticle(particleType,
-                true,
-                (double) pos.getX() + 0.5D + random.nextDouble() / 3.0D * (double) (random.nextBoolean() ? 1 : -1),
-                (double) pos.getY() + random.nextDouble() + random.nextDouble(),
-                (double) pos.getZ() + 0.5D + random.nextDouble() / 3.0D * (double) (random.nextBoolean() ? 1 : -1),
-                0.007D * xDrift + dx, 0.05D + dy, 0.007D * zDrift + dz);
+    override fun createNavigation(p_175447_1_: Level): PathNavigation {
+        return TugPathNavigator(this, p_175447_1_)
     }
 
-    @Override
-    protected PathNavigation createNavigation(Level p_175447_1_) {
-        return new TugPathNavigator(this, p_175447_1_);
-    }
-
-    @Override
-    public InteractionResult mobInteract(Player player, InteractionHand hand) {
-        if (!this.level().isClientSide) {
-            var color = DyeColor.getColor(player.getItemInHand(hand));
+    public override fun mobInteract(player: Player, hand: InteractionHand): InteractionResult {
+        if (!level().isClientSide) {
+            val color: DyeColor? = DyeColor.getColor(player.getItemInHand(hand))
 
             if (color != null) {
-                this.getEntityData().set(COLOR_DATA, color.getId());
+                getEntityData().set(COLOR_DATA, color.getId())
             } else {
-                player.openMenu(createContainerProvider());
+                player.openMenu(createContainerProvider())
             }
         }
 
-        return InteractionResult.sidedSuccess(this.level().isClientSide);
+        return InteractionResult.sidedSuccess(level().isClientSide)
     }
 
-    @Override
-    public void enroll(UUID uuid) {
-        enrollmentHandler.enroll(uuid);
+    override fun enroll(uuid: UUID) {
+        enrollmentHandler.enroll(uuid)
     }
 
-    @Override
-    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> key) {
-        super.onSyncedDataUpdated(key);
+    override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
+        super.onSyncedDataUpdated(key)
 
         if (level().isClientSide) {
-            if (INDEPENDENT_MOTION.equals(key)) {
-                independentMotion = entityData.get(INDEPENDENT_MOTION);
+            if (INDEPENDENT_MOTION == key) {
+                independentMotion = entityData.get(INDEPENDENT_MOTION)
             }
         }
     }
 
 
-    protected void registerGoals() {
-        this.goalSelector.addGoal(0, new MovementGoal());
+    override fun registerGoals() {
+        goalSelector.addGoal(0, MovementGoal())
     }
 
-    class MovementGoal extends Goal {
-        @Override
-        public boolean canUse() {
-            return AbstractTugEntity.this.path != null;
+    internal inner class MovementGoal : Goal() {
+        override fun canUse(): Boolean {
+            return this@AbstractTugEntity.path != null
         }
 
-        public void tick() {
-            if (!AbstractTugEntity.this.level().isClientSide) {
-                tickRouteCheck();
-                tickCheckDock();
+        override fun tick() {
+            if (!level().isClientSide) {
+                tickRouteCheck()
+                tickCheckDock()
 
-                followPath();
-                followGuideRail();
-
+                followPath()
+                followGuideRail()
             }
-
         }
     }
 
-    @Override
-    public boolean isMultipartEntity() {
-        return true;
+    override fun isMultipartEntity(): Boolean {
+        return true
     }
 
-    @Override
-    public PartEntity<?>[] getParts() {
-        return new PartEntity<?>[]{frontHitbox};
+    override fun getParts(): Array<PartEntity<*>> {
+        return arrayOf(frontHitbox)
     }
 
-    @Override
-    public void aiStep() {
-        super.aiStep();
+    override fun aiStep() {
+        super.aiStep()
         if (!isDeadOrDying() && !this.isNoAi()) {
-            frontHitbox.updatePosition(this);
+            frontHitbox.updatePosition(this)
         }
-
     }
 
-    @Override
-    public void recreateFromPacket(ClientboundAddEntityPacket p_149572_) {
-        super.recreateFromPacket(p_149572_);
-        frontHitbox.setId(p_149572_.getId());
+    override fun recreateFromPacket(p_149572_: ClientboundAddEntityPacket) {
+        super.recreateFromPacket(p_149572_)
+        frontHitbox.setId(p_149572_.getId())
     }
 
-    public void tick() {
-        if (this.level().isClientSide && independentMotion) {
-            makeSmoke();
+    override fun tick() {
+        if (level().isClientSide && independentMotion) {
+            makeSmoke()
         }
 
-        if (!this.level().isClientSide) {
-            enrollmentHandler.tick();
-            enrollmentHandler.getPlayerName().ifPresent(name ->
-                    entityData.set(OWNER, name));
+        if (!level().isClientSide) {
+            enrollmentHandler.tick()
+            enrollmentHandler.playerName.ifPresent(Consumer { name: String -> entityData.set(OWNER, name) })
         }
 
-        super.tick();
+        super.tick()
     }
 
-    private void followGuideRail() {
+    private fun followGuideRail() {
         // do not follow guide rail if stalled
-        var dockcap = Optional.ofNullable(getCapability(StallingCapability.STALLING_CAPABILITY));
-        if (dockcap.isPresent() ) {
-            var cap = dockcap.get();
-            if (cap.isDocked || cap.isFrozen || cap.isStalled)
-                return;
+        val dockcap: Optional<StallingCapability> =
+            Optional.ofNullable(getCapability(StallingCapability.STALLING_CAPABILITY))
+        if (dockcap.isPresent()) {
+            val cap: StallingCapability = dockcap.get()
+            if (cap.isDocked() || cap.isFrozen() || cap.isStalled()) return
         }
 
-        List<BlockState> belowList = Arrays.asList(this.level().getBlockState(getOnPos().below()),
-                this.level().getBlockState(getOnPos().below().below()));
-        BlockState water = this.level().getBlockState(getOnPos());
-        for (BlockState below : belowList) {
-            if (below.is(ModBlocks.GUIDE_RAIL_TUG.get()) && water.is(Blocks.WATER)) {
-                Direction arrows = TugGuideRailBlock.getArrowsDirection(below);
-                this.setYRot(arrows.toYRot());
-                double modifier = 0.03;
-                this.setDeltaMovement(this.getDeltaMovement().add(
-                        new Vec3(arrows.getStepX() * modifier, 0, arrows.getStepZ() * modifier)));
+        val belowList: List<BlockState> = Arrays.asList(
+            level().getBlockState(getOnPos().below()),
+            level().getBlockState(getOnPos().below().below())
+        )
+        val water: BlockState = level().getBlockState(getOnPos())
+        for (below: BlockState in belowList) {
+            if (below.`is`(ModBlocks.GUIDE_RAIL_TUG.get()) && water.`is`(Blocks.WATER)) {
+                val arrows: Direction = getArrowsDirection(below)
+                this.setYRot(arrows.toYRot())
+                val modifier: Double = 0.03
+                this.setDeltaMovement(
+                    getDeltaMovement().add(
+                        Vec3(arrows.getStepX() * modifier, 0.0, arrows.getStepZ() * modifier)
+                    )
+                )
             }
         }
     }
 
     // todo: someone said you could prevent mobs from getting stuck on blocks by override this
-    @Override
-    protected void customServerAiStep() {
-        super.customServerAiStep();
+    override fun customServerAiStep() {
+        super.customServerAiStep()
     }
 
-    private void followPath() {
-        pathfindCooldown--;
-        if (!this.path.isEmpty() && !this.docked && engineOn && !shouldFreezeTrain() && tickFuel()) {
-            TugRouteNode stop = path.get(nextStop);
-            if (navigation.getPath() == null || navigation.getPath().isDone()
+    private fun followPath() {
+        pathfindCooldown--
+        if (!path!!.isEmpty() && !this.isDocked && engineOn && !shouldFreezeTrain() && tickFuel()) {
+            val stop: TugRouteNode = path!!.get(nextStop)
+            if (navigation.getPath() == null || navigation.getPath()!!.isDone()
             ) {
                 if (pathfindCooldown < 0 || navigation.getPath() != null) {  //only go on cooldown when the path was not completed
-                    navigation.moveTo(stop.x, this.getY(), stop.z, 0.3);
-                    pathfindCooldown = 20;
+                    navigation.moveTo(stop.x, this.getY(), stop.z, 0.3)
+                    pathfindCooldown = 20
                 } else {
-                    return;
+                    return
                 }
             }
-            double distance = Math.abs(Math.hypot(this.getX() - (stop.x + 0.5), this.getZ() - (stop.z + 0.5)));
-            independentMotion = true;
-            entityData.set(INDEPENDENT_MOTION, true);
+            val distance: Double = abs(hypot(this.getX() - (stop.x + 0.5), this.getZ() - (stop.z + 0.5)))
+            independentMotion = true
+            entityData.set(INDEPENDENT_MOTION, true)
 
             if (distance < 0.9) {
-                incrementStop();
+                incrementStop()
             }
-
         } else {
-            entityData.set(INDEPENDENT_MOTION, false);
-            this.navigation.stop();
+            entityData.set(INDEPENDENT_MOTION, false)
+            navigation.stop()
             if (remainingStallTime > 0) {
-                remainingStallTime--;
+                remainingStallTime--
             }
 
-            if (this.path.isEmpty()) {
-                this.nextStop = 0;
+            if (path!!.isEmpty()) {
+                this.nextStop = 0
             }
         }
     }
 
-    public boolean shouldFreezeTrain() {
-        return !enrollmentHandler.mayMove() || (stalling.isStalled && !docked) || linkingHandler.train.asList().stream().anyMatch(VesselEntity::isFrozen);
+    fun shouldFreezeTrain(): Boolean {
+        return !enrollmentHandler.mayMove() || (stalling.isStalled() && !isDocked) || getLinkingHandler().train!!.asList()
+            .stream().anyMatch(VesselEntity::isFrozen)
     }
 
-    @Override
-    protected void defineSynchedData(SynchedEntityData.Builder pBuilder) {
-        super.defineSynchedData(pBuilder);
-        entityData.set(INDEPENDENT_MOTION, false);
-        entityData.set(OWNER, "");
+    override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
+        super.defineSynchedData(pBuilder)
+        entityData.set(INDEPENDENT_MOTION, false)
+        entityData.set(OWNER, "")
     }
 
 
-    public void setPath(TugRoute path) {
-        if (!this.path.isEmpty() && !this.path.equals(path)) {
-            this.nextStop = 0;
+    fun setPath(path: TugRoute?) {
+        if (!this.path!!.isEmpty() && !this.path!!.equals(path)) {
+            this.nextStop = 0
         }
-        this.path = path;
+        this.path = path
     }
 
-    private void incrementStop() {
-        if (this.path.size() == 1) {
-            nextStop = 0;
-        } else if (!this.path.isEmpty()) {
-            nextStop = (nextStop + 1) % (this.path.size());
+    private fun incrementStop() {
+        if (path!!.size == 1) {
+            nextStop = 0
+        } else if (!path!!.isEmpty()) {
+            nextStop = (nextStop + 1) % (path!!.size)
         }
     }
 
-    @Override
-    public void setDominated(VesselEntity entity) {
-        linkingHandler.follower = (Optional.of(entity));
+    override fun setDominated(entity: VesselEntity) {
+        getLinkingHandler().follower = (Optional.of(entity))
     }
 
-    @Override
-    public void setDominant(VesselEntity entity) {
-
+    override fun setDominant(entity: VesselEntity) {
     }
 
-    @Override
-    public void removeDominated() {
-        linkingHandler.follower = (Optional.empty());
-        linkingHandler.train.setTail(this);
+    override fun removeDominated() {
+        getLinkingHandler().follower = (Optional.empty())
+        getLinkingHandler().train!!.tail = this
     }
 
-    @Override
-    public boolean hasOwner() {
-        return enrollmentHandler.hasOwner();
+    override fun hasOwner(): Boolean {
+        return enrollmentHandler.hasOwner()
     }
 
-    @Override
-    public void removeDominant() {
-
+    override fun removeDominant() {
     }
 
-    @Override
-    public void setTrain(Train<VesselEntity> train) {
-        linkingHandler.train = train;
+    override fun setTrain(train: Train<VesselEntity>) {
+        getLinkingHandler().train = train
     }
 
-    @Override
-    public void remove(RemovalReason r) {
-        if (!this.level().isClientSide) {
-            var stack = new ItemStack(this.dropItem);
+    override fun getTrain(): Train<VesselEntity> {
+        return getLinkingHandler().train!!
+    }
+
+    override fun remove(r: RemovalReason) {
+        if (!level().isClientSide) {
+            val stack: ItemStack = ItemStack(this.dropItem)
             if (this.hasCustomName()) {
                 //TODO stack.setHoverName(this.getCustomName());
             }
-            this.spawnAtLocation(stack);
-            Containers.dropContents(this.level(), this, this);
-            this.spawnAtLocation(routeItemHandler.getStackInSlot(0));
+            this.spawnAtLocation(stack)
+            Containers.dropContents(this.level(), this, this)
+            this.spawnAtLocation(routeItemHandler.getStackInSlot(0))
         }
-        super.remove(r);
+        super.remove(r)
     }
 
     // Have to implement IInventory to work with hoppers
-    @Override
-    public ItemStack removeItem(int p_70298_1_, int p_70298_2_) {
-        return null;
+    override fun removeItem(p_70298_1_: Int, p_70298_2_: Int): ItemStack? {
+        return null
     }
 
-    @Override
-    public ItemStack removeItemNoUpdate(int p_70304_1_) {
-        return null;
+    override fun removeItemNoUpdate(p_70304_1_: Int): ItemStack? {
+        return null
     }
 
 
-    public boolean canPlaceItem(int p_94041_1_, ItemStack p_94041_2_) {
-        return true;
+    override fun canPlaceItem(p_94041_1_: Int, p_94041_2_: ItemStack): Boolean {
+        return true
     }
 
-    @Override
-    public void setChanged() {
-        contentsChanged = true;
+    override fun setChanged() {
+        contentsChanged = true
     }
 
-    @Override
-    public boolean isValid(Player p_70300_1_) {
+    override fun isValid(p_70300_1_: Player): Boolean {
         if (this.isRemoved()) {
-            return false;
+            return false
         } else {
-            return !(p_70300_1_.distanceToSqr(this) > 64.0D);
+            return !(p_70300_1_.distanceToSqr(this) > 64.0)
         }
     }
 
-    @Override
-    public boolean stillValid(Player p_70300_1_) {
+    override fun stillValid(p_70300_1_: Player): Boolean {
         if (this.isRemoved()) {
-            return false;
+            return false
         } else {
-            return !(p_70300_1_.distanceToSqr(this) > 64.0D);
+            return !(p_70300_1_.distanceToSqr(this) > 64.0)
         }
     }
 
-    @Override
-    public void clearContent() {
-
+    override fun clearContent() {
     }
 
-    @Override
-    public boolean canTakeItemThroughFace(int p_180461_1_, ItemStack p_180461_2_, Direction p_180461_3_) {
-        return false;
+    override fun canTakeItemThroughFace(p_180461_1_: Int, p_180461_2_: ItemStack, p_180461_3_: Direction): Boolean {
+        return false
     }
 
-    @Override
-    public int[] getSlotsForFace(Direction p_180463_1_) {
-        return IntStream.range(0, getContainerSize()).toArray();
+    override fun getSlotsForFace(p_180463_1_: Direction): IntArray {
+        return IntStream.range(0, getContainerSize()).toArray()
     }
 
-    @Override
-    public boolean canPlaceItemThroughFace(int p_180462_1_, ItemStack p_180462_2_, @Nullable Direction p_180462_3_) {
-        return isDocked();
+    override fun canPlaceItemThroughFace(p_180462_1_: Int, p_180462_2_: ItemStack, p_180462_3_: Direction?): Boolean {
+        return isDocked
     }
 
-    @Override
-    public int getContainerSize() {
-        return 1;
+    override fun getContainerSize(): Int {
+        return 1
     }
 
-    @Override
-    public boolean canBeLeashed() {
-        return true;
+    override fun canBeLeashed(): Boolean {
+        return true
     }
 
-    @Override
-    protected double swimSpeed() {
-        if (this.level().isClientSide) {
-            return super.swimSpeed();
+    override fun swimSpeed(): Double {
+        if (level().isClientSide) {
+            return super.swimSpeed()
         }
 
         if (this.tickCount % 10 == 0) {
-            swimSpeedMult = computeSpeedMult();
+            swimSpeedMult = computeSpeedMult()
         }
 
-        return swimSpeedMult * super.swimSpeed();
+        return swimSpeedMult * super.swimSpeed()
     }
 
-    private double computeSpeedMult() {
-        double mult = 1;
-        boolean doBreak = false;
-        for (int i = 0; i < 10 && !doBreak; i++) {
-            for (Direction direction : List.of(Direction.NORTH, Direction.EAST, Direction.WEST, Direction.SOUTH)) {
-                BlockPos pos = this.getOnPos().relative(direction, i);
-                if (!this.level().getFluidState(pos).isSource()) {
-                    doBreak = true;
-                    break;
+    private fun computeSpeedMult(): Double {
+        var mult: Double = 1.0
+        var doBreak: Boolean = false
+        var i: Int = 0
+        while (i < 10 && !doBreak) {
+            for (direction: Direction in java.util.List.of(
+                Direction.NORTH,
+                Direction.EAST,
+                Direction.WEST,
+                Direction.SOUTH
+            )) {
+                val pos: BlockPos = getOnPos().relative(direction, i)
+                if (!level().getFluidState(pos).isSource()) {
+                    doBreak = true
+                    break
                 }
             }
             if (i > 3) {
-                mult = 1 + ((i / 10f) * 1.8);
+                mult = 1 + ((i / 10f) * 1.8)
             }
+            i++
         }
-        if (mult < swimSpeedMult) return mult;
-        else return (mult + swimSpeedMult * 20) / 21;
+        if (mult < swimSpeedMult) return mult
+        else return (mult + swimSpeedMult * 20) / 21
     }
 
-    public boolean isEngineOn() {
-        return engineOn;
+    fun isEngineOn(): Boolean {
+        return engineOn
     }
 
-    @Override
-    public void setEngineOn(boolean engineOn) {
-        this.engineOn = engineOn;
+    override fun setEngineOn(engineOn: Boolean) {
+        this.engineOn = engineOn
     }
 
-    public boolean isDocked() {
-        return docked;
-    }
-
-    public void setDocked(boolean docked) {
-        this.docked = docked;
-    }
-
-    @Override
-    public ItemStackHandler getRouteItemHandler() {
-        return routeItemHandler;
+    override fun getRouteItemHandler(): ItemStackHandler {
+        return routeItemHandler
     }
 
     /*
                             Stalling Capability
                      */
-    private final StallingCapability stalling = new StallingCapability() {
-        @Override
-        public boolean isDocked() {
-            return docked;
+    private val stalling: StallingCapability = object : StallingCapability {
+        override fun isDocked(): Boolean {
+            return isDocked
         }
 
-        @Override
-        public void dock(double x, double y, double z) {
-            docked = true;
-            setDeltaMovement(Vec3.ZERO);
-            moveTo(x, y, z);
+        override fun dock(x: Double, y: Double, z: Double) {
+            isDocked = true
+            setDeltaMovement(Vec3.ZERO)
+            moveTo(x, y, z)
         }
 
-        @Override
-        public void undock() {
-            docked = false;
+        override fun undock() {
+            isDocked = false
         }
 
-        @Override
-        public boolean isStalled() {
-            return remainingStallTime > 0;
+        override fun isStalled(): Boolean {
+            return remainingStallTime > 0
         }
 
-        @Override
-        public void stall() {
-            remainingStallTime = 20;
+        override fun stall() {
+            remainingStallTime = 20
         }
 
-        @Override
-        public void unstall() {
-            remainingStallTime = 0;
+        override fun unstall() {
+            remainingStallTime = 0
         }
 
-        @Override
-        public boolean isFrozen() {
-            return AbstractTugEntity.super.isFrozen();
+        override fun isFrozen(): Boolean {
+            return super@AbstractTugEntity.isFrozen
         }
 
-        @Override
-        public void freeze() {
-            setFrozen(true);
+        override fun freeze() {
+            isFrozen = true
         }
 
-        @Override
-        public void unfreeze() {
-            setFrozen(false);
+        override fun unfreeze() {
+            isFrozen = false
         }
-    };
+    }
+
+    init {
+        this.blocksBuilding = true
+        getLinkingHandler().train = (Train(this))
+        this.path = TugRoute()
+        frontHitbox = VehicleFrontPart(this)
+        enrollmentHandler = ChunkManagerEnrollmentHandler(this)
+    }
+
+    companion object {
+        private val INDEPENDENT_MOTION: EntityDataAccessor<Boolean> = SynchedEntityData.defineId(
+            AbstractTugEntity::class.java, EntityDataSerializers.BOOLEAN
+        )
+        private val OWNER: EntityDataAccessor<String> = SynchedEntityData.defineId(
+            AbstractTugEntity::class.java, EntityDataSerializers.STRING
+        )
+
+
+        fun setCustomAttributes(): AttributeSupplier.Builder {
+            return VesselEntity.setCustomAttributes()
+                .add(Attributes.FOLLOW_RANGE, 200.0)
+        }
+
+        fun makeParticles(level: Level, pos: BlockPos, entity: Entity) {
+            val random: RandomSource = level.getRandom()
+            val h: Supplier<Boolean> = Supplier { random.nextDouble() < 0.5 }
+
+            val dx: Double = (entity.getX() - entity.xOld) / 12.0
+            val dy: Double = (entity.getY() - entity.yOld) / 12.0
+            val dz: Double = (entity.getZ() - entity.zOld) / 12.0
+
+            val xDrift: Double = (if (h.get()) 1 else -1) * random.nextDouble() * 2
+            val zDrift: Double = (if (h.get()) 1 else -1) * random.nextDouble() * 2
+
+            val particleType: SimpleParticleType =
+                if (random.nextBoolean()) ParticleTypes.CAMPFIRE_SIGNAL_SMOKE else ParticleTypes.CAMPFIRE_COSY_SMOKE
+
+            level.addAlwaysVisibleParticle(
+                particleType,
+                true,
+                pos.getX()
+                    .toDouble() + 0.5 + random.nextDouble() / 3.0 * (if (random.nextBoolean()) 1 else -1).toDouble(),
+                pos.getY().toDouble() + random.nextDouble() + random.nextDouble(),
+                pos.getZ()
+                    .toDouble() + 0.5 + random.nextDouble() / 3.0 * (if (random.nextBoolean()) 1 else -1).toDouble(),
+                0.007 * xDrift + dx, 0.05 + dy, 0.007 * zDrift + dz
+            )
+        }
+
+    }
 }

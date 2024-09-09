@@ -759,7 +759,6 @@ abstract class VesselEntity protected constructor(type: EntityType<out WaterAnim
             VesselEntity::class.java, EntityDataSerializers.INT
         )
 
-        @JvmStatic
         fun setCustomAttributes(): AttributeSupplier.Builder {
             return createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0)

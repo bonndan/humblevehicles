@@ -1,23 +1,20 @@
-package dev.murad.shipping.item;
+package dev.murad.shipping.item
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
+import dev.murad.shipping.setup.ModDataComponents.TAG_PROPERTIES
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.item.ItemStack
+import java.util.*
 
-import java.util.Optional;
-
-import static dev.murad.shipping.setup.ModDataComponents.TAG_PROPERTIES;
-
-public class ItemStackUtil {
-
-    private ItemStackUtil() {
+object ItemStackUtil {
+    fun getCompoundTag(stack: ItemStack): Optional<CompoundTag> {
+        return Optional.ofNullable<CompoundTag?>(stack.components.get<CompoundTag>(TAG_PROPERTIES.get()))
     }
 
-    public static Optional<CompoundTag> getCompoundTag(ItemStack stack) {
-
-        return Optional.ofNullable(stack.getComponents().get(TAG_PROPERTIES.get()));
-    }
-
-    public static boolean contains(ItemStack stack, String pKey) {
-        return getCompoundTag(stack).map(compoundTag -> compoundTag.contains(pKey)).orElse(false);
+    fun contains(stack: ItemStack, pKey: String): Boolean {
+        return getCompoundTag(stack).map { compoundTag: CompoundTag? ->
+            compoundTag!!.contains(
+                pKey
+            )
+        }.orElse(false)
     }
 }

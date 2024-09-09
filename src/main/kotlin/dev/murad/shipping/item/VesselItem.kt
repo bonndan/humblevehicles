@@ -1,82 +1,71 @@
-package dev.murad.shipping.item;
+package dev.murad.shipping.item
 
-import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySelector;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.stats.Stats
+import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntitySelector
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.ClipContext
+import net.minecraft.world.level.Level
+import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.HitResult
 
-import java.util.List;
+class VesselItem(props: Properties, private val addEntity: AddEntityFunction) : Item(props) {
 
-public class VesselItem extends Item {
-
-    @FunctionalInterface
-    public interface AddEntityFunction {
-        Entity apply(Level level, double x, double y, double z);
+    fun interface AddEntityFunction {
+        fun apply(level: Level, x: Double, y: Double, z: Double): Entity
     }
 
-    private final AddEntityFunction addEntity;
-
-    public VesselItem(Properties props, AddEntityFunction addEntity) {
-        super(props);
-        this.addEntity = addEntity;
-    }
-
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
-        ItemStack itemstack = player.getItemInHand(hand);
-        BlockHitResult raytraceresult = getPlayerPOVHitResult(world, player, ClipContext.Fluid.ANY);
-        if (raytraceresult.getType() == BlockHitResult.Type.MISS) {
-            return InteractionResultHolder.pass(itemstack);
+    override fun use(world: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
+        val itemstack = player.getItemInHand(hand)
+        val hitResult = getPlayerPOVHitResult(world, player, ClipContext.Fluid.ANY)
+        if (hitResult.type == HitResult.Type.MISS) {
+            return InteractionResultHolder.pass(itemstack)
         } else {
-            Vec3 vector3d = player.getViewVector(1.0F);
-            List<Entity> list = world.getEntities(player, player.getBoundingBox().expandTowards(vector3d.scale(5.0D)).inflate(1.0D),
-                    EntitySelector.NO_SPECTATORS.and(Entity::isPickable));
+            val vector3d = player.getViewVector(1.0f)
+            val list = world.getEntities(player, player.boundingBox.expandTowards(vector3d.scale(5.0)).inflate(1.0),
+                EntitySelector.NO_SPECTATORS.and { obj: Entity -> obj.isPickable })
             if (!list.isEmpty()) {
-                Vec3 vector3d1 = player.getEyePosition(1.0F);
+                val vector3d1 = player.getEyePosition(1.0f)
 
-                for(Entity entity : list) {
-                    AABB axisalignedbb = entity.getBoundingBox().inflate(entity.getPickRadius());
+                for (entity in list) {
+                    val axisalignedbb = entity.boundingBox.inflate(entity.pickRadius.toDouble())
                     if (axisalignedbb.contains(vector3d1)) {
-                        return InteractionResultHolder.pass(itemstack);
+                        return InteractionResultHolder.pass(itemstack)
                     }
                 }
             }
 
-            if (raytraceresult.getType() == BlockHitResult.Type.BLOCK) {
-                Entity entity = getEntity(world, itemstack, raytraceresult);
-                entity.setYRot(player.getYRot());
-                if (!world.noCollision(entity, entity.getBoundingBox().inflate(-0.1D))) {
-                    return InteractionResultHolder.fail(itemstack);
+            if (hitResult.type == HitResult.Type.BLOCK) {
+                val entity = getEntity(world, itemstack, hitResult)
+                entity.yRot = player.yRot
+                if (!world.noCollision(entity, entity.boundingBox.inflate(-0.1))) {
+                    return InteractionResultHolder.fail(itemstack)
                 } else {
                     if (!world.isClientSide) {
-                        world.addFreshEntity(entity);
-                        if (!player.getAbilities().instabuild) {
-                            itemstack.shrink(1);
+                        world.addFreshEntity(entity)
+                        if (!player.abilities.instabuild) {
+                            itemstack.shrink(1)
                         }
                     }
 
-                    player.awardStat(Stats.ITEM_USED.get(this));
-                    return InteractionResultHolder.sidedSuccess(itemstack, world.isClientSide());
+                    player.awardStat(Stats.ITEM_USED[this])
+                    return InteractionResultHolder.sidedSuccess(itemstack, world.isClientSide())
                 }
             } else {
-                return InteractionResultHolder.pass(itemstack);
+                return InteractionResultHolder.pass(itemstack)
             }
         }
     }
 
-    protected Entity getEntity(Level world, ItemStack stack, BlockHitResult raytraceresult) {
-        Entity e = addEntity.apply(world, raytraceresult.getLocation().x, raytraceresult.getLocation().y, raytraceresult.getLocation().z);
-        if (!stack.getHoverName().getString().isBlank()) {
-            e.setCustomName(stack.getHoverName());
+    protected fun getEntity(world: Level, stack: ItemStack, raytraceresult: BlockHitResult): Entity {
+        val e = addEntity.apply(world, raytraceresult.location.x, raytraceresult.location.y, raytraceresult.location.z)
+        if (!stack.hoverName.string.isBlank()) {
+            e.customName = stack.hoverName
         }
-        return e;
+        return e
     }
 }

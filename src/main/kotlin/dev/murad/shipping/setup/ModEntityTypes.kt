@@ -98,7 +98,7 @@ object ModEntityTypes {
     val STEAM_TUG: Supplier<EntityType<SteamTugEntity>> =
         ENTITIES.register("tug", Supplier<EntityType<SteamTugEntity>> {
             EntityType.Builder.of(
-                { type: EntityType<SteamTugEntity>, world: Level? -> SteamTugEntity(type, world) }, MobCategory.MISC
+                { type: EntityType<SteamTugEntity>, world -> SteamTugEntity(type, world) }, MobCategory.MISC
             ).sized(0.7f, 0.9f).clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "tug").toString())
         })
@@ -107,7 +107,7 @@ object ModEntityTypes {
     val ENERGY_TUG: Supplier<EntityType<EnergyTugEntity>> =
         ENTITIES.register("energy_tug", Supplier<EntityType<EnergyTugEntity>> {
             EntityType.Builder.of(
-                { type: EntityType<EnergyTugEntity>, world: Level? -> EnergyTugEntity(type, world) }, MobCategory.MISC
+                { type: EntityType<EnergyTugEntity>, world -> EnergyTugEntity(type, world) }, MobCategory.MISC
             ).sized(0.7f, 0.9f).clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "energy_tug").toString())
         })

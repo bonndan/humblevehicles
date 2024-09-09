@@ -1,56 +1,56 @@
-package dev.murad.shipping.item;
+package dev.murad.shipping.item
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RailBlock;
-import net.minecraft.world.level.block.state.properties.RailShape;
+import net.minecraft.network.chat.Component
+import net.minecraft.world.InteractionResult
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.TooltipFlag
+import net.minecraft.world.item.context.UseOnContext
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.RailBlock
+import net.minecraft.world.level.block.state.properties.RailShape
 
-import java.util.List;
-import java.util.Map;
+class WrenchItem(pProperties: Properties) : Item(pProperties) {
+    private val wrenchInfo: Component = Component.translatable("item.littlelogistics.conductors_wrench.description")
 
-public class WrenchItem extends Item {
-    private static final Map<RailShape, RailShape> nextShapes = Map.ofEntries(
-            Map.entry(RailShape.EAST_WEST, RailShape.NORTH_SOUTH),
-            Map.entry(RailShape.NORTH_SOUTH, RailShape.NORTH_EAST),
-            Map.entry(RailShape.NORTH_EAST, RailShape.NORTH_WEST),
-            Map.entry(RailShape.NORTH_WEST, RailShape.SOUTH_WEST),
-            Map.entry(RailShape.SOUTH_WEST, RailShape.SOUTH_EAST),
-            Map.entry(RailShape.SOUTH_EAST, RailShape.EAST_WEST)
-    );
-
-    private Component wrenchInfo = Component.translatable("item.littlelogistics.conductors_wrench.description");
-
-    public WrenchItem(Properties pProperties) {
-        super(pProperties);
-    }
-
-    @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pTooltipFlag) {
-        pTooltipComponents.add(wrenchInfo);
-        super.appendHoverText(pStack, pContext, pTooltipComponents, pTooltipFlag);
+    override fun appendHoverText(
+        pStack: ItemStack,
+        pContext: TooltipContext,
+        pTooltipComponents: MutableList<Component>,
+        pTooltipFlag: TooltipFlag
+    ) {
+        pTooltipComponents.add(wrenchInfo)
+        super.appendHoverText(pStack, pContext, pTooltipComponents, pTooltipFlag)
     }
 
 
-    @Override
-    public InteractionResult useOn(UseOnContext pContext) {
-        var state = pContext.getLevel().getBlockState(pContext.getClickedPos());
-        if(state.is(Blocks.RAIL)){
-            var shape = state.getValue(RailBlock.SHAPE);
-            if(shape.isAscending()){
-                return InteractionResult.PASS;
+    override fun useOn(pContext: UseOnContext): InteractionResult {
+        val state = pContext.level.getBlockState(pContext.clickedPos)
+        if (state.`is`(Blocks.RAIL)) {
+            val shape = state.getValue(RailBlock.SHAPE)
+            if (shape.isAscending) {
+                return InteractionResult.PASS
             }
-            if(!pContext.getLevel().isClientSide()){
-                pContext.getLevel().setBlock(pContext.getClickedPos(),
-                        state.setValue(RailBlock.SHAPE, nextShapes.getOrDefault(shape, shape)), 2);
+            if (!pContext.level.isClientSide()) {
+                pContext.level.setBlock(
+                    pContext.clickedPos,
+                    state.setValue(RailBlock.SHAPE, nextShapes.getOrDefault(shape, shape)), 2
+                )
             }
-            return InteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS
         } else {
-            return super.useOn(pContext);
+            return super.useOn(pContext)
         }
+    }
+
+    companion object {
+        private val nextShapes: Map<RailShape, RailShape> = java.util.Map.ofEntries(
+            java.util.Map.entry(RailShape.EAST_WEST, RailShape.NORTH_SOUTH),
+            java.util.Map.entry(RailShape.NORTH_SOUTH, RailShape.NORTH_EAST),
+            java.util.Map.entry(RailShape.NORTH_EAST, RailShape.NORTH_WEST),
+            java.util.Map.entry(RailShape.NORTH_WEST, RailShape.SOUTH_WEST),
+            java.util.Map.entry(RailShape.SOUTH_WEST, RailShape.SOUTH_EAST),
+            java.util.Map.entry(RailShape.SOUTH_EAST, RailShape.EAST_WEST)
+        )
     }
 }

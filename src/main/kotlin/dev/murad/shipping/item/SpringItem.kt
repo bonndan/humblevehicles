@@ -1,4 +1,17 @@
-package dev.murad.shipping.item;
+package dev.murad.shipping.item
+
+import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart
+import dev.murad.shipping.util.LinkableEntity
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.chat.Component
+import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.TooltipFlag
+import net.minecraft.world.level.Level
 
 /*
 MIT License
@@ -22,117 +35,92 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
- */
+*/
 
 
-import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart;
-import dev.murad.shipping.util.LinkableEntity;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
-import java.util.List;
-
-public class SpringItem extends Item {
-
-    public static final String LINKED = "linked";
-
-    private Component springInfo = Component.translatable("item.littlelogistics.spring.description");
-
-    public SpringItem(Properties properties) {
-        super(properties);
-
-//        addProperty(new ResourceLocation("first_selected"), (stack, a, b) -> getState(stack) == State.WAITING_NEXT ? 1f : 0f);
-    }
+class SpringItem(properties: Properties) : Item(properties) {
+    private val springInfo: Component = Component.translatable("item.littlelogistics.spring.description")
 
     // because 'itemInteractionForEntity' is only for Living entities
-    public void onUsedOnEntity(ItemStack stack, Player player, Level world, Entity target) {
-        if (target instanceof VehicleFrontPart) {
-            target = ((VehicleFrontPart) target).getParent();
+    fun onUsedOnEntity(stack: ItemStack, player: Player, world: Level, target: Entity) {
+        var target = target
+        if (target is VehicleFrontPart) {
+            target = target.parent!!
         }
-        if (world.isClientSide)
-            return;
-        switch (getState(stack)) {
-            case WAITING_NEXT: {
-                createSpringHelper(stack, player, world, target);
+        if (world.isClientSide) return
+        when (getState(stack)) {
+            State.WAITING_NEXT -> {
+                createSpringHelper(stack, player, world, target)
             }
-            break;
 
-            default: {
-                setDominant(world, stack, target);
+            else -> {
+                setDominant(world, stack, target)
             }
-            break;
         }
     }
 
-    private void createSpringHelper(ItemStack stack, Player player, Level world, Entity target) {
-        Entity dominant = getDominant(world, stack);
-        if (dominant == null)
-            return;
-        if (dominant == target) {
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.notToSelf"), true);
-        } else if (dominant instanceof LinkableEntity d) {
-            if (d.linkEntities(player, target) && !player.isCreative())
-                stack.shrink(1);
+    private fun createSpringHelper(stack: ItemStack, player: Player, world: Level, target: Entity) {
+        val dominant = getDominant(world, stack) ?: return
+        if (dominant === target) {
+            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.notToSelf"), true)
+        } else if (dominant is LinkableEntity<*>) {
+            if (dominant.linkEntities(player, target) && !player.isCreative) stack.shrink(1)
         }
-        resetLinked(stack);
+        resetLinked(stack)
     }
 
-    @Override
-    public void appendHoverText(
-            @NotNull ItemStack pStack,
-            @NotNull TooltipContext pContext,
-            @NotNull List<Component> pTooltipComponents,
-            @NotNull TooltipFlag pTooltipFlag
+    override fun appendHoverText(
+        pStack: ItemStack,
+        pContext: TooltipContext,
+        pTooltipComponents: MutableList<Component>,
+        pTooltipFlag: TooltipFlag
     ) {
-        super.appendHoverText(pStack, pContext, pTooltipComponents, pTooltipFlag);
-        pTooltipComponents.add(springInfo);
+        super.appendHoverText(pStack, pContext, pTooltipComponents, pTooltipFlag)
+        pTooltipComponents.add(springInfo)
     }
 
 
-    private void setDominant(Level worldIn, ItemStack stack, Entity entity) {
-
+    private fun setDominant(worldIn: Level, stack: ItemStack, entity: Entity) {
         ItemStackUtil.getCompoundTag(stack)
-                .ifPresent(compoundTag -> compoundTag.putInt(LINKED, entity.getId()));
+            .ifPresent { compoundTag: CompoundTag? -> compoundTag!!.putInt(LINKED, entity.id) }
     }
 
-    @Nullable
-    private Entity getDominant(Level worldIn, ItemStack stack) {
-
-
+    private fun getDominant(worldIn: Level, stack: ItemStack): Entity? {
         if (ItemStackUtil.contains(stack, LINKED)) {
-            int id = ItemStackUtil.getCompoundTag(stack).map(compoundTag -> compoundTag.getInt(LINKED)).orElseThrow();
-            return worldIn.getEntity(id);
+            val id = ItemStackUtil.getCompoundTag(stack).map { compoundTag: CompoundTag? ->
+                compoundTag!!.getInt(
+                    LINKED
+                )
+            }.orElseThrow()
+            return worldIn.getEntity(id)
         }
-        resetLinked(stack);
-        return null;
+        resetLinked(stack)
+        return null
     }
 
-    private void resetLinked(ItemStack itemstack) {
-        ItemStackUtil.getCompoundTag(itemstack).ifPresent(compoundTag -> compoundTag.remove(LINKED));
+    private fun resetLinked(itemstack: ItemStack) {
+        ItemStackUtil.getCompoundTag(itemstack).ifPresent { compoundTag: CompoundTag? ->
+            compoundTag!!.remove(
+                LINKED
+            )
+        }
     }
 
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
-        resetLinked(playerIn.getItemInHand(handIn));
-        return super.use(worldIn, playerIn, handIn);
+    override fun use(worldIn: Level, playerIn: Player, handIn: InteractionHand): InteractionResultHolder<ItemStack> {
+        resetLinked(playerIn.getItemInHand(handIn))
+        return super.use(worldIn, playerIn, handIn)
     }
 
-    public static State getState(ItemStack stack) {
-        return ItemStackUtil.contains(stack, LINKED) ? State.WAITING_NEXT : State.READY;
-    }
-
-
-    public enum State {
+    enum class State {
         WAITING_NEXT,
         READY
+    }
+
+    companion object {
+        const val LINKED: String = "linked"
+
+        fun getState(stack: ItemStack): State {
+            return if (ItemStackUtil.contains(stack, LINKED)) State.WAITING_NEXT else State.READY
+        }
     }
 }

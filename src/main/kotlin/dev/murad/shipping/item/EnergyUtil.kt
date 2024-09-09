@@ -1,19 +1,13 @@
-package dev.murad.shipping.item;
+package dev.murad.shipping.item
 
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.energy.EnergyStorage;
+import dev.murad.shipping.setup.ModDataComponents.ENERGY
+import net.minecraft.world.item.ItemStack
+import net.neoforged.neoforge.energy.EnergyStorage
+import java.util.*
 
-import java.util.Optional;
-
-import static dev.murad.shipping.setup.ModDataComponents.ENERGY;
-
-public class EnergyUtil {
-
-    private EnergyUtil() {
-    }
-
-    public static Optional<EnergyStorage> getEnergyStorage(ItemStack stack) {
-
-        return Optional.ofNullable(stack.getComponents().get(ENERGY.get()));
+object EnergyUtil {
+    @JvmStatic
+    fun getEnergyStorage(stack: ItemStack): Optional<EnergyStorage> {
+        return Optional.ofNullable<EnergyStorage>(stack.components.get(ENERGY.get()))
     }
 }
