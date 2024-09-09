@@ -2,7 +2,7 @@ package dev.murad.shipping.entity.models.train;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.murad.shipping.ShippingMod;
+import dev.murad.shipping.HumVeeMod;
 import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -17,7 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class BaseCarModel<T extends AbstractTrainCarEntity> extends EntityModel<T> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(ShippingMod.MOD_ID, "base_car_model"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "base_car_model"), "main");
     private final ModelPart bb_main;
 
     public BaseCarModel(ModelPart root) {

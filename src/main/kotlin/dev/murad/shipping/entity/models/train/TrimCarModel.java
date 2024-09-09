@@ -2,10 +2,8 @@ package dev.murad.shipping.entity.models.train;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.murad.shipping.ShippingMod;
-import dev.murad.shipping.entity.Colorable;
+import dev.murad.shipping.HumVeeMod;
 import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity;
-import dev.murad.shipping.entity.custom.train.wagon.SeaterCarEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -16,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class TrimCarModel<T extends AbstractTrainCarEntity> extends EntityModel<T> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(ShippingMod.MOD_ID, "trim_car_model"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "trim_car_model"), "main");
 	private final ModelPart bb_main;
 
 	public TrimCarModel(ModelPart root) {

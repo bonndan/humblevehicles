@@ -1,6 +1,6 @@
 package dev.murad.shipping.setup
 
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.entity.custom.train.locomotive.EnergyLocomotiveEntity
 import dev.murad.shipping.entity.custom.train.locomotive.SteamLocomotiveEntity
 import dev.murad.shipping.entity.custom.train.wagon.ChestCarEntity
@@ -30,13 +30,13 @@ object ModItems {
      * Empty Icons
      */
     @JvmField
-    val LOCO_ROUTE_ICON: ResourceLocation = ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "item/empty_loco_route")
+    val LOCO_ROUTE_ICON: ResourceLocation = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "item/empty_loco_route")
 
     @JvmField
-    val TUG_ROUTE_ICON: ResourceLocation = ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "item/empty_tug_route")
+    val TUG_ROUTE_ICON: ResourceLocation = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "item/empty_tug_route")
 
     @JvmField
-    val EMPTY_ENERGY: ResourceLocation = ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "item/empty_energy")
+    val EMPTY_ENERGY: ResourceLocation = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "item/empty_energy")
 
 
     /**

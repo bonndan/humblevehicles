@@ -5,7 +5,7 @@ package dev.murad.shipping.entity.models.train;// Made with Blockbench 4.1.1
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.murad.shipping.ShippingMod;
+import dev.murad.shipping.HumVeeMod;
 import dev.murad.shipping.entity.custom.train.wagon.ChunkLoaderCarEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class ChunkLoaderCarModel extends EntityModel<ChunkLoaderCarEntity> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "chunkloadercarmodel"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "chunkloadercarmodel"), "main");
     private final ModelPart bb_main;
     private final ModelPart bb_main2;
 

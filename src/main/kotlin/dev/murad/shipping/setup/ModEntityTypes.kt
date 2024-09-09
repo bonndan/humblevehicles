@@ -1,6 +1,6 @@
 package dev.murad.shipping.setup
 
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.entity.custom.train.locomotive.AbstractLocomotiveEntity
 import dev.murad.shipping.entity.custom.train.locomotive.EnergyLocomotiveEntity
 import dev.murad.shipping.entity.custom.train.locomotive.SteamLocomotiveEntity
@@ -28,7 +28,7 @@ object ModEntityTypes {
                     type, world
                 )
             }, MobCategory.MISC).sized(0.6f, 0.9f).clientTrackingRange(8)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "barge").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "barge").toString())
         })
 
     @JvmField
@@ -38,7 +38,7 @@ object ModEntityTypes {
                 { type: EntityType<ChestBargeEntity?>?, world: Level? -> ChestBargeEntity(type, world) },
                 MobCategory.MISC
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "barrel_barge").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "barrel_barge").toString())
         })
 
     @JvmField
@@ -51,7 +51,7 @@ object ModEntityTypes {
                     )
                 }, MobCategory.MISC
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "chunk_loader_barge").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "chunk_loader_barge").toString())
         })
 
     @JvmField
@@ -61,7 +61,7 @@ object ModEntityTypes {
                 { type: EntityType<FishingBargeEntity>, world: Level? -> FishingBargeEntity(type, world) },
                 MobCategory.MISC
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "fishing_barge").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "fishing_barge").toString())
         })
 
     @JvmField
@@ -71,7 +71,7 @@ object ModEntityTypes {
                 { type: EntityType<FluidTankBargeEntity>, world: Level? -> FluidTankBargeEntity(type, world) },
                 MobCategory.MISC
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "fluid_barge").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "fluid_barge").toString())
         })
 
     @JvmField
@@ -81,7 +81,7 @@ object ModEntityTypes {
                 { type: EntityType<SeaterBargeEntity>, world: Level? -> SeaterBargeEntity(type, world) },
                 MobCategory.MISC
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "seater_barge").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "seater_barge").toString())
         })
 
     @JvmField
@@ -91,7 +91,7 @@ object ModEntityTypes {
                 { type: EntityType<VacuumBargeEntity>, world: Level? -> VacuumBargeEntity(type, world) },
                 MobCategory.MISC
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "vacuum_barge").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "vacuum_barge").toString())
         })
 
     @JvmField
@@ -100,7 +100,7 @@ object ModEntityTypes {
             EntityType.Builder.of(
                 { type: EntityType<SteamTugEntity>, world -> SteamTugEntity(type, world) }, MobCategory.MISC
             ).sized(0.7f, 0.9f).clientTrackingRange(8)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "tug").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "tug").toString())
         })
 
     @JvmField
@@ -109,7 +109,7 @@ object ModEntityTypes {
             EntityType.Builder.of(
                 { type: EntityType<EnergyTugEntity>, world -> EnergyTugEntity(type, world) }, MobCategory.MISC
             ).sized(0.7f, 0.9f).clientTrackingRange(8)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "energy_tug").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "energy_tug").toString())
         })
 
     val CHEST_CAR: Supplier<EntityType<ChestCarEntity>> =
@@ -117,7 +117,7 @@ object ModEntityTypes {
             EntityType.Builder.of(
                 { type: EntityType<ChestCarEntity>, level: Level -> ChestCarEntity(type, level) }, MobCategory.MISC
             ).sized(0.7f, 0.9f).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "chest_car").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "chest_car").toString())
         })
 
     @JvmField
@@ -126,7 +126,7 @@ object ModEntityTypes {
             EntityType.Builder.of(
                 { type: EntityType<ChestCarEntity>, level: Level -> ChestCarEntity(type, level) }, MobCategory.MISC
             ).sized(0.7f, 0.9f).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "barrel_car").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "barrel_car").toString())
         })
 
     @JvmField
@@ -135,7 +135,7 @@ object ModEntityTypes {
             EntityType.Builder.of({ type, level -> SeaterCarEntity(type, level) }, MobCategory.MISC)
                 .sized(0.7f, 0.9f)
                 .clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "seater_car").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "seater_car").toString())
         })
 
     @JvmField
@@ -144,7 +144,7 @@ object ModEntityTypes {
             EntityType.Builder.of(
                 { type, level -> FluidTankCarEntity(type, level) }, MobCategory.MISC
             ).sized(0.7f, 0.9f).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "fluid_car").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "fluid_car").toString())
         })
 
     @JvmField
@@ -157,7 +157,7 @@ object ModEntityTypes {
                     )
                 }, MobCategory.MISC
             ).sized(0.7f, 0.9f).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "chunk_loader_car").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "chunk_loader_car").toString())
         })
 
 
@@ -171,7 +171,7 @@ object ModEntityTypes {
                     )
                 }, MobCategory.MISC
             ).sized(0.7f, 0.9f).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "steam_locomotive").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "steam_locomotive").toString())
         })
 
     @JvmField
@@ -182,6 +182,6 @@ object ModEntityTypes {
                     EnergyLocomotiveEntity(type, level)
                 }, MobCategory.MISC
             ).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true).sized(0.7f, 0.9f)
-                .build(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "energy_locomotive").toString())
+                .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "energy_locomotive").toString())
         })
 }

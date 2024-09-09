@@ -1,6 +1,6 @@
 package dev.murad.shipping.data
 
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.setup.ModTags
 import net.minecraft.core.HolderLookup
@@ -16,7 +16,7 @@ class ModItemTagsProvider(
     blockTagProvider: CompletableFuture<TagLookup<Block?>?>,
     existingFileHelper: ExistingFileHelper?
 ) :
-    ItemTagsProvider(output, lookupProvider, blockTagProvider, ShippingMod.MOD_ID, existingFileHelper) {
+    ItemTagsProvider(output, lookupProvider, blockTagProvider, HumVeeMod.MOD_ID, existingFileHelper) {
     override fun addTags(lookupProvider: HolderLookup.Provider) {
         tag(ModTags.Items.WRENCHES).add(ModItems.CONDUCTORS_WRENCH.get())
     }

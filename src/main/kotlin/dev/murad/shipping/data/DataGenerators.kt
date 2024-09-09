@@ -1,13 +1,13 @@
 package dev.murad.shipping.data
 
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.data.client.ModBlockStateProvider
 import dev.murad.shipping.data.client.ModItemModelProvider
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.data.event.GatherDataEvent
 
-@EventBusSubscriber(modid = ShippingMod.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = HumVeeMod.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 object DataGenerators {
     @SubscribeEvent
     fun gatherData(gatherDataEvent: GatherDataEvent) {

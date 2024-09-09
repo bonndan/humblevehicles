@@ -1,6 +1,6 @@
 package dev.murad.shipping.entity.container
 
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.entity.custom.HeadVehicle
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -102,6 +102,6 @@ abstract class AbstractHeadVehicleScreen<U, T : AbstractHeadVehicleContainer<*, 
 
     companion object {
         private val REGISTRATION =
-            ResourceLocation.tryBuild(ShippingMod.MOD_ID, "textures/container/vehicle_registration.png")
+            ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "textures/container/vehicle_registration.png")
     }
 }

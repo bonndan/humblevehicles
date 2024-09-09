@@ -1,7 +1,7 @@
 package dev.murad.shipping.util
 
 import com.mojang.datafixers.util.Pair
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
@@ -88,6 +88,6 @@ class MobileChunkLoader(private val entity: Entity) {
 
     companion object {
         private val ticketController =
-            TicketController(ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "mobile_chunks"))
+            TicketController(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "mobile_chunks"))
     }
 }

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
-import dev.murad.shipping.ShippingMod;
+import dev.murad.shipping.HumVeeMod;
 import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity;
 import dev.murad.shipping.entity.models.train.ChainModel;
 import dev.murad.shipping.entity.render.RenderWithAttachmentPoints;
@@ -29,14 +29,14 @@ public class TrainCarRenderer<T extends AbstractTrainCarEntity> extends EntityRe
     private final ResourceLocation texture;
 
     private static final ResourceLocation CHAIN_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "textures/entity/chain.png");
+            ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/entity/chain.png");
 
     private final ChainModel chainModel;
 
     public TrainCarRenderer(EntityRendererProvider.Context context,
                             Function<ModelPart, EntityModel<T>> baseModel,
                             ModelLayerLocation layerLocation, String baseTexture) {
-        this(context, baseModel, layerLocation, ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, baseTexture));
+        this(context, baseModel, layerLocation, ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, baseTexture));
     }
 
     public TrainCarRenderer(EntityRendererProvider.Context context,

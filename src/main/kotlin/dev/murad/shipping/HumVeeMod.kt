@@ -20,11 +20,11 @@ import net.neoforged.neoforge.registries.DeferredRegister
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-@Mod(ShippingMod.MOD_ID)
-class ShippingMod(modBus: IEventBus, container: ModContainer) {
+@Mod(HumVeeMod.MOD_ID)
+class HumVeeMod(modBus: IEventBus, container: ModContainer) {
 
     init {
-        LOGGER.info("Starting ShippingMod")
+        LOGGER.info("Starting Humble Vehicles Mod")
         Registration.register(modBus)
 
         // Register the doClientStuff method for modloading
@@ -36,9 +36,9 @@ class ShippingMod(modBus: IEventBus, container: ModContainer) {
         }
 
 
-        container.registerConfig(ModConfig.Type.COMMON, ShippingConfig.Common.SPEC, "littlelogistics-common.toml")
-        container.registerConfig(ModConfig.Type.CLIENT, ShippingConfig.Client.SPEC, "littlelogistics-client.toml")
-        container.registerConfig(ModConfig.Type.SERVER, ShippingConfig.Server.SPEC, "littlelogistics-server.toml")
+        container.registerConfig(ModConfig.Type.COMMON, ShippingConfig.Common.SPEC, "humblevehicles-common.toml")
+        container.registerConfig(ModConfig.Type.CLIENT, ShippingConfig.Client.SPEC, "humblevehicles-client.toml")
+        container.registerConfig(ModConfig.Type.SERVER, ShippingConfig.Server.SPEC, "humblevehicles-server.toml")
 
         // Register ourselves for server and other game events we are interested in
         modBus.register(this)
@@ -60,16 +60,16 @@ class ShippingMod(modBus: IEventBus, container: ModContainer) {
 
     companion object {
         // The value here should match an entry in the META-INF/mods.toml file
-        const val MOD_ID: String = "littlelogistics_neo"
+        const val MOD_ID: String = "humblevehicles"
 
         val CREATIVE_MODE_TABS: DeferredRegister<CreativeModeTab> =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID)
 
-        private val LOGGER: Logger = LoggerFactory.getLogger(ShippingMod::class.java)
+        private val LOGGER: Logger = LoggerFactory.getLogger(HumVeeMod::class.java)
 
         @JvmStatic
         fun entityTexture(suffix: String?): ResourceLocation? {
-            return ResourceLocation.tryBuild(MOD_ID, String.format("textures/entity/%s", suffix))
+            return ResourceLocation.fromNamespaceAndPath(MOD_ID, String.format("textures/entity/%s", suffix))
         }
     }
 }

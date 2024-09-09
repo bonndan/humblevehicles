@@ -1,6 +1,6 @@
 package dev.murad.shipping.entity.container
 
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.entity.custom.HeadVehicle
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.chat.Component
@@ -32,6 +32,6 @@ class SteamHeadVehicleScreen<T>(menu: SteamHeadVehicleContainer<T>, inventory: I
 
     companion object {
         private val GUI: ResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "textures/container/steam_locomotive.png")
+            ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/container/steam_locomotive.png")
     }
 }

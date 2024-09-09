@@ -2,9 +2,8 @@ package dev.murad.shipping.entity.models.insert;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.murad.shipping.ShippingMod;
+import dev.murad.shipping.HumVeeMod;
 import dev.murad.shipping.entity.Colorable;
-import dev.murad.shipping.entity.custom.vessel.barge.AbstractBargeEntity;
 import dev.murad.shipping.entity.custom.vessel.barge.FishingBargeEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -16,9 +15,9 @@ import net.minecraft.world.entity.Entity;
 
 public class FishingInsertBargeModel<T extends Entity & Colorable> extends EntityModel<T> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-    public static final ModelLayerLocation STASHED_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(ShippingMod.MOD_ID, "fishing_insert_barge_model_stashed"), "main");
-    public static final ModelLayerLocation TRANSITION_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(ShippingMod.MOD_ID, "fishing_insert_barge_model_transition"), "main");
-    public static final ModelLayerLocation DEPLOYED_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(ShippingMod.MOD_ID, "fishing_insert_barge_model_deployed"), "main");
+    public static final ModelLayerLocation STASHED_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "fishing_insert_barge_model_stashed"), "main");
+    public static final ModelLayerLocation TRANSITION_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "fishing_insert_barge_model_transition"), "main");
+    public static final ModelLayerLocation DEPLOYED_LOCATION = new ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "fishing_insert_barge_model_deployed"), "main");
     private final ModelPart armsLeft;
     private final ModelPart armsRight;
 

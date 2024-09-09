@@ -1,6 +1,6 @@
 package dev.murad.shipping.network;
 
-import dev.murad.shipping.ShippingMod;
+import dev.murad.shipping.HumVeeMod;
 import dev.murad.shipping.entity.custom.HeadVehicle;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public final class VehiclePacketHandler {
 
-    public static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "locomotive_channel");
+    public static final ResourceLocation LOCATION = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "locomotive_channel");
 
 
     @SubscribeEvent

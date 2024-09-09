@@ -1,6 +1,6 @@
 package dev.murad.shipping.item.container
 
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.item.TugRouteItem
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.Font
@@ -229,6 +229,6 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
             TugRouteScreen::class.java
         )
         val GUI: ResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "textures/container/tug_route.png")
+            ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/container/tug_route.png")
     }
 }

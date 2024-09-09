@@ -1,7 +1,7 @@
 package dev.murad.shipping.entity.render.barge;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.murad.shipping.ShippingMod;
+import dev.murad.shipping.HumVeeMod;
 import dev.murad.shipping.entity.custom.vessel.VesselEntity;
 import dev.murad.shipping.entity.models.vessel.EmptyModel;
 import dev.murad.shipping.entity.render.ModelPack;
@@ -153,7 +153,7 @@ public class MultipartVesselRenderer<T extends VesselEntity> extends AbstractVes
         }
 
         public Builder<T> emptyInsert() {
-            insertModel(EmptyModel::new, EmptyModel.LAYER_LOCATION, ShippingMod.entityTexture("emptytexture.png"));
+            insertModel(EmptyModel::new, EmptyModel.LAYER_LOCATION, HumVeeMod.entityTexture("emptytexture.png"));
             return this;
         }
 

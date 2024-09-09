@@ -1,6 +1,6 @@
 package dev.murad.shipping.item.container
 
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.util.TugRouteNode
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -72,6 +72,6 @@ class StringInputScreen(node: TugRouteNode, index: Int, private val callback: Co
             StringInputScreen::class.java
         )
         val GUI: ResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "textures/container/tug_route_rename.png")
+            ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/container/tug_route_rename.png")
     }
 }

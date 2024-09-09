@@ -1,6 +1,6 @@
 package dev.murad.shipping.network.client;
 
-import dev.murad.shipping.ShippingMod;
+import dev.murad.shipping.HumVeeMod;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public record VehicleTrackerClientPacket(CompoundTag tag, String dimension) implements CustomPacketPayload {
 
-    public static final ResourceLocation LOCATION = ResourceLocation.tryBuild(ShippingMod.MOD_ID, "vehicle_tracker_channel");
+    public static final ResourceLocation LOCATION = ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "vehicle_tracker_channel");
     public static final Type<VehicleTrackerClientPacket> TYPE = new Type<>(LOCATION);
 
     public static final StreamCodec<ByteBuf, VehicleTrackerClientPacket> STREAM_CODEC = StreamCodec.composite(

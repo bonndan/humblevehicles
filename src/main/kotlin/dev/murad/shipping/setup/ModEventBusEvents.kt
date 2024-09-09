@@ -1,6 +1,6 @@
 package dev.murad.shipping.setup
 
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.entity.custom.vessel.VesselEntity
 import dev.murad.shipping.entity.custom.vessel.tug.EnergyTugEntity
 import dev.murad.shipping.entity.custom.vessel.tug.SteamTugEntity
@@ -8,7 +8,7 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent
 
-@EventBusSubscriber(modid = ShippingMod.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = HumVeeMod.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 object ModEventBusEvents {
     @SubscribeEvent
     fun addEntityAttributes(event: EntityAttributeCreationEvent) {

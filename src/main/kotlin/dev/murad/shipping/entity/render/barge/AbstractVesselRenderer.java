@@ -3,7 +3,7 @@ package dev.murad.shipping.entity.render.barge;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import dev.murad.shipping.ShippingMod;
+import dev.murad.shipping.HumVeeMod;
 import dev.murad.shipping.entity.custom.vessel.VesselEntity;
 import dev.murad.shipping.entity.models.train.ChainModel;
 import net.minecraft.client.model.EntityModel;
@@ -26,7 +26,7 @@ import org.joml.Matrix4f;
 public abstract class AbstractVesselRenderer<T extends VesselEntity> extends EntityRenderer<T> {
 
     private static final ResourceLocation CHAIN_TEXTURE =
-            ResourceLocation.tryBuild(ShippingMod.MOD_ID, "textures/entity/chain.png");
+            ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "textures/entity/chain.png");
 
     private final ChainModel chainModel;
 

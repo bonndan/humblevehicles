@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
-import dev.murad.shipping.ShippingMod;
+import dev.murad.shipping.HumVeeMod;
 import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity;
 import dev.murad.shipping.entity.models.train.ChainModel;
 import dev.murad.shipping.entity.models.vessel.EmptyModel;
@@ -49,7 +49,7 @@ public class MultipartCarRenderer<T extends AbstractTrainCarEntity> extends Enti
     }
 
     private static final ResourceLocation CHAIN_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "textures/entity/chain.png");
+            ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/entity/chain.png");
 
     private final ChainModel chainModel;
 
@@ -268,7 +268,7 @@ public class MultipartCarRenderer<T extends AbstractTrainCarEntity> extends Enti
         }
 
         public Builder<T> emptyInsert() {
-            insertModel(EmptyModel::new, EmptyModel.LAYER_LOCATION, ShippingMod.entityTexture("emptytexture.png"));
+            insertModel(EmptyModel::new, EmptyModel.LAYER_LOCATION, HumVeeMod.entityTexture("emptytexture.png"));
             return this;
         }
 

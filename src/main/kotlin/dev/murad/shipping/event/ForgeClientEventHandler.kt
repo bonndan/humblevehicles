@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexFormat
 import com.mojang.math.Axis
 import dev.murad.shipping.ShippingConfig
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.item.LocoRouteItem
 import dev.murad.shipping.item.TugRouteItem
 import dev.murad.shipping.network.client.VehicleTrackerPacketHandler
@@ -21,7 +21,6 @@ import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.blockentity.BeaconRenderer
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.player.Player
@@ -43,10 +42,10 @@ import kotlin.math.min
 /**
  * Forge-wide event bus
  */
-@EventBusSubscriber(modid = ShippingMod.MOD_ID, value = [Dist.CLIENT])
+@EventBusSubscriber(modid = HumVeeMod.MOD_ID, value = [Dist.CLIENT])
 object ForgeClientEventHandler {
     val BEAM_LOCATION: ResourceLocation =
-        ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "textures/entity/beacon_beam.png")
+        ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/entity/beacon_beam.png")
 
     @SubscribeEvent
     fun onWorldUnload(event: LevelEvent.Unload?) {

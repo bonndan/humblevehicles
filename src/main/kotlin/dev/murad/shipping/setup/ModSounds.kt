@@ -1,6 +1,6 @@
 package dev.murad.shipping.setup
 
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundEvent
 import java.util.function.Supplier
@@ -11,7 +11,7 @@ object ModSounds {
         Supplier {
             SoundEvent.createFixedRangeEvent(
                 ResourceLocation.fromNamespaceAndPath(
-                    ShippingMod.MOD_ID,
+                    HumVeeMod.MOD_ID,
                     "steam_tug_whistle"
                 ), 64f
             )
@@ -22,7 +22,7 @@ object ModSounds {
         Supplier {
             SoundEvent.createFixedRangeEvent(
                 ResourceLocation.fromNamespaceAndPath(
-                    ShippingMod.MOD_ID,
+                    HumVeeMod.MOD_ID,
                     "tug_docking"
                 ), 64f
             )
@@ -33,7 +33,7 @@ object ModSounds {
         Supplier {
             SoundEvent.createFixedRangeEvent(
                 ResourceLocation.fromNamespaceAndPath(
-                    ShippingMod.MOD_ID,
+                    HumVeeMod.MOD_ID,
                     "tug_undocking"
                 ), 64f
             )

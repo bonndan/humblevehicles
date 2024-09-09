@@ -1,6 +1,6 @@
 package dev.murad.shipping.data.client
 
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.block.dock.DockingBlockStates
 import dev.murad.shipping.block.energy.VesselChargerBlock
 import dev.murad.shipping.block.fluid.FluidHopperBlock
@@ -22,7 +22,7 @@ import net.neoforged.neoforge.client.model.generators.ModelFile
 import net.neoforged.neoforge.common.data.ExistingFileHelper
 
 class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper) :
-    BlockStateProvider(output, ShippingMod.MOD_ID, exFileHelper) {
+    BlockStateProvider(output, HumVeeMod.MOD_ID, exFileHelper) {
 
     private fun getTugDockModel(state: BlockState): ModelFile {
         val inv = if (state.getValue(DockingBlockStates.INVERTED)) "_inv" else ""
@@ -268,7 +268,7 @@ class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper
 
     companion object {
         fun getBlTx(name: String): ResourceLocation {
-            return ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, String.format("block/%s", name))
+            return ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, String.format("block/%s", name))
         }
     }
 }

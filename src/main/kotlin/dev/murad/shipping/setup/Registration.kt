@@ -1,6 +1,6 @@
 package dev.murad.shipping.setup
 
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.network.TugRoutePacketHandler
 import dev.murad.shipping.network.VehiclePacketHandler
 import dev.murad.shipping.network.client.VehicleTrackerPacketHandler
@@ -36,7 +36,7 @@ object Registration {
 
 
     private fun <T> create(registry: Registry<T>): DeferredRegister<T> {
-        return DeferredRegister.create(registry, ShippingMod.MOD_ID)
+        return DeferredRegister.create(registry, HumVeeMod.MOD_ID)
     }
 
     fun register(eventBus: IEventBus) {

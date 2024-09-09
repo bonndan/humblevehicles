@@ -1,6 +1,6 @@
 package dev.murad.shipping.network;
 
-import dev.murad.shipping.ShippingMod;
+import dev.murad.shipping.HumVeeMod;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -21,7 +21,7 @@ public class SetRouteTagPacket implements CustomPacketPayload {
     }
 
     public static final CustomPacketPayload.Type<SetRouteTagPacket> TYPE = new CustomPacketPayload.Type<>(
-            ResourceLocation.fromNamespaceAndPath(ShippingMod.MOD_ID, "tug_route_channel")
+            ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "tug_route_channel")
     );
 
     public static final StreamCodec<ByteBuf, SetRouteTagPacket> STREAM_CODEC = StreamCodec.composite(

@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Pair
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DataResult
 import com.mojang.serialization.DynamicOps
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
@@ -25,7 +25,7 @@ import java.util.function.UnaryOperator
  */
 object ModDataComponents {
     private val DATA_COMPONENT_TYPES: DeferredRegister<DataComponentType<*>> =
-        DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, ShippingMod.MOD_ID)
+        DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, HumVeeMod.MOD_ID)
 
     private var isInitialised = false
 

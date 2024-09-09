@@ -1,7 +1,7 @@
 package dev.murad.shipping.event
 
 import dev.murad.shipping.ShippingConfig
-import dev.murad.shipping.ShippingMod
+import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart
 import dev.murad.shipping.global.PlayerTrainChunkManager
 import dev.murad.shipping.global.TrainChunkManagerManager
@@ -22,7 +22,7 @@ import java.util.function.Consumer
 /**
  * Forge-wide event bus
  */
-@EventBusSubscriber(modid = ShippingMod.MOD_ID)
+@EventBusSubscriber(modid = HumVeeMod.MOD_ID)
 object ForgeEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun entityInteract(event: PlayerInteractEvent.EntityInteract) {
