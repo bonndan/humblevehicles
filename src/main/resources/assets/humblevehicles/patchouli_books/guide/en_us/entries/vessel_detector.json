@@ -1,0 +1,12 @@
+{
+  "name": "Vessel Detector",
+  "icon": "humblevehicles:vessel_detector",
+  "category": "humblevehicles:blocks",
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "humblevehicles:vessel_detector",
+      "text": "Emits a redstone signal when a vessel is within 3 blocks in a given direction. Needs a straight line of water."
+    }
+  ]
+}

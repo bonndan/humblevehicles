@@ -30,28 +30,24 @@ object ModTileEntitiesTypes {
         ModBlocks.BARGE_DOCK
     )
 
-    @JvmField
     val LOCOMOTIVE_DOCK: Supplier<BlockEntityType<LocomotiveDockTileEntity>> = register(
         "locomotive_dock",
         { pos: BlockPos, state: BlockState -> LocomotiveDockTileEntity(pos, state) },
         ModBlocks.LOCOMOTIVE_DOCK_RAIL
     )
 
-    @JvmField
     val CAR_DOCK: Supplier<BlockEntityType<TrainCarDockTileEntity>> = register(
         "car_dock",
         { pos: BlockPos, state: BlockState -> TrainCarDockTileEntity(pos, state) },
         ModBlocks.CAR_DOCK_RAIL
     )
 
-    @JvmField
     val VESSEL_DETECTOR: Supplier<BlockEntityType<VesselDetectorTileEntity>> = register(
         "vessel_detector",
         { pos: BlockPos, state: BlockState -> VesselDetectorTileEntity(pos, state) },
         ModBlocks.VESSEL_DETECTOR
     )
 
-    @JvmField
     val FLUID_HOPPER: Supplier<BlockEntityType<FluidHopperTileEntity>> = register(
         "fluid_hopper",
         { pos: BlockPos, state: BlockState -> FluidHopperTileEntity(pos, state) },
@@ -71,10 +67,10 @@ object ModTileEntitiesTypes {
         ModBlocks.RAPID_HOPPER
     )
 
-    private fun <T : BlockEntity?> register(
+    private fun <T : BlockEntity> register(
         name: String,
         factory: BlockEntitySupplier<T>,
-        block: Supplier<out Block?>
+        block: Supplier<out Block>
     ): Supplier<BlockEntityType<T>> {
         return Registration.TILE_ENTITIES.register(
             name,

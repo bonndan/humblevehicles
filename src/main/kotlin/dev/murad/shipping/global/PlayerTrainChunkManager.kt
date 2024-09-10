@@ -42,11 +42,7 @@ class PlayerTrainChunkManager : SavedData {
         updateToLoad()
         numVehicles = enrolled.size
         enrolled.clear()
-        tickets.forEach(Consumer { chunkPos: ChunkPos? ->
-            level.chunkSource.removeRegionTicket(
-                TRAVEL_TICKET, chunkPos, loadLevel, uuid
-            )
-        })
+        tickets.forEach { chunkPos -> level.chunkSource.removeRegionTicket(TRAVEL_TICKET, chunkPos, loadLevel, uuid) }
         tickets.clear()
         isActive = false
     }
@@ -54,14 +50,7 @@ class PlayerTrainChunkManager : SavedData {
     fun activate() {
         isActive = true
         level.server.execute {
-            toLoad.forEach(Consumer { chunkPos: ChunkPos? ->
-                level.chunkSource.addRegionTicket(
-                    LOAD_TICKET,
-                    chunkPos,
-                    2,
-                    uuid
-                )
-            })
+            toLoad.forEach { chunkPos -> level.chunkSource.addRegionTicket(LOAD_TICKET, chunkPos, 2, uuid) }
         }
     }
 
@@ -78,7 +67,7 @@ class PlayerTrainChunkManager : SavedData {
         }
 
         if (entity.parts != null) {
-            subjects.addAll(java.util.List.of(*entity.parts))
+            subjects.addAll(listOf(*entity.parts))
         }
         return subjects
     }
@@ -158,8 +147,8 @@ class PlayerTrainChunkManager : SavedData {
     private fun computeRequiredTickets(entity: Entity): Set<ChunkPos> {
         val set = HashSet<ChunkPos>()
         getAllSubjectEntities(entity).stream()
-            .map { obj: Entity? -> obj!!.chunkPosition() }
-            .map { pos: ChunkPos? -> ChunkPos.rangeClosed(pos, 1) }
+            .map { obj -> obj!!.chunkPosition() }
+            .map { pos -> ChunkPos.rangeClosed(pos, 1) }
             .forEach { pos: Stream<ChunkPos> -> set.addAll(pos.collect(Collectors.toList())) }
 
         return set
@@ -217,10 +206,10 @@ class PlayerTrainChunkManager : SavedData {
 
     companion object {
         private val TRAVEL_TICKET: TicketType<UUID> = TicketType.create(
-            "littlelogistics:travelticket"
+            "humblevehicles:travelticket"
         ) { obj: UUID, `val`: UUID? -> obj.compareTo(`val`) }
         private val LOAD_TICKET: TicketType<UUID> = TicketType.create(
-            "littlelogistics:loadticket",
+            "humblevehicles:loadticket",
             { obj: UUID, `val`: UUID? -> obj.compareTo(`val`) }, 500
         )
 
@@ -229,7 +218,7 @@ class PlayerTrainChunkManager : SavedData {
             val storage = level.dataStorage
 
             val factory = getPlayerTrainChunkManagerFactory(level, uuid)
-            return storage.computeIfAbsent(factory, "littlelogistics:chunkmanager-$uuid")
+            return storage.computeIfAbsent(factory, "humblevehicles:chunkmanager-$uuid")
         }
 
         fun getSaved(level: ServerLevel, uuid: UUID): Optional<PlayerTrainChunkManager> {
@@ -237,7 +226,7 @@ class PlayerTrainChunkManager : SavedData {
             return Optional.ofNullable(
                 storage.get(
                     getPlayerTrainChunkManagerFactory(level, uuid),
-                    "littlelogistics:chunkmanager-$uuid"
+                    "humblevehicles:chunkmanager-$uuid"
                 )
             )
         }
@@ -248,7 +237,7 @@ class PlayerTrainChunkManager : SavedData {
         ): Factory<PlayerTrainChunkManager> {
             return Factory(
                 { PlayerTrainChunkManager(level, uuid) },
-                { tag: CompoundTag?, provider: HolderLookup.Provider? -> PlayerTrainChunkManager(level, uuid) },
+                { tag, provider -> PlayerTrainChunkManager(level, uuid) },
                 DataFixTypes.CHUNK
             )
         }
@@ -278,7 +267,7 @@ class PlayerTrainChunkManager : SavedData {
                 if (registered > max) {
                     player.sendSystemMessage(
                         Component.translatable(
-                            "global.littlelogistics.locomotive.register_success",
+                            "global.humblevehicles.locomotive.register_success",
                             max
                         )
                     )
@@ -286,7 +275,7 @@ class PlayerTrainChunkManager : SavedData {
                 } else {
                     player.sendSystemMessage(
                         Component.translatable(
-                            "global.littlelogistics.locomotive.register_fail",
+                            "global.humblevehicles.locomotive.register_fail",
                             registered,
                             max
                         )

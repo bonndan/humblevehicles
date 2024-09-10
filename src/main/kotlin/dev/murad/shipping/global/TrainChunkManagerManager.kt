@@ -81,7 +81,7 @@ class TrainChunkManagerManager : SavedData {
                 .dataStorage
                 .computeIfAbsent(
                     getPlayerTrainChunkManagerFactory(server),
-                    "littlelogistics:trainchunkmanagermanager"
+                    "humblevehicles:trainchunkmanagermanager"
                 )
         }
 

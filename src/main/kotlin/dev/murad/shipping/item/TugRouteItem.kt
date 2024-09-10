@@ -29,7 +29,7 @@ class TugRouteItem(properties: Properties) : Item(properties) {
     protected fun createContainerProvider(hand: InteractionHand): MenuProvider {
         return object : MenuProvider {
             override fun getDisplayName(): Component {
-                return Component.translatable("screen.littlelogistics.tug_route")
+                return Component.translatable("screen.humblevehicles.tug_route")
             }
 
             override fun createMenu(i: Int, playerInventory: Inventory, Player: Player): AbstractContainerMenu? {
@@ -55,13 +55,13 @@ class TugRouteItem(properties: Properties) : Item(properties) {
                 val z = floor(player.z) as Int
                 if (!tryRemoveSpecific(itemstack, x, z)) {
                     player.displayClientMessage(
-                        Component.translatable("item.littlelogistics.tug_route.added", x, z),
+                        Component.translatable("item.humblevehicles.tug_route.added", x, z),
                         false
                     )
                     pushRoute(itemstack, x, z)
                 } else {
                     player.displayClientMessage(
-                        Component.translatable("item.littlelogistics.tug_route.removed", x, z),
+                        Component.translatable("item.humblevehicles.tug_route.removed", x, z),
                         false
                     )
                 }
@@ -96,9 +96,9 @@ class TugRouteItem(properties: Properties) : Item(properties) {
         pTooltipFlag: TooltipFlag
     ) {
         super.appendHoverText(pStack, pContext, tooltip, pTooltipFlag)
-        tooltip.add(Component.translatable("item.littlelogistics.tug_route.description"))
+        tooltip.add(Component.translatable("item.humblevehicles.tug_route.description"))
         tooltip.add(
-            Component.translatable("item.littlelogistics.tug_route.num_nodes", getRoute(pStack).size).setStyle(
+            Component.translatable("item.humblevehicles.tug_route.num_nodes", getRoute(pStack).size).setStyle(
                 Style.EMPTY.withColor(ChatFormatting.YELLOW)
             )
         )

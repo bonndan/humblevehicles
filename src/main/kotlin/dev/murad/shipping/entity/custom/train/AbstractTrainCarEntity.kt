@@ -168,9 +168,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
 
     override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
         super.onSyncedDataUpdated(key)
-        if (linkingHandler != null) {
-            linkingHandler.onSyncedDataUpdated(key)
-        }
+        linkingHandler.onSyncedDataUpdated(key)
     }
 
 
@@ -507,7 +505,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
                 val parentDirection = railDirDis
                     .map { obj: Pair<Direction, Int> -> obj.first }
                     .map { obj: Direction -> obj.normal }
-                    .map { pToCopy: Vec3i? -> Vec3.atLowerCornerOf(pToCopy) }
+                    .map { pToCopy -> Vec3.atLowerCornerOf(pToCopy) }
                     .orElse(euclideanDir)
                     .normalize()
                 val parentVelocity = parent.deltaMovement
@@ -662,28 +660,24 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
     override fun linkEntities(player: Player, target: Entity): Boolean {
 
         if (target !is AbstractTrainCarEntity) {
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.badTypes"), true)
+            player.displayClientMessage(Component.translatable("item.humblevehicles.spring.badTypes"), true)
             return false
         }
 
         val train1 = target.getTrain()
         val train2 = this.getTrain()
 
-        if (train1 == null || train2 == null) {
-            return false;
-        }
-
         if (train2.tug.isPresent && train1.tug.isPresent) {
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.noTwoLoco"), true)
+            player.displayClientMessage(Component.translatable("item.humblevehicles.spring.noTwoLoco"), true)
             return false
         } else if (train2 == train1) {
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.noLoops"), true)
+            player.displayClientMessage(Component.translatable("item.humblevehicles.spring.noLoops"), true)
             return false
         } else {
             tryFindAndPrepareClosePair(train1, train2).ifPresentOrElse(
                 { pair -> createLinks(pair.first, pair.second) },
                 {
-                    player.displayClientMessage(Component.translatable("item.littlelogistics.spring.tooFar"), true)
+                    player.displayClientMessage(Component.translatable("item.humblevehicles.spring.tooFar"), true)
                 }
             )
         }

@@ -1,5 +1,6 @@
 package dev.murad.shipping.entity.container
 
+import com.mojang.blaze3d.systems.RenderSystem
 import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.entity.custom.HeadVehicle
 import net.minecraft.client.gui.GuiGraphics
@@ -30,19 +31,19 @@ abstract class AbstractHeadVehicleScreen<U, T : AbstractHeadVehicleContainer<*, 
         on = Button.Builder(Component.literal("->")) { menu.setEngine(true) }
             .pos(this.guiLeft + 130, this.guiTop + 25)
             .size(20, 20)
-            .tooltip(tooltipOf("screen.littlelogistics.locomotive.on"))
+            .tooltip(tooltipOf("screen.humblevehicles.locomotive.on"))
             .build()
 
         off = Button.Builder(Component.literal("x")) { menu.setEngine(false) }
             .pos(this.guiLeft + 96, this.guiTop + 25)
             .size(20, 20)
-            .tooltip(tooltipOf("screen.littlelogistics.locomotive.off"))
+            .tooltip(tooltipOf("screen.humblevehicles.locomotive.off"))
             .build()
 
-        register = Button.Builder(Component.translatable("screen.littlelogistics.locomotive.register")) { menu.enroll() }
+        register = Button.Builder(Component.translatable("screen.humblevehicles.locomotive.register")) { menu.enroll() }
             .pos(this.guiLeft + 181, this.guiTop + 20)
             .size(77, 20)
-            .tooltip(tooltipOf("screen.littlelogistics.locomotive.register"))
+            .tooltip(tooltipOf("screen.humblevehicles.locomotive.register"))
             .build()
 
         this.addRenderableWidget(off)
@@ -54,17 +55,17 @@ abstract class AbstractHeadVehicleScreen<U, T : AbstractHeadVehicleContainer<*, 
         super.render(graphics, mouseX, mouseY, partialTicks)
 
         graphics.drawString(
-            font, Component.translatable("screen.littlelogistics.locomotive.route"),
+            font, Component.translatable("screen.humblevehicles.locomotive.route"),
             this.guiLeft + 120,
             this.guiTop + 55, 4210752, false
         )
         graphics.drawString(
-            font, Component.translatable("screen.littlelogistics.locomotive.registration"),
+            font, Component.translatable("screen.humblevehicles.locomotive.registration"),
             this.guiLeft + 180,
             this.guiTop + 5, 16777215
         )
 
-        val text = font.split(Component.translatable("screen.littlelogistics.locomotive.register_info"), 90)
+        val text = font.split(Component.translatable("screen.humblevehicles.locomotive.register_info"), 90)
         for (i in text.indices) {
             graphics.drawString(
                 font,
@@ -73,7 +74,7 @@ abstract class AbstractHeadVehicleScreen<U, T : AbstractHeadVehicleContainer<*, 
         }
 
         if (!menu.canMove()) {
-            val frozen = font.split(Component.translatable("screen.littlelogistics.locomotive.frozen"), 90)
+            val frozen = font.split(Component.translatable("screen.humblevehicles.locomotive.frozen"), 90)
             for (i in frozen.indices) {
                 graphics.drawString(
                     font,
@@ -86,9 +87,9 @@ abstract class AbstractHeadVehicleScreen<U, T : AbstractHeadVehicleContainer<*, 
     }
 
     override fun renderBg(graphics: GuiGraphics, pPartialTick: Float, pMouseX: Int, pMouseY: Int) {
-//        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-//        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-//        RenderSystem.setShaderTexture(0, REGISTRATION);
+        //TODO not available in 1.21 RenderSystem.setShader(GameRenderer::getPositionTexShader)
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F)
+        RenderSystem.setShaderTexture(0, REGISTRATION)
         val i = this.guiLeft + 175
         val j = this.guiTop
         graphics.blit(REGISTRATION, i, j, 0, 0, this.xSize, this.ySize)
@@ -102,6 +103,6 @@ abstract class AbstractHeadVehicleScreen<U, T : AbstractHeadVehicleContainer<*, 
 
     companion object {
         private val REGISTRATION =
-            ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "textures/container/vehicle_registration.png")
+            ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/container/vehicle_registration.png")
     }
 }

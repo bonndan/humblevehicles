@@ -23,7 +23,7 @@ class EnergyHeadVehicleScreen<T>(menu: EnergyHeadVehicleContainer<T>, inventory:
                 font,
                 listOf<Component>(
                     Component.translatable(
-                        "screen.littlelogistics.energy_tug.energy",
+                        "screen.humblevehicles.energy_tug.energy",
                         getMenu().energy,
                         getMenu().capacity
                     )

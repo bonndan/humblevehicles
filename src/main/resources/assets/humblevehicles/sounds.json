@@ -1,0 +1,23 @@
+{
+    "steam_tug_whistle": {
+        "subtitle": "subtitle.humblevehicles.steam_tug_whistle",
+        "sounds": [
+            "humblevehicles:steam_tug/tug_whistle1",
+            "humblevehicles:steam_tug/tug_whistle2",
+            "humblevehicles:steam_tug/tug_whistle3",
+            "humblevehicles:steam_tug/tug_whistle4"
+        ]
+    },
+    "tug_docking": {
+        "subtitle": "subtitle.humblevehicles.tug_docking",
+        "sounds": [
+            "humblevehicles:dock/docking"
+        ]
+    },
+    "tug_undocking": {
+        "subtitle": "subtitle.humblevehicles.tug_undocking",
+        "sounds": [
+            "humblevehicles:dock/docking"
+        ]
+    }
+}

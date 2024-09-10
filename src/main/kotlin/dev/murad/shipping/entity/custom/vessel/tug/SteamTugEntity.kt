@@ -43,7 +43,7 @@ class SteamTugEntity : AbstractTugEntity {
     override fun createContainerProvider(): MenuProvider {
         return object : MenuProvider {
             override fun getDisplayName(): Component {
-                return Component.translatable("screen.littlelogistics.tug")
+                return Component.translatable("screen.humblevehicles.tug")
             }
 
             override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {

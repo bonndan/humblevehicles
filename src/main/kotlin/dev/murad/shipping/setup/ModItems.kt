@@ -29,36 +29,40 @@ object ModItems {
     /**
      * Empty Icons
      */
-    @JvmField
-    val LOCO_ROUTE_ICON: ResourceLocation = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "item/empty_loco_route")
 
-    @JvmField
-    val TUG_ROUTE_ICON: ResourceLocation = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "item/empty_tug_route")
+    val LOCO_ROUTE_ICON: ResourceLocation =
+        ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "item/empty_loco_route")
 
-    @JvmField
+
+    val TUG_ROUTE_ICON: ResourceLocation =
+        ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "item/empty_tug_route")
+
+
     val EMPTY_ENERGY: ResourceLocation = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "item/empty_energy")
 
 
     /**
      * COMMON
      */
-    @JvmField
+
     val CONDUCTORS_WRENCH: Supplier<Item> = register(
         "conductors_wrench",
-        { WrenchItem(defaultItemProperties(1)) }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        fun(): Item { //fun because Supplier is executed immediately and results in registry already closed exception
+            return WrenchItem(defaultItemProperties(1))
+        },
+        listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-
-    @JvmField
     val SPRING: Supplier<Item> = register(
         "spring",
-        { SpringItem(defaultItemProperties(64)) }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        { SpringItem(defaultItemProperties(64)) },
+        listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
     /**
      * Vessels
      */
-    @JvmField
+
     val CHEST_BARGE: Supplier<Item> = register(
         "barge",
         {
@@ -77,7 +81,7 @@ object ModItems {
         java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val BARREL_BARGE: Supplier<Item> = register(
         "barrel_barge",
         {
@@ -98,7 +102,7 @@ object ModItems {
 
     //    public static final Supplier<Item> CHUNK_LOADER_BARGE = register("chunk_loader_barge",
     //            () -> new VesselItem(new Item.Properties(), ChunkLoaderBargeEntity::new), ImmutableList.of(CreativeModeTabs.TOOLS_AND_UTILITIES));
-    @JvmField
+
     val FISHING_BARGE: Supplier<Item> = register(
         "fishing_barge",
         {
@@ -113,7 +117,7 @@ object ModItems {
         }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val FLUID_BARGE: Supplier<Item> = register(
         "fluid_barge",
         {
@@ -128,7 +132,7 @@ object ModItems {
         }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val SEATER_BARGE: Supplier<Item> = register(
         "seater_barge",
         {
@@ -143,7 +147,7 @@ object ModItems {
         }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val VACUUM_BARGE: Supplier<Item> = register(
         "vacuum_barge",
         {
@@ -155,20 +159,20 @@ object ModItems {
                     z
                 )
             }
-        }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val STEAM_TUG: Supplier<Item> = register(
         "tug",
         {
             VesselItem(Item.Properties()) { worldIn, x: Double, y: Double, z: Double ->
-                SteamTugEntity(worldIn!!, x, y, z)
+                SteamTugEntity(worldIn, x, y, z)
             }
         }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val ENERGY_TUG: Supplier<Item> = register(
         "energy_tug",
         {
@@ -186,13 +190,13 @@ object ModItems {
     /**
      * Trains
      */
-    @JvmField
+
     val TUG_ROUTE: Supplier<Item> = register(
         "tug_route",
         { TugRouteItem(defaultItemPropertiesWithTag(16)) }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val CHEST_CAR: Supplier<Item> = register(
         "chest_car",
         {
@@ -206,7 +210,7 @@ object ModItems {
         listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val BARREL_CAR: Supplier<Item> = register(
         "barrel_car",
         {
@@ -220,7 +224,7 @@ object ModItems {
         listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val FLUID_CAR: Supplier<Item> = register(
         "fluid_car",
         {
@@ -235,7 +239,7 @@ object ModItems {
         }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val SEATER_CAR: Supplier<Item> = register(
         "seater_car",
         {
@@ -250,7 +254,7 @@ object ModItems {
         }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val STEAM_LOCOMOTIVE: Supplier<Item> = register(
         "steam_locomotive",
         {
@@ -261,7 +265,7 @@ object ModItems {
         }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val ENERGY_LOCOMOTIVE: Supplier<Item> = register(
         "energy_locomotive",
         {
@@ -282,16 +286,16 @@ object ModItems {
         { Item(defaultItemProperties(64)) }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
-    @JvmField
+
     val LOCO_ROUTE: Supplier<Item> = register(
         "locomotive_route",
-        { LocoRouteItem(defaultItemPropertiesWithTag(16)) }, java.util.List.of(CreativeModeTabs.TOOLS_AND_UTILITIES)
+        { LocoRouteItem(defaultItemPropertiesWithTag(16)) }, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES)
     )
 
 
     fun buildCreativeTab(event: BuildCreativeModeTabContentsEvent) {
         PRIVATE_TAB_REGISTRY.getOrDefault(event.tabKey, ArrayList())
-            ?.forEach(Consumer { supplier: Supplier<out Item> -> event.accept(supplier.get()) })
+            .forEach(Consumer { supplier: Supplier<out Item> -> event.accept(supplier.get()) })
     }
 
     private fun register(
@@ -300,7 +304,6 @@ object ModItems {
         tabs: List<ResourceKey<CreativeModeTab>>
     ): Supplier<Item> {
         val res = Registration.ITEMS.register(name, itemSupplier)
-
         for (tab in tabs) {
             PRIVATE_TAB_REGISTRY.putInsert(tab, itemSupplier)
         }

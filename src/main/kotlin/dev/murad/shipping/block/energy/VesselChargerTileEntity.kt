@@ -75,7 +75,7 @@ class VesselChargerTileEntity(pos: BlockPos, state: BlockState) :
     fun use(player: Player, hand: InteractionHand?) {
         player.displayClientMessage(
             Component.translatable(
-                "block.littlelogistics.vessel_charger.capacity",
+                "block.humblevehicles.vessel_charger.capacity",
                 internalBattery.energyStored, internalBattery.maxEnergyStored
             ), false
         )

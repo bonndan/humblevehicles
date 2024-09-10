@@ -39,7 +39,7 @@ SOFTWARE.
 
 
 class SpringItem(properties: Properties) : Item(properties) {
-    private val springInfo: Component = Component.translatable("item.littlelogistics.spring.description")
+    private val springInfo: Component = Component.translatable("item.humblevehicles.spring.description")
 
     // because 'itemInteractionForEntity' is only for Living entities
     fun onUsedOnEntity(stack: ItemStack, player: Player, world: Level, target: Entity) {
@@ -62,7 +62,7 @@ class SpringItem(properties: Properties) : Item(properties) {
     private fun createSpringHelper(stack: ItemStack, player: Player, world: Level, target: Entity) {
         val dominant = getDominant(world, stack) ?: return
         if (dominant === target) {
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.notToSelf"), true)
+            player.displayClientMessage(Component.translatable("item.humblevehicles.spring.notToSelf"), true)
         } else if (dominant is LinkableEntity<*>) {
             if (dominant.linkEntities(player, target) && !player.isCreative) stack.shrink(1)
         }

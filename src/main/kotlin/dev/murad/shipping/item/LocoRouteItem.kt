@@ -22,7 +22,7 @@ class LocoRouteItem(properties: Properties) : Item(properties) {
         val removed = route.removeIf { n -> n?.isAt(pos) ?: false }
         if (removed && player != null) player.displayClientMessage(
             Component.translatable(
-                "item.littlelogistics.locomotive_route.removed",
+                "item.humblevehicles.locomotive_route.removed",
                 pos.x, pos.y, pos.z
             ), false
         )
@@ -36,7 +36,7 @@ class LocoRouteItem(properties: Properties) : Item(properties) {
             // world can change
             player?.displayClientMessage(
                 Component.translatable(
-                    "item.littlelogistics.locomotive_route.added",
+                    "item.humblevehicles.locomotive_route.added",
                     pos.x, pos.y, pos.z
                 ), false
             )
@@ -95,9 +95,9 @@ class LocoRouteItem(properties: Properties) : Item(properties) {
         pTooltipFlag: TooltipFlag
     ) {
         super.appendHoverText(pStack, pContext, tooltip, pTooltipFlag)
-        tooltip.add(Component.translatable("item.littlelogistics.locomotive_route.description"))
+        tooltip.add(Component.translatable("item.humblevehicles.locomotive_route.description"))
         tooltip.add(
-            Component.translatable("item.littlelogistics.locomotive_route.num_nodes", getRoute(pStack).size)
+            Component.translatable("item.humblevehicles.locomotive_route.num_nodes", getRoute(pStack).size)
                 .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
         )
     }

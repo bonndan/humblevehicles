@@ -1,0 +1,19 @@
+{
+  "name": "Steam Tug",
+  "icon": "humblevehicles:tug",
+  "category": "humblevehicles:vessels",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "humblevehicles:tug",
+      "scale": 0.4,
+      "offset": 0.5,
+      "text": "A basic tugboat that can operate on any furnace fuel."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "humblevehicles:tug",
+      "text": "Fuel can be loaded with hoppers placed on top of tug docks."
+    }
+  ]
+}

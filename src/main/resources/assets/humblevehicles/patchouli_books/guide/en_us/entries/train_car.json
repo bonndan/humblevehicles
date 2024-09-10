@@ -1,0 +1,19 @@
+{
+  "name": "Train Car",
+  "icon": "humblevehicles:seater_car",
+  "category": "humblevehicles:trains",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "humblevehicles:seater_car",
+      "scale": 0.6,
+      "offset": 0.5,
+      "text": "A simple train car that can sit one player or mob."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "humblevehicles:seater_car",
+      "text": "Just like vanilla minecarts, this car can be unloaded with an activator rail"
+    }
+  ]
+}

@@ -49,7 +49,7 @@ class EnergyTugEntity : AbstractTugEntity {
     override fun createContainerProvider(): MenuProvider {
         return object : MenuProvider {
             override fun getDisplayName(): Component {
-                return Component.translatable("screen.littlelogistics.energy_tug")
+                return Component.translatable("screen.humblevehicles.energy_tug")
             }
 
             override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {

@@ -1,0 +1,12 @@
+{
+  "name": "Rapid Hopper",
+  "icon": "humblevehicles:rapid_hopper",
+  "category": "humblevehicles:blocks",
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "humblevehicles:rapid_hopper",
+      "text": "Same as vanilla hopper, but much faster!"
+    }
+  ]
+}

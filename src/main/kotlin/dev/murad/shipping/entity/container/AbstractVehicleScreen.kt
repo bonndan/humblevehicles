@@ -5,7 +5,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.player.Inventory
 
-abstract class AbstractVehicleScreen<T : AbstractItemHandlerContainer?>(
+abstract class AbstractVehicleScreen<T : AbstractItemHandlerContainer>(
     menu: T,
     inventory: Inventory,
     p_i51105_3_: Component

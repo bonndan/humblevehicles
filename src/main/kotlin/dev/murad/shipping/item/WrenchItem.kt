@@ -11,7 +11,8 @@ import net.minecraft.world.level.block.RailBlock
 import net.minecraft.world.level.block.state.properties.RailShape
 
 class WrenchItem(pProperties: Properties) : Item(pProperties) {
-    private val wrenchInfo: Component = Component.translatable("item.littlelogistics.conductors_wrench.description")
+
+    private val wrenchInfo: Component = Component.translatable("item.humblevehicles.conductors_wrench.description")
 
     override fun appendHoverText(
         pStack: ItemStack,

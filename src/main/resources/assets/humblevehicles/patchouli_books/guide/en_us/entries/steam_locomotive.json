@@ -1,0 +1,19 @@
+{
+  "name": "Steam Locomotive",
+  "icon": "humblevehicles:steam_locomotive",
+  "category": "humblevehicles:trains",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "humblevehicles:steam_locomotive",
+      "scale": 0.4,
+      "offset": 0.5,
+      "text": "A basic locomotive that can operate on any furnace fuel."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "humblevehicles:steam_locomotive",
+      "text": "Fuel can be loaded with hoppers placed beside docking rails"
+    }
+  ]
+}

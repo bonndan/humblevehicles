@@ -10,10 +10,10 @@ class TugRouteNode(var name: String?, @JvmField val x: Double, @JvmField val z: 
 
     fun getDisplayName(index: Int): String {
         return if (!this.hasCustomName()) {
-            I18n.get("item.littlelogistics.tug_route.node", index)
+            I18n.get("item.humblevehicles.tug_route.node", index)
         } else {
             I18n.get(
-                "item.littlelogistics.tug_route.node_named", index,
+                "item.humblevehicles.tug_route.node_named", index,
                 name
             )
         }
@@ -40,7 +40,7 @@ class TugRouteNode(var name: String?, @JvmField val x: Double, @JvmField val z: 
     fun toNBT(): CompoundTag {
         val tag = CompoundTag()
         if (this.hasCustomName()) {
-            tag.putString(NAME_TAG, this.name)
+            tag.putString(NAME_TAG, this.name!!)
         }
 
         val coords = CompoundTag()

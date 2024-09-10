@@ -35,8 +35,8 @@ class VacuumBargeEntity : AbstractBargeEntity {
 
         player?.displayClientMessage(
             when (size) {
-                0 -> Component.translatable("global.littlelogistics.no_connected_inventory_barge")
-                else -> Component.translatable("global.littlelogistics.connected_inventory", size)
+                0 -> Component.translatable("global.humblevehicles.no_connected_inventory_barge")
+                else -> Component.translatable("global.humblevehicles.connected_inventory", size)
             }, false
         )
     }

@@ -19,23 +19,17 @@ import net.neoforged.neoforge.fluids.CauldronFluidContent
 import net.neoforged.neoforge.registries.DeferredRegister
 
 object Registration {
-    @JvmField
-    val BLOCKS: DeferredRegister<Block> = create(BuiltInRegistries.BLOCK)
-    @JvmField
-    val CONTAINERS: DeferredRegister<MenuType<*>> = create(BuiltInRegistries.MENU)
-    @JvmField
-    val ENTITIES: DeferredRegister<EntityType<*>> = create(BuiltInRegistries.ENTITY_TYPE)
-    @JvmField
-    val ITEMS: DeferredRegister<Item> = create(BuiltInRegistries.ITEM)
-    @JvmField
-    val RECIPE_SERIALIZERS: DeferredRegister<RecipeSerializer<*>> = create(BuiltInRegistries.RECIPE_SERIALIZER)
-    @JvmField
-    val TILE_ENTITIES: DeferredRegister<BlockEntityType<*>> = create(BuiltInRegistries.BLOCK_ENTITY_TYPE)
-    @JvmField
-    val SOUND_EVENTS: DeferredRegister<SoundEvent> = create(BuiltInRegistries.SOUND_EVENT)
+
+    val BLOCKS: DeferredRegister<Block> = createRegister(BuiltInRegistries.BLOCK)
+    val CONTAINERS: DeferredRegister<MenuType<*>> = createRegister(BuiltInRegistries.MENU)
+    val ENTITIES: DeferredRegister<EntityType<*>> = createRegister(BuiltInRegistries.ENTITY_TYPE)
+    val ITEMS: DeferredRegister<Item> = createRegister(BuiltInRegistries.ITEM)
+    val RECIPE_SERIALIZERS: DeferredRegister<RecipeSerializer<*>> = createRegister(BuiltInRegistries.RECIPE_SERIALIZER)
+    val TILE_ENTITIES: DeferredRegister<BlockEntityType<*>> = createRegister(BuiltInRegistries.BLOCK_ENTITY_TYPE)
+    val SOUND_EVENTS: DeferredRegister<SoundEvent> = createRegister(BuiltInRegistries.SOUND_EVENT)
 
 
-    private fun <T> create(registry: Registry<T>): DeferredRegister<T> {
+    private fun <T> createRegister(registry: Registry<T>): DeferredRegister<T> {
         return DeferredRegister.create(registry, HumVeeMod.MOD_ID)
     }
 
@@ -59,7 +53,7 @@ object Registration {
         eventBus.register(VehicleTrackerPacketHandler)
         eventBus.register(VehiclePacketHandler)
         ModSounds.register()
-        eventBus.addListener { event: RegisterCapabilitiesEvent? -> CauldronFluidContent.registerCapabilities(event) }
+        eventBus.addListener { event: RegisterCapabilitiesEvent -> CauldronFluidContent.registerCapabilities(event) }
 
         ModDataComponents.initialise(eventBus)
     }

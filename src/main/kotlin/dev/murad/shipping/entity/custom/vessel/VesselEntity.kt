@@ -211,7 +211,7 @@ abstract class VesselEntity protected constructor(type: EntityType<out WaterAnim
 
     override fun linkEntities(player: Player, entity: Entity): Boolean {
         if (entity !is VesselEntity) {
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.badTypes"), true)
+            player.displayClientMessage(Component.translatable("item.humblevehicles.spring.badTypes"), true)
             return false
         }
         val firstTrain = this.getTrain()
@@ -222,11 +222,11 @@ abstract class VesselEntity protected constructor(type: EntityType<out WaterAnim
         }
 
         if (this.distanceTo(entity) > 15) {
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.tooFar"), true)
+            player.displayClientMessage(Component.translatable("item.humblevehicles.spring.tooFar"), true)
         } else if (firstTrain.tug.isPresent && secondTrain.tug.isPresent) {
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.noTwoTugs"), true)
+            player.displayClientMessage(Component.translatable("item.humblevehicles.spring.noTwoTugs"), true)
         } else if (secondTrain == firstTrain) {
-            player.displayClientMessage(Component.translatable("item.littlelogistics.spring.noLoops"), true)
+            player.displayClientMessage(Component.translatable("item.humblevehicles.spring.noLoops"), true)
         } else if (firstTrain.tug.isPresent) {
             val tail = firstTrain.tail
             val head = secondTrain.head

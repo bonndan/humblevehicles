@@ -84,7 +84,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
                         ) { name: String? -> route.renameSelected(name) })
                     }
                 },
-                getTooltip(Component.translatable("screen.littlelogistics.tug_route.rename_button"))
+                getTooltip(Component.translatable("screen.humblevehicles.tug_route.rename_button"))
             )
         )
 
@@ -93,7 +93,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
                 right - 70, bot - 24, 20, 20,
                 Component.literal("▲"),
                 { button: Button? -> route.moveSelectedUp() },
-                getTooltip(Component.translatable("screen.littlelogistics.tug_route.up_button"))
+                getTooltip(Component.translatable("screen.humblevehicles.tug_route.up_button"))
             )
         )
 
@@ -102,7 +102,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
                 right - 47, bot - 24, 20, 20,
                 Component.literal("▼"),
                 { button: Button? -> route.moveSelectedDown() },
-                getTooltip(Component.translatable("screen.littlelogistics.tug_route.down_button"))
+                getTooltip(Component.translatable("screen.humblevehicles.tug_route.down_button"))
             )
         )
 
@@ -111,7 +111,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
                 right - 24, bot - 24, 20, 20,
                 Component.literal("✘"),
                 { button: Button? -> route.deleteSelected() },
-                getTooltip(Component.translatable("screen.littlelogistics.tug_route.delete_button"))
+                getTooltip(Component.translatable("screen.humblevehicles.tug_route.delete_button"))
             )
         )
     }

@@ -79,7 +79,7 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
     override fun createContainerProvider(): MenuProvider {
         return object : MenuProvider {
             override fun getDisplayName(): Component {
-                return Component.translatable("entity.littlelogistics.steam_locomotive")
+                return Component.translatable("entity.humblevehicles.steam_locomotive")
             }
 
             override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {

@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger
 import java.util.function.Consumer
 
 class StringInputScreen(node: TugRouteNode, index: Int, private val callback: Consumer<String?>) :
-    Screen(Component.translatable("screen.littlelogistics.tug_route.rename", node.getDisplayName(index))) {
+    Screen(Component.translatable("screen.humblevehicles.tug_route.rename", node.getDisplayName(index))) {
     private var text: String?
     private var textFieldWidget: EditBox? = null
 
@@ -45,7 +45,7 @@ class StringInputScreen(node: TugRouteNode, index: Int, private val callback: Co
         // add button
         this.addRenderableWidget(
             Button.builder(
-                Component.translatable("screen.littlelogistics.tug_route.confirm")
+                Component.translatable("screen.humblevehicles.tug_route.confirm")
             ) { b: Button? ->
                 LOGGER.info("Setting to {}", text)
                 callback.accept(if (text!!.isEmpty()) null else text)

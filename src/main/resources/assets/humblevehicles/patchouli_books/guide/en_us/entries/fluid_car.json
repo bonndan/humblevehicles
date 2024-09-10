@@ -1,0 +1,18 @@
+{
+  "name": "Fluid car",
+  "icon": "humblevehicles:fluid_car",
+  "category": "humblevehicles:trains",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "humblevehicles:fluid_car",
+      "scale": 0.6,
+      "offset": 0.5,
+      "text": "Use this train car to transport fluids, can be loaded with a $(l:fluid_hopper)Fluid Hopper$()."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "humblevehicles:fluid_car"
+    }
+  ]
+}

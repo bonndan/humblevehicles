@@ -9,10 +9,10 @@ object FluidDisplayUtil {
     fun getFluidDisplay(tank: FluidTank): Component {
         val fluid = tank.fluid.fluid
         return if (fluid == Fluids.EMPTY) Component.translatable(
-            "block.littlelogistics.fluid_hopper.capacity_empty",
+            "block.humblevehicles.fluid_hopper.capacity_empty",
             tank.capacity
         ) else Component.translatable(
-            "block.littlelogistics.fluid_hopper.capacity", tank.fluid.hoverName.string,
+            "block.humblevehicles.fluid_hopper.capacity", tank.fluid.hoverName.string,
             tank.fluidAmount, tank.capacity
         )
     }

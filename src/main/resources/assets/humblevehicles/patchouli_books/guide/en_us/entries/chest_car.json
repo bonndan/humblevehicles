@@ -1,0 +1,19 @@
+{
+  "name": "Chest Car",
+  "icon": "humblevehicles:chest_car",
+  "category": "humblevehicles:trains",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "humblevehicles:chest_car",
+      "scale": 0.6,
+      "offset": 0.5,
+      "text": "A simple train car that holds items, similar to chest minecart."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "humblevehicles:chest_car",
+      "text": "The car must be docked and part of a tug-train to interface with hoppers."
+    }
+  ]
+}
