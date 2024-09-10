@@ -47,8 +47,8 @@ class LinkingHandler<T>(
             Optional.ofNullable(entity.getCapability(StallingCapability.STALLING_CAPABILITY))
                 .ifPresent { obj: StallingCapability -> obj.stall() }
         }
-        entity.entityData.set(dominantID, leader.map { it.id }.orElse(-1))
-        entity.entityData.set(dominatedID, follower.map { it.id }.orElse(-1))
+        entity.entityData?.set(dominantID, leader.map { it.id }.orElse(-1))
+        entity.entityData?.set(dominatedID, follower.map { it.id }.orElse(-1))
     }
 
     private fun stallNonTicking() {
@@ -103,9 +103,7 @@ class LinkingHandler<T>(
 
     private fun fetchDominantClient() {
         val potential = entity.level().getEntity(
-            entity.entityData.get(
-                dominantID
-            )
+            entity.entityData?.get(dominantID) ?: 0 //TODO was treated as non-null
         )
         if (clazz.isInstance(potential)) {
             leader = Optional.of(clazz.cast(potential))
@@ -155,8 +153,8 @@ class LinkingHandler<T>(
             dominantID: EntityDataAccessor<Int>,
             dominatedID: EntityDataAccessor<Int>
         ) {
-            entity.entityData.set(dominantID, -1)
-            entity.entityData.set(dominatedID, -1)
+            entity.entityData?.set(dominantID, -1)
+            entity.entityData?.set(dominatedID, -1)
         }
     }
 }

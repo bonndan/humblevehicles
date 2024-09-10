@@ -24,30 +24,25 @@ import java.util.function.UnaryOperator
  * @author Choonster
  */
 object ModDataComponents {
-    private val DATA_COMPONENT_TYPES: DeferredRegister<DataComponentType<*>> =
-        DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, HumVeeMod.MOD_ID)
+
+    private val DATA_COMPONENT_TYPES = DeferredRegister.createDataComponents(HumVeeMod.MOD_ID)
 
     private var isInitialised = false
 
-    @JvmField
-    val TAG_PROPERTIES: Supplier<DataComponentType<CompoundTag?>> = register(
-        "tag_properties"
-    ) { builder: DataComponentType.Builder<CompoundTag?> ->
-        builder
+    private val TAG_PROPERTIES_BUILDER: DataComponentType.Builder<CompoundTag> =
+        DataComponentType.Builder<CompoundTag>()
             .persistent(CompoundTag.CODEC) //TODO.networkSynchronized(CompoundTag.NETWORK_CODEC)
             .cacheEncoding()
-    }
 
-
-    @JvmField
-    val ENERGY: Supplier<DataComponentType<EnergyStorage>> = register(
-        "energy"
-    ) { builder: DataComponentType.Builder<EnergyStorage> ->
-        builder
+    private val ENERGY_PROPERTIES_BUILDER: DataComponentType.Builder<EnergyStorage> =
+        DataComponentType.Builder<EnergyStorage>()
             .persistent(EnergyProperties.CODEC)
             .networkSynchronized(EnergyProperties.NETWORK_CODEC)
             .cacheEncoding()
-    }
+
+    private var TAG_PROPERTIES: Supplier<DataComponentType<CompoundTag>>? = null
+
+    private var ENERGY: Supplier<DataComponentType<EnergyStorage>>? = null
 
     /**
      * Registers the [DeferredRegister] instance with the mod event bus.
@@ -62,7 +57,20 @@ object ModDataComponents {
 
         DATA_COMPONENT_TYPES.register(modEventBus)
 
+        TAG_PROPERTIES = register("tag_properties") { TAG_PROPERTIES_BUILDER }
+        ENERGY = register("energy") { ENERGY_PROPERTIES_BUILDER }
+
         isInitialised = true
+    }
+
+    fun getCompoundTag(): Supplier<DataComponentType<CompoundTag>> {
+        if (!isInitialised) throw IllegalStateException("Get before initialised")
+
+        return TAG_PROPERTIES!!
+    }
+
+    fun getEnergyStorage(): Supplier<DataComponentType<EnergyStorage>> {
+        return ENERGY!!
     }
 
     private fun <T> register(

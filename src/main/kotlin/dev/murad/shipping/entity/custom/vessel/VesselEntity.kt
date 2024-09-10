@@ -140,7 +140,7 @@ abstract class VesselEntity protected constructor(type: EntityType<out WaterAnim
 
     override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
         super.defineSynchedData(pBuilder)
-        getEntityData().set(COLOR_DATA, -1)
+        getEntityData()?.set(COLOR_DATA, -1)
         LinkingHandler.defineSynchedData(this, DOMINANT_ID, DOMINATED_ID)
     }
 

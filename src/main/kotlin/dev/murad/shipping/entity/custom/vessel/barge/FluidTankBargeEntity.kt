@@ -48,8 +48,8 @@ class FluidTankBargeEntity : AbstractBargeEntity {
 
     protected override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
         super.defineSynchedData(pBuilder)
-        entityData.set<String?>(FluidTankBargeEntity.Companion.FLUID_TYPE, "minecraft:empty")
-        entityData.set<Int?>(FluidTankBargeEntity.Companion.VOLUME, 0)
+        entityData.set<String>(FLUID_TYPE, "minecraft:empty")
+        entityData.set<Int>(VOLUME, 0)
     }
 
     override fun doInteract(player: Player?) {

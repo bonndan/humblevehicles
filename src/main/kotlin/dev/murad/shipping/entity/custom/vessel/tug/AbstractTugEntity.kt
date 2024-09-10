@@ -62,7 +62,7 @@ abstract class AbstractTugEntity(type: EntityType<out WaterAnimal>, world: Level
     private val routeItemHandler: ItemStackHandler = createRouteItemHandler()
     private var contentsChanged: Boolean = false
     private var isDocked: Boolean = false
-    fun isDocked() : Boolean = isDocked
+    fun isDocked(): Boolean = isDocked
     private var remainingStallTime: Int = 0
     private var swimSpeedMult: Double = 1.0
 
@@ -126,7 +126,7 @@ abstract class AbstractTugEntity(type: EntityType<out WaterAnimal>, world: Level
     }
 
     override fun owner(): String? {
-        return entityData.get(OWNER)
+        return entityData?.get(OWNER)
     }
 
     override fun isPushedByFluid(): Boolean {
@@ -284,7 +284,7 @@ abstract class AbstractTugEntity(type: EntityType<out WaterAnimal>, world: Level
     override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
         super.onSyncedDataUpdated(key)
 
-        if (level().isClientSide) {
+        if (level().isClientSide && entityData != null) {
             if (INDEPENDENT_MOTION == key) {
                 independentMotion = entityData.get(INDEPENDENT_MOTION)
             }
@@ -418,8 +418,8 @@ abstract class AbstractTugEntity(type: EntityType<out WaterAnimal>, world: Level
 
     override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
         super.defineSynchedData(pBuilder)
-        entityData.set(INDEPENDENT_MOTION, false)
-        entityData.set(OWNER, "")
+        entityData?.set(INDEPENDENT_MOTION, false)
+        entityData?.set(OWNER, "")
     }
 
 

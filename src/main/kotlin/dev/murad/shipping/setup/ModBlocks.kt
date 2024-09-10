@@ -9,6 +9,8 @@ import dev.murad.shipping.block.guiderail.TugGuideRailBlock
 import dev.murad.shipping.block.rail.*
 import dev.murad.shipping.block.rapidhopper.RapidHopperBlock
 import dev.murad.shipping.block.vesseldetector.VesselDetectorBlock
+import dev.murad.shipping.setup.Registration.BLOCKS
+import dev.murad.shipping.setup.Registration.ITEMS
 import dev.murad.shipping.util.MultiMap
 import net.minecraft.resources.ResourceKey
 import net.minecraft.world.item.BlockItem
@@ -21,8 +23,6 @@ import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.state.BlockBehaviour
 import net.minecraft.world.level.material.MapColor
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.util.function.Supplier
 
 
@@ -31,11 +31,13 @@ object ModBlocks {
     private val PRIVATE_TAB_REGISTRY = MultiMap<ResourceKey<CreativeModeTab>, Supplier<BlockItem>>()
 
     // Taken from IRON_BLOCK
-    private val METAL_BLOCK_BEHAVIOUR: BlockBehaviour.Properties =
-        BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(0.5f, 6.0f).sound(SoundType.METAL)
-    private val RAIL_BLOCK_BEHAVIOUR: BlockBehaviour.Properties = BlockBehaviour.Properties.ofFullCopy(Blocks.RAIL)
+    private val METAL_BLOCK_BEHAVIOUR: BlockBehaviour.Properties = BlockBehaviour.Properties
+        .of()
+        .mapColor(MapColor.METAL)
+        .strength(0.5f, 6.0f)
+        .sound(SoundType.METAL)
 
-    private val logger: Logger = LoggerFactory.getLogger(ModBlocks::class.java)
+    private val RAIL_BLOCK_BEHAVIOUR: BlockBehaviour.Properties = BlockBehaviour.Properties.ofFullCopy(Blocks.RAIL)
 
 
     val TUG_DOCK: Supplier<Block> = register(
@@ -131,14 +133,9 @@ object ModBlocks {
         )
     )
 
-    @JvmStatic
     fun buildCreativeTab(event: BuildCreativeModeTabContentsEvent) {
         PRIVATE_TAB_REGISTRY.getOrDefault(event.tabKey, ArrayList())
             .forEach { supplier: Supplier<BlockItem> -> event.accept(supplier.get()) }
-    }
-
-    private fun <T : Block> registerBlock(name: String, block: Supplier<T>): Supplier<T> {
-        return Registration.BLOCKS.register(name, block)
     }
 
     private fun register(
@@ -146,15 +143,13 @@ object ModBlocks {
         block: Supplier<Block>,
         tabs: List<ResourceKey<CreativeModeTab>>
     ): Supplier<Block> {
-        val ret = registerBlock(name, block)
-        val item: Supplier<BlockItem> =
-            Registration.ITEMS.register(name, Supplier { BlockItem(ret.get(), Item.Properties()) })
+
+        val ret = BLOCKS.register(name, block)
+        val item = ITEMS.registerItem(name) { _ -> BlockItem(ret.get(), Item.Properties()) }
 
         for (tab in tabs) {
             PRIVATE_TAB_REGISTRY.putInsert(tab, item)
         }
-
-        logger.info("Registered block ${name}")
 
         return ret
     }

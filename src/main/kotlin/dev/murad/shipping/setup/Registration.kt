@@ -20,10 +20,10 @@ import net.neoforged.neoforge.registries.DeferredRegister
 
 object Registration {
 
-    val BLOCKS: DeferredRegister<Block> = createRegister(BuiltInRegistries.BLOCK)
+    val BLOCKS: DeferredRegister<Block> = DeferredRegister.createBlocks(HumVeeMod.MOD_ID);
     val CONTAINERS: DeferredRegister<MenuType<*>> = createRegister(BuiltInRegistries.MENU)
     val ENTITIES: DeferredRegister<EntityType<*>> = createRegister(BuiltInRegistries.ENTITY_TYPE)
-    val ITEMS: DeferredRegister<Item> = createRegister(BuiltInRegistries.ITEM)
+    val ITEMS : DeferredRegister.Items = DeferredRegister.createItems(HumVeeMod.MOD_ID);
     val RECIPE_SERIALIZERS: DeferredRegister<RecipeSerializer<*>> = createRegister(BuiltInRegistries.RECIPE_SERIALIZER)
     val TILE_ENTITIES: DeferredRegister<BlockEntityType<*>> = createRegister(BuiltInRegistries.BLOCK_ENTITY_TYPE)
     val SOUND_EVENTS: DeferredRegister<SoundEvent> = createRegister(BuiltInRegistries.SOUND_EVENT)
@@ -43,6 +43,7 @@ object Registration {
         SOUND_EVENTS.register(eventBus)
 
         //TODO static calls used to ensure correct loading sequence
+        ModDataComponents.initialise(eventBus)
         ModItems.register()
         ModBlocks.register()
         ModEntityTypes.register()
@@ -55,6 +56,5 @@ object Registration {
         ModSounds.register()
         eventBus.addListener { event: RegisterCapabilitiesEvent -> CauldronFluidContent.registerCapabilities(event) }
 
-        ModDataComponents.initialise(eventBus)
     }
 }

@@ -18,6 +18,7 @@ import kotlin.collections.set
 import kotlin.collections.setOf
 
 object InventoryUtils {
+
     fun mayMoveIntoInventory(target: Container, source: Container): Boolean {
         if (source.isEmpty) {
             return false
@@ -62,7 +63,6 @@ object InventoryUtils {
         return false
     }
 
-    @JvmStatic
     fun isEmpty(itemHandler: ItemStackHandler): Boolean {
         for (i in 0 until itemHandler.slots) {
             if (!itemHandler.getStackInSlot(i).isEmpty && itemHandler.getStackInSlot(i).item != Items.AIR) {
@@ -72,7 +72,6 @@ object InventoryUtils {
         return true
     }
 
-    @JvmStatic
     fun moveItemStackIntoHandler(handler: ItemStackHandler, stack: ItemStack): ItemStack {
         var stack = stack
         val slots = handler.slots
@@ -96,12 +95,11 @@ object InventoryUtils {
         }
     }
 
-    @JvmStatic
     fun getEnergyCapabilityInSlot(slot: Int, handler: ItemStackHandler): IEnergyStorage? {
         val stack = handler.getStackInSlot(slot)
         if (!stack.isEmpty) {
             val energyStorage = Optional.ofNullable<IEnergyStorage>(
-                stack.components.get(ModDataComponents.ENERGY.get())
+                stack.components.get(ModDataComponents.getEnergyStorage().get())
             )
             if (energyStorage.isPresent) {
                 return energyStorage.get()
