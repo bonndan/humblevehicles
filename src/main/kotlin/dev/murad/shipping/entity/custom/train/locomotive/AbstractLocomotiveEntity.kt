@@ -226,8 +226,8 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
     override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
         super.defineSynchedData(pBuilder)
-        entityData.set(INDEPENDENT_MOTION, false)
-        entityData.set(OWNER, "")
+        pBuilder.define(INDEPENDENT_MOTION, false)
+        pBuilder.define(OWNER, "")
     }
 
     private fun tickMovement() {

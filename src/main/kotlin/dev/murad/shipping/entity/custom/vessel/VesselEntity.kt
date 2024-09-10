@@ -49,7 +49,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-abstract class VesselEntity protected constructor(type: EntityType<out WaterAnimal>, world: Level) :
+abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
     WaterAnimal(type, world), LinkableEntity<VesselEntity>, Colorable {
 
     var isFrozen: Boolean = false
@@ -140,13 +140,14 @@ abstract class VesselEntity protected constructor(type: EntityType<out WaterAnim
 
     override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
         super.defineSynchedData(pBuilder)
-        getEntityData()?.set(COLOR_DATA, -1)
-        LinkingHandler.defineSynchedData(this, DOMINANT_ID, DOMINATED_ID)
+        pBuilder.define(COLOR_DATA, -1)
+        pBuilder.define(DOMINANT_ID, -1)
+        pBuilder.define(DOMINATED_ID, -1)
     }
 
     override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
         super.onSyncedDataUpdated(key)
-        linkingHandler.onSyncedDataUpdated(key)
+        getLinkingHandler()?.onSyncedDataUpdated(key) //TODO how can this be null?
     }
 
     override fun getColor(): Int? {
@@ -745,10 +746,9 @@ abstract class VesselEntity protected constructor(type: EntityType<out WaterAnim
 
 
     companion object {
-        @JvmField
-        val COLOR_DATA: EntityDataAccessor<Int> = SynchedEntityData.defineId(
-            VesselEntity::class.java, EntityDataSerializers.INT
-        )
+
+        val COLOR_DATA: EntityDataAccessor<Int> =
+            SynchedEntityData.defineId(VesselEntity::class.java, EntityDataSerializers.INT)
 
         private const val NAMETAG_RENDERING_DISTANCE = 15.0
 

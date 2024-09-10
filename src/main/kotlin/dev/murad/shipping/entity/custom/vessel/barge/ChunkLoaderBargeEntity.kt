@@ -27,29 +27,29 @@ class ChunkLoaderBargeEntity : AbstractBargeEntity {
         mobileChunkLoader = MobileChunkLoader(this)
     }
 
-    public override fun remove(r: RemovalReason) {
+     override fun remove(r: RemovalReason) {
         super.remove(r)
         if (!this.level().isClientSide) {
             mobileChunkLoader.remove()
         }
     }
 
-    public override fun tick() {
+     override fun tick() {
         super.tick()
         if (!this.level().isClientSide) {
             mobileChunkLoader.serverTick()
         }
     }
 
-    public override fun addAdditionalSaveData(p_213281_1_: CompoundTag) {
+     override fun addAdditionalSaveData(p_213281_1_: CompoundTag) {
         mobileChunkLoader.addAdditionalSaveData(p_213281_1_)
     }
 
-    public override fun readAdditionalSaveData(p_70037_1_: CompoundTag) {
+    override fun readAdditionalSaveData(p_70037_1_: CompoundTag) {
         mobileChunkLoader.readAdditionalSaveData(p_70037_1_)
     }
 
-    public override fun getDropItem(): Item? {
+    override fun getDropItem(): Item? {
         return ModItems.SEATER_BARGE.get()
     }
 

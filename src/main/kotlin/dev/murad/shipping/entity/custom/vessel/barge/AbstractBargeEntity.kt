@@ -19,6 +19,7 @@ import java.util.*
 
 abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, world: Level) :
     VesselEntity(type, world) {
+
     constructor(
         type: EntityType<out AbstractBargeEntity>,
         worldIn: Level,

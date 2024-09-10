@@ -24,9 +24,18 @@ import net.neoforged.neoforge.fluids.FluidUtil
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank
 
 class FluidTankCarEntity : AbstractWagonEntity {
-    protected var tank: FluidTank = object : FluidTank(
-        CAPACITY
-    ) {
+
+    companion object {
+        var CAPACITY: Int = FluidType.BUCKET_VOLUME * 10
+        private val VOLUME: EntityDataAccessor<Int> = SynchedEntityData.defineId(
+            AbstractTugEntity::class.java, EntityDataSerializers.INT
+        )
+        private val FLUID_TYPE: EntityDataAccessor<String> = SynchedEntityData.defineId(
+            AbstractTugEntity::class.java, EntityDataSerializers.STRING
+        )
+    }
+
+    protected var tank: FluidTank = object : FluidTank(CAPACITY) {
         override fun onContentsChanged() {
             sendInfoToClient()
         }
@@ -49,8 +58,8 @@ class FluidTankCarEntity : AbstractWagonEntity {
 
     override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
         super.defineSynchedData(pBuilder)
-        entityData.set(FLUID_TYPE, "minecraft:empty")
-        entityData.set(VOLUME, 0)
+        pBuilder.define(FLUID_TYPE, "minecraft:empty")
+        pBuilder.define(VOLUME, 0)
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
@@ -98,13 +107,5 @@ class FluidTankCarEntity : AbstractWagonEntity {
         }
     }
 
-    companion object {
-        var CAPACITY: Int = FluidType.BUCKET_VOLUME * 10
-        private val VOLUME: EntityDataAccessor<Int> = SynchedEntityData.defineId(
-            AbstractTugEntity::class.java, EntityDataSerializers.INT
-        )
-        private val FLUID_TYPE: EntityDataAccessor<String> = SynchedEntityData.defineId(
-            AbstractTugEntity::class.java, EntityDataSerializers.STRING
-        )
-    }
+
 }

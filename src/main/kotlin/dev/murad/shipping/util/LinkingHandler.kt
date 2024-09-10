@@ -147,14 +147,4 @@ class LinkingHandler<T>(
         }
     }
 
-    companion object {
-        fun defineSynchedData(
-            entity: Entity,
-            dominantID: EntityDataAccessor<Int>,
-            dominatedID: EntityDataAccessor<Int>
-        ) {
-            entity.entityData?.set(dominantID, -1)
-            entity.entityData?.set(dominatedID, -1)
-        }
-    }
 }

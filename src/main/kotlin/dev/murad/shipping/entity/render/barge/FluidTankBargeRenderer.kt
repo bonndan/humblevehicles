@@ -57,7 +57,7 @@ class FluidTankBargeRenderer<T : FluidTankBargeEntity> protected constructor(
     class Builder<T : FluidTankBargeEntity>(context: EntityRendererProvider.Context) :
         MultipartVesselRenderer.Builder<T>(context) {
         override fun build(): FluidTankBargeRenderer<T> {
-            return FluidTankBargeRenderer<T>(context, baseModelPack, insertModelPack, trimModelPack)
+            return FluidTankBargeRenderer(context, baseModelPack, insertModelPack, trimModelPack)
         }
     }
 }

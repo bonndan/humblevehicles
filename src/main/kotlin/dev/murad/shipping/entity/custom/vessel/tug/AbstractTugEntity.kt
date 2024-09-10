@@ -7,6 +7,7 @@ import dev.murad.shipping.capability.StallingCapability
 import dev.murad.shipping.entity.accessor.DataAccessor
 import dev.murad.shipping.entity.custom.HeadVehicle
 import dev.murad.shipping.entity.custom.vessel.VesselEntity
+import dev.murad.shipping.entity.custom.vessel.barge.AbstractBargeEntity
 import dev.murad.shipping.entity.navigation.TugPathNavigator
 import dev.murad.shipping.item.TugRouteItem
 import dev.murad.shipping.item.TugRouteItem.Companion.getRoute
@@ -53,8 +54,8 @@ import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.hypot
 
-abstract class AbstractTugEntity(type: EntityType<out WaterAnimal>, world: Level) :
-    VesselEntity(type, world), LinkableEntityHead<VesselEntity>, Container, WorldlyContainer, HeadVehicle {
+abstract class AbstractTugEntity :
+    VesselEntity, LinkableEntityHead<VesselEntity>, Container, WorldlyContainer, HeadVehicle {
 
     protected val enrollmentHandler: ChunkManagerEnrollmentHandler
 
@@ -80,6 +81,8 @@ abstract class AbstractTugEntity(type: EntityType<out WaterAnimal>, world: Level
     private var nextStop: Int = 0
 
     protected fun getNextStop(): Int = nextStop
+
+    constructor(type: EntityType<out WaterAnimal>, world: Level) : super(type, world)
 
     constructor(type: EntityType<out WaterAnimal>, worldIn: Level, x: Double, y: Double, z: Double) : this(
         type,
@@ -418,8 +421,8 @@ abstract class AbstractTugEntity(type: EntityType<out WaterAnimal>, world: Level
 
     override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
         super.defineSynchedData(pBuilder)
-        entityData?.set(INDEPENDENT_MOTION, false)
-        entityData?.set(OWNER, "")
+        pBuilder.define(INDEPENDENT_MOTION, false)
+        pBuilder.define(OWNER, "")
     }
 
 

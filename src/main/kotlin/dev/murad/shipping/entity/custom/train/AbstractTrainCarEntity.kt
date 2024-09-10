@@ -99,12 +99,6 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
             return Optional.empty()
         }
 
-
-    override fun canBeCollidedWith(): Boolean {
-        // future me: we don't want to change this, because then you can't push the cart
-        return super.canBeCollidedWith()
-    }
-
     public override fun getDropItem(): Item {
         return pickResult.item
     }
@@ -160,9 +154,9 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
 
     override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
         super.defineSynchedData(pBuilder)
-        getEntityData().set(DOMINANT_ID, -1)
-        getEntityData().set(DOMINATED_ID, -1)
-        getEntityData().set(COLOR_DATA, -1)
+        pBuilder.define(DOMINANT_ID, -1)
+        pBuilder.define(DOMINATED_ID, -1)
+        pBuilder.define(COLOR_DATA, -1)
     }
 
 
@@ -704,11 +698,8 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
             AbstractTrainCarEntity::class.java, EntityDataSerializers.INT
         )
         protected var TRAIN_SPEED: Double = ShippingConfig.Server.TRAIN_MAX_SPEED!!.get()
-        private val EXITS: Map<RailShape?, Pair<Vec3i, Vec3i>> = Util.make(
-            Maps.newEnumMap(
-                RailShape::class.java
-            )
-        ) { enumMap: EnumMap<RailShape?, Pair<Vec3i, Vec3i>> ->
+        private val EXITS: Map<RailShape?, Pair<Vec3i, Vec3i>> = Util.make(Maps.newEnumMap(RailShape::class.java))
+        { enumMap: EnumMap<RailShape?, Pair<Vec3i, Vec3i>> ->
             val west = Direction.WEST.normal
             val east = Direction.EAST.normal
             val north = Direction.NORTH.normal
