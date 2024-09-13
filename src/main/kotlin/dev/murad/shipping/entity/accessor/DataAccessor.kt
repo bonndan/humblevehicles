@@ -3,7 +3,7 @@ package dev.murad.shipping.entity.accessor
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.world.inventory.ContainerData
 
-open class DataAccessor(var rawData: ContainerData) : ContainerData {
+open class DataAccessor(private var rawData: ContainerData) : ContainerData {
 
     fun write(buffer: FriendlyByteBuf) {
         for (i in 0 until rawData.count) {
@@ -11,8 +11,7 @@ open class DataAccessor(var rawData: ContainerData) : ContainerData {
         }
     }
 
-    val entityUUID: Int
-        get() = rawData[0]
+    fun getEntityUUID(): Int? = if (rawData.count == 0) { null } else rawData[0]
 
     override fun get(i: Int): Int {
         return rawData[i]
@@ -24,5 +23,9 @@ open class DataAccessor(var rawData: ContainerData) : ContainerData {
 
     override fun getCount(): Int {
         return rawData.count
+    }
+
+    fun getRawData(): ContainerData {
+        return rawData
     }
 }

@@ -97,9 +97,9 @@ class CornerGuideRailBlock(properties: Properties) : Block(properties) {
     companion object {
         protected val SHAPE: VoxelShape = box(1.0, 0.0, 1.0, 15.0, 15.0, 15.0)
 
-        @JvmField
+        
         val FACING: DirectionProperty = HorizontalDirectionalBlock.FACING
-        @JvmField
+        
         val INVERTED: BooleanProperty = BlockStateProperties.INVERTED
 
 

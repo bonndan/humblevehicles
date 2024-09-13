@@ -23,32 +23,21 @@ class EnergyHeadVehicleDataAccessor(private val data: ContainerData) : HeadVehic
         }
 
     class Builder : HeadVehicleDataAccessor.Builder() {
-        init {
-            this.arr = SupplierIntArray(20)
-        }
-
+       
         fun withEnergy(energy: IntSupplier): Builder {
-            arr!!.setSupplier(
-                15
-            ) { energy.asInt and SHORT_MASK }
-            arr!!.setSupplier(
-                16
-            ) { (energy.asInt shr 16) and SHORT_MASK }
+            arr.setSupplier(15) { energy.asInt and SHORT_MASK }
+            arr.setSupplier(16) { (energy.asInt shr 16) and SHORT_MASK }
             return this
         }
 
         fun withCapacity(capacity: IntSupplier): Builder {
-            arr!!.setSupplier(
-                17
-            ) { capacity.asInt and SHORT_MASK }
-            arr!!.setSupplier(
-                18
-            ) { (capacity.asInt shr 16) and SHORT_MASK }
+            arr.setSupplier(17) { capacity.asInt and SHORT_MASK }
+            arr.setSupplier(18) { (capacity.asInt shr 16) and SHORT_MASK }
             return this
         }
 
         override fun build(): EnergyHeadVehicleDataAccessor {
-            return EnergyHeadVehicleDataAccessor(this.arr)
+            return EnergyHeadVehicleDataAccessor(arr)
         }
     }
 

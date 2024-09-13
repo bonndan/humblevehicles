@@ -24,7 +24,7 @@ class SteamHeadVehicleScreen<T>(menu: SteamHeadVehicleContainer<T>, inventory: I
 
         graphics.blit(GUI, i, j, 0, 0, this.xSize, this.ySize)
         if (menu.isLit) {
-            val k = menu.burnProgress
+            val k = menu.getBurnProgress()
             graphics.blit(GUI, i + 43, j + 23 + 12 - k, 176, 12 - k, 14, k + 1)
         }
     }

@@ -22,14 +22,14 @@ data class SetEnginePacket(val locoId: Int, val state: Boolean) : CustomPacketPa
 
         val LOCATION: ResourceLocation = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "locomotive_channel_engine_packet")
 
-        @JvmField
+        
         val TYPE: CustomPacketPayload.Type<SetEnginePacket> = CustomPacketPayload.Type<SetEnginePacket>(LOCATION)
 
         // Each pair of elements defines the stream codec of the element to encode/decode and the getter for the element to encode
         // 'name' will be encoded and decoded as a string
         // 'age' will be encoded and decoded as an integer
         // The final parameter takes in the previous parameters in the order they are provided to construct the payload object
-        @JvmField
+        
         val STREAM_CODEC: StreamCodec<ByteBuf?, SetEnginePacket> =
             StreamCodec.composite<ByteBuf, SetEnginePacket, Int, Boolean>(
                 ByteBufCodecs.VAR_INT,

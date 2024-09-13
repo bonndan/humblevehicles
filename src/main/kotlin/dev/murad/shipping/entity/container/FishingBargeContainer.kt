@@ -11,12 +11,10 @@ import net.neoforged.neoforge.items.SlotItemHandler
 import java.util.*
 
 // Unused
-class FishingBargeContainer(
-    windowId: Int, world: Level, entityId: Int,
-    playerInventory: Inventory, player: Player?
-) :
+class FishingBargeContainer(windowId: Int, world: Level, entityId: Int?, playerInventory: Inventory, player: Player?) :
     AbstractItemHandlerContainer(ModMenuTypes.FISHING_BARGE_CONTAINER.get(), windowId, playerInventory, player) {
-    private val fishingBargeEntity = world.getEntity(entityId) as FishingBargeEntity?
+
+    private val fishingBargeEntity = entityId?.let { world.getEntity(it) } as FishingBargeEntity?
 
     init {
         layoutPlayerInventorySlots(8, 49 + 18 * 2)

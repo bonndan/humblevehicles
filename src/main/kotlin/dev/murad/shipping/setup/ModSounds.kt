@@ -6,7 +6,7 @@ import net.minecraft.sounds.SoundEvent
 import java.util.function.Supplier
 
 object ModSounds {
-    @JvmField
+    
     val STEAM_TUG_WHISTLE: Supplier<SoundEvent> = Registration.SOUND_EVENTS.register("steam_tug_whistle",
         Supplier {
             SoundEvent.createFixedRangeEvent(
@@ -17,7 +17,7 @@ object ModSounds {
             )
         })
 
-    @JvmField
+    
     val TUG_DOCKING: Supplier<SoundEvent> = Registration.SOUND_EVENTS.register("tug_docking",
         Supplier {
             SoundEvent.createFixedRangeEvent(
@@ -28,7 +28,7 @@ object ModSounds {
             )
         })
 
-    @JvmField
+    
     val TUG_UNDOCKING: Supplier<SoundEvent> = Registration.SOUND_EVENTS.register("tug_undocking",
         Supplier {
             SoundEvent.createFixedRangeEvent(

@@ -19,7 +19,7 @@ interface StallingCapability {
     fun unfreeze()
 
     companion object {
-        @JvmField
+        
         val STALLING_CAPABILITY: EntityCapability<StallingCapability, Void?> = EntityCapability.createVoid(
             ResourceLocation.parse("item_handler"),  //"create"
             StallingCapability::class.java

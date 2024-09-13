@@ -62,34 +62,34 @@ abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, wo
     }
 
     override fun setDominated(entity: VesselEntity) {
-        getLinkingHandler().follower = Optional.of(entity)
+        getLinkingHandler()?.follower = Optional.of(entity)
     }
 
     override fun setDominant(entity: VesselEntity) {
         this.setTrain(entity.getTrain())
-        getLinkingHandler().leader = Optional.of(entity)
+        getLinkingHandler()?.leader = Optional.of(entity)
     }
 
     override fun removeDominated() {
         if (!this.isAlive) {
             return
         }
-        getLinkingHandler().follower = Optional.empty()
-        getLinkingHandler().train!!.tail = this
+        getLinkingHandler()?.follower = Optional.empty()
+        getLinkingHandler()?.train!!.tail = this
     }
 
     override fun removeDominant() {
         if (!this.isAlive) {
             return
         }
-        getLinkingHandler().leader = Optional.empty()
+        getLinkingHandler()?.leader = Optional.empty()
         this.setTrain(Train(this))
     }
 
     override fun setTrain(train: Train<VesselEntity>) {
-        getLinkingHandler().train = train
+        getLinkingHandler()?.train = train
         train.tail = this
-        getLinkingHandler().follower.ifPresent { dominated: VesselEntity ->
+        getLinkingHandler()?.follower?.ifPresent { dominated: VesselEntity ->
             // avoid recursion loops
             if (dominated.getTrain() != train) {
                 dominated.setTrain(train)
@@ -98,7 +98,7 @@ abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, wo
     }
 
     override fun getTrain(): Train<VesselEntity> {
-        return getLinkingHandler().train!!
+        return getLinkingHandler()?.train!!
     }
 
     override fun remove(r: RemovalReason) {
@@ -114,11 +114,11 @@ abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, wo
 
     val isDockable: Boolean
         // hack to disable hoppers
-        get() = getLinkingHandler().leader.map { dom: VesselEntity? ->
+        get() = getLinkingHandler()?.leader?.map { dom: VesselEntity? ->
             this.distanceToSqr(
                 dom
             ) < 1.1
-        }.orElse(true)
+        }?.orElse(true) == true
 
     override fun allowDockInterface(): Boolean {
         return isDockable
@@ -162,7 +162,7 @@ abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, wo
         }
 
         private fun delegate(): Optional<StallingCapability> {
-            val head = getLinkingHandler().train!!.head
+            val head = getLinkingHandler()?.train!!.head
             if (head is AbstractTugEntity) {
                 return Optional.ofNullable<StallingCapability>(head.getCapability(StallingCapability.STALLING_CAPABILITY))
             }
@@ -172,6 +172,6 @@ abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, wo
 
     init {
         this.blocksBuilding = true
-        getLinkingHandler().train = Train(this)
+        getLinkingHandler()?.train = Train(this)
     }
 }

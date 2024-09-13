@@ -415,7 +415,7 @@ abstract class AbstractTugEntity :
     }
 
     fun shouldFreezeTrain(): Boolean {
-        return !enrollmentHandler.mayMove() || (stalling.isStalled() && !isDocked) || getLinkingHandler().train!!.asList()
+        return !enrollmentHandler.mayMove() || (stalling.isStalled() && !isDocked) || getLinkingHandler()?.train!!.asList()
             .stream().anyMatch(VesselEntity::isFrozen)
     }
 
@@ -442,15 +442,15 @@ abstract class AbstractTugEntity :
     }
 
     override fun setDominated(entity: VesselEntity) {
-        getLinkingHandler().follower = (Optional.of(entity))
+        getLinkingHandler()?.follower = (Optional.of(entity))
     }
 
     override fun setDominant(entity: VesselEntity) {
     }
 
     override fun removeDominated() {
-        getLinkingHandler().follower = (Optional.empty())
-        getLinkingHandler().train!!.tail = this
+        getLinkingHandler()?.follower = Optional.empty()
+        getLinkingHandler()?.train!!.tail = this
     }
 
     override fun hasOwner(): Boolean {
@@ -461,11 +461,11 @@ abstract class AbstractTugEntity :
     }
 
     override fun setTrain(train: Train<VesselEntity>) {
-        getLinkingHandler().train = train
+        getLinkingHandler()?.train = train
     }
 
     override fun getTrain(): Train<VesselEntity> {
-        return getLinkingHandler().train!!
+        return getLinkingHandler()?.train!!
     }
 
     override fun remove(r: RemovalReason) {
@@ -633,7 +633,7 @@ abstract class AbstractTugEntity :
 
     init {
         this.blocksBuilding = true
-        getLinkingHandler().train = (Train(this))
+        getLinkingHandler()!!.train = (Train(this))
         this.path = TugRoute()
         frontHitbox = VehicleFrontPart(this)
         enrollmentHandler = ChunkManagerEnrollmentHandler(this)

@@ -5,8 +5,7 @@ import java.util.function.IntSupplier
 
 class SupplierIntArray(count: Int) : ContainerData {
     private val count = 0
-    private val suppliers =
-        arrayOfNulls<IntSupplier>(count)
+    private val suppliers = arrayOfNulls<IntSupplier>(count)
 
     override fun get(i: Int): Int {
         return if (suppliers[i] == null) 0 else suppliers[i]!!.asInt

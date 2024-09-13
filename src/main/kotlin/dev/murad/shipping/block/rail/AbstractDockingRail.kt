@@ -91,7 +91,7 @@ protected constructor(pProperties: Properties?) : BaseRailBlock(true, pPropertie
     }
 
     companion object {
-        @JvmField
+        
         val RAIL_SHAPE: EnumProperty<RailShape> = RailShapeUtil.RAIL_SHAPE_STRAIGHT_FLAT
 
         @JvmStatic

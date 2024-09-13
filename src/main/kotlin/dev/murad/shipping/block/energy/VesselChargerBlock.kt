@@ -125,7 +125,7 @@ class VesselChargerBlock(p_i48440_1_: Properties?) : Block(p_i48440_1_), EntityB
     }
 
     companion object {
-        @JvmField
+        
         val FACING: DirectionProperty = HorizontalDirectionalBlock.FACING
         private val SHAPE_N = Stream.of(
             box(3.0, 2.0, 3.0, 13.0, 13.0, 13.0),

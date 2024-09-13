@@ -60,7 +60,7 @@ object ModTileEntitiesTypes {
         ModBlocks.VESSEL_CHARGER
     )
 
-    @JvmField
+    
     val RAPID_HOPPER: Supplier<BlockEntityType<RapidHopperTileEntity>> = register(
         "rapid_hopper",
         { pWorldPosition: BlockPos, pBlockState: BlockState -> RapidHopperTileEntity(pWorldPosition, pBlockState) },

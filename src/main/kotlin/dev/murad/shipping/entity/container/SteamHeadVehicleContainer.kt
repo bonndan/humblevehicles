@@ -8,7 +8,6 @@ import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
 import net.neoforged.neoforge.capabilities.Capabilities
-import net.neoforged.neoforge.items.IItemHandler
 import net.neoforged.neoforge.items.SlotItemHandler
 import java.util.*
 
@@ -31,9 +30,10 @@ class SteamHeadVehicleContainer<T>(
             Optional.ofNullable(entity!!.getCapability(Capabilities.ItemHandler.ENTITY))
                 .ifPresent { h -> addSlot(SlotItemHandler(h, 0, 42, 40)) }
         }
-        this.addDataSlots(data.rawData)
+        this.addDataSlots(data.getRawData())
     }
 
-    val burnProgress: Int
-        get() = data.burnProgress
+    fun getBurnProgress(): Int {
+        return data.getBurnProgress()
+    }
 }

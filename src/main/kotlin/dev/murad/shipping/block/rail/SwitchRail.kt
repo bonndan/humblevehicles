@@ -257,13 +257,13 @@ class SwitchRail : BaseRailBlock, MultiShapeRail {
         val RAIL_SHAPE: EnumProperty<RailShape> = RailShapeUtil.RAIL_SHAPE_STRAIGHT_FLAT
 
         // facing denotes direction of straight out
-        @JvmField
+        
         val FACING: EnumProperty<Direction> = BlockStateProperties.HORIZONTAL_FACING
-        @JvmField
+        
         val OUT_DIRECTION: EnumProperty<OutDirection> = EnumProperty.create("out_direction", OutDirection::class.java)
 
         // is this rail track engaged?
-        @JvmField
+        
         val POWERED: BooleanProperty = BlockStateProperties.POWERED
 
         val CODEC: MapCodec<SwitchRail?> = simpleCodec { pProperties: Properties ->

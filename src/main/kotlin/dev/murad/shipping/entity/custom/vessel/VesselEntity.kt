@@ -61,7 +61,10 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
         DOMINATED_ID
     )
 
-    protected fun getLinkingHandler(): LinkingHandler<VesselEntity> {
+    /**
+     * The linking handler can be null if used in constructors.
+     */
+    protected fun getLinkingHandler(): LinkingHandler<VesselEntity>? {
         return linkingHandler
     }
 
@@ -147,7 +150,7 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
 
     override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
         super.onSyncedDataUpdated(key)
-        getLinkingHandler()?.onSyncedDataUpdated(key) //TODO how can this be null?
+        getLinkingHandler()?.onSyncedDataUpdated(key)
     }
 
     override fun getColor(): Int? {

@@ -16,8 +16,8 @@ abstract class AbstractItemHandlerContainer protected constructor(
     protected var player: Player?
 ) :
     AbstractContainerMenu(menuType, containerId) {
-    private val playerInventory: IItemHandler =
-        InvWrapper(playerInventory)
+
+    private val playerInventory: IItemHandler = InvWrapper(playerInventory)
 
     private fun addSlotRange(handler: IItemHandler, index: Int, x: Int, y: Int, amount: Int, dx: Int): Int {
         var index = index

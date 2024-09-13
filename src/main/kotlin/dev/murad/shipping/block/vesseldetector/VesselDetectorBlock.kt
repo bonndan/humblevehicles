@@ -129,9 +129,9 @@ class VesselDetectorBlock(properties: Properties) : Block(properties), EntityBlo
     }
 
     companion object {
-        @JvmField
+        
         val POWERED: BooleanProperty = BlockStateProperties.POWERED
-        @JvmField
+        
         val FACING: DirectionProperty = BlockStateProperties.FACING
 
         private val PARTICLE = DustParticleOptions(Vector3f(0.9f, 0.65f, 0.2f), 1.0f)

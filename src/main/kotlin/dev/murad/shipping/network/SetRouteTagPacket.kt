@@ -29,12 +29,12 @@ class SetRouteTagPacket(private val routeChecksum: Int, private val isOffhand: B
     }
 
     companion object {
-        @JvmField
+        
         val TYPE: CustomPacketPayload.Type<SetRouteTagPacket?> = CustomPacketPayload.Type<SetRouteTagPacket?>(
             ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "tug_route_channel")
         )
 
-        @JvmField
+        
         val STREAM_CODEC: StreamCodec<ByteBuf?, SetRouteTagPacket?> =
             StreamCodec.composite<ByteBuf?, SetRouteTagPacket?, Int?, Boolean?, CompoundTag?>(
                 ByteBufCodecs.VAR_INT,

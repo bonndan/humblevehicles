@@ -20,23 +20,13 @@ import net.neoforged.neoforge.common.extensions.IMenuTypeExtension
 import java.util.function.Supplier
 
 object ModMenuTypes {
-    private fun makeIntArray(buffer: FriendlyByteBuf): SimpleContainerData {
-        val size = (buffer.readableBytes() + 1) / 4
-        val arr = SimpleContainerData(size)
-        for (i in 0 until size) {
-            arr[i] = buffer.readInt()
-        }
-        return arr
-    }
 
     val TUG_CONTAINER: Supplier<MenuType<SteamHeadVehicleContainer<SteamTugEntity>>> =
         Registration.CONTAINERS.register("tug_container",
             Supplier {
                 IMenuTypeExtension.create { windowId: Int, inv: Inventory, data: RegistryFriendlyByteBuf ->
                     SteamHeadVehicleContainer(
-                        windowId, inv.player.level(), SteamHeadVehicleDataAccessor(
-                            makeIntArray(data)
-                        ), inv, inv.player
+                        windowId, inv.player.level(), SteamHeadVehicleDataAccessor(makeIntArray(data)), inv, inv.player
                     )
                 }
             })
@@ -46,27 +36,28 @@ object ModMenuTypes {
             Supplier {
                 IMenuTypeExtension.create { windowId: Int, inv: Inventory, data: RegistryFriendlyByteBuf ->
                     EnergyHeadVehicleContainer(
-                        windowId, inv.player.level(), EnergyHeadVehicleDataAccessor(
-                            makeIntArray(data)
-                        ), inv, inv.player
+                        windowId, inv.player.level(), EnergyHeadVehicleDataAccessor(makeIntArray(data)), inv, inv.player
                     )
                 }
             })
 
-    @JvmField
     val STEAM_LOCOMOTIVE_CONTAINER: Supplier<MenuType<SteamHeadVehicleContainer<SteamLocomotiveEntity>>> =
         Registration.CONTAINERS.register("steam_locomotive_container",
-            Supplier {
-                IMenuTypeExtension.create { windowId: Int, inv: Inventory, data: RegistryFriendlyByteBuf ->
-                    SteamHeadVehicleContainer(
-                        windowId, inv.player.level(), SteamHeadVehicleDataAccessor(
-                            makeIntArray(data)
-                        ), inv, inv.player
-                    )
-                }
-            })
+            Supplier{IMenuTypeExtension.create(::steamHeadVehicleContainer)}
+        )
 
-    @JvmField
+
+    private fun steamHeadVehicleContainer(windowId: Int, inv: Inventory, data: RegistryFriendlyByteBuf):
+            SteamHeadVehicleContainer<SteamLocomotiveEntity> {
+        return SteamHeadVehicleContainer(
+            windowId,
+            inv.player.level(),
+            SteamHeadVehicleDataAccessor(makeIntArray(data)),
+            inv,
+            inv.player
+        )
+    }
+
     val ENERGY_LOCOMOTIVE_CONTAINER: Supplier<MenuType<EnergyHeadVehicleContainer<EnergyLocomotiveEntity>>> =
         Registration.CONTAINERS.register("energy_locomotive_container",
             Supplier {
@@ -79,7 +70,6 @@ object ModMenuTypes {
                 }
             })
 
-    @JvmField
     val FISHING_BARGE_CONTAINER: Supplier<MenuType<FishingBargeContainer>> =
         Registration.CONTAINERS.register("fishing_barge_container",
             Supplier {
@@ -87,14 +77,14 @@ object ModMenuTypes {
                     FishingBargeContainer(
                         windowId,
                         inv.player.level(),
-                        data.readInt(),
+                        data?.readInt(),
                         inv,
                         inv.player
                     )
                 }
             })
 
-    @JvmField
+
     val TUG_ROUTE_CONTAINER: Supplier<MenuType<TugRouteContainer>> =
         Registration.CONTAINERS.register("tug_route_container",
             Supplier {
@@ -109,4 +99,14 @@ object ModMenuTypes {
 
 
     fun register() {}
+
+    private fun makeIntArray(buffer: FriendlyByteBuf): SimpleContainerData {
+
+        val size = (buffer.readableBytes() + 1) / 4
+        val arr = SimpleContainerData(size)
+        for (i in 0 until size) {
+            arr[i] = buffer.readInt()
+        }
+        return arr
+    }
 }

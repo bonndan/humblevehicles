@@ -5,7 +5,7 @@ import net.neoforged.neoforge.common.ModConfigSpec
 class ShippingConfig {
     object Common {
         val BUILDER: ModConfigSpec.Builder = ModConfigSpec.Builder()
-        @JvmField
+        
         val SPEC: ModConfigSpec
 
         val CREATE_COMPAT: ModConfigSpec.ConfigValue<Boolean>
@@ -21,14 +21,14 @@ class ShippingConfig {
 
     object Client {
         val BUILDER: ModConfigSpec.Builder = ModConfigSpec.Builder()
-        @JvmField
+        
         val SPEC: ModConfigSpec
 
-        @JvmField
+        
         val TUG_SMOKE_MODIFIER: ModConfigSpec.ConfigValue<Double>
-        @JvmField
+        
         val LOCO_SMOKE_MODIFIER: ModConfigSpec.ConfigValue<Double>
-        @JvmField
+        
         val DISABLE_TUG_ROUTE_BEACONS: ModConfigSpec.ConfigValue<Boolean>
 
         init {
@@ -52,62 +52,62 @@ class ShippingConfig {
 
     object Server {
         val BUILDER: ModConfigSpec.Builder = ModConfigSpec.Builder()
-        @JvmField
+        
         val SPEC: ModConfigSpec
-        @JvmField
+        
         var FISHING_TREASURE_CHANCE_MODIFIER: ModConfigSpec.ConfigValue<Double>? = null
-        @JvmField
+        
         var FISHING_LOOT_TABLE: ModConfigSpec.ConfigValue<String>? = null
-        @JvmField
+        
         var FISHING_COOLDOWN: ModConfigSpec.ConfigValue<Int>? = null
 
-        @JvmField
+        
         var TUG_BASE_SPEED: ModConfigSpec.ConfigValue<Double>? = null
 
-        @JvmField
+        
         var STEAM_TUG_FUEL_MULTIPLIER: ModConfigSpec.ConfigValue<Double>? = null
 
-        @JvmField
+        
         var TUG_PATHFINDING_MULTIPLIER: ModConfigSpec.ConfigValue<Int>? = null
-        @JvmField
+        
         var ENERGY_TUG_BASE_CAPACITY: ModConfigSpec.ConfigValue<Int>? = null
-        @JvmField
+        
         var ENERGY_TUG_BASE_ENERGY_USAGE: ModConfigSpec.ConfigValue<Int>? = null
-        @JvmField
+        
         var ENERGY_TUG_BASE_MAX_CHARGE_RATE: ModConfigSpec.ConfigValue<Int>? = null
 
-        @JvmField
+        
         var TRAIN_MAX_SPEED: ModConfigSpec.ConfigValue<Double>? = null
-        @JvmField
+        
         var LOCO_BASE_SPEED: ModConfigSpec.ConfigValue<Double>? = null
 
-        @JvmField
+        
         var STEAM_LOCO_FUEL_MULTIPLIER: ModConfigSpec.ConfigValue<Double>? = null
-        @JvmField
+        
         var ENERGY_LOCO_BASE_CAPACITY: ModConfigSpec.ConfigValue<Int>? = null
-        @JvmField
+        
         var ENERGY_LOCO_BASE_ENERGY_USAGE: ModConfigSpec.ConfigValue<Int>? = null
-        @JvmField
+        
         var ENERGY_LOCO_BASE_MAX_CHARGE_RATE: ModConfigSpec.ConfigValue<Int>? = null
 
-        @JvmField
+        
         var VESSEL_CHARGER_BASE_CAPACITY: ModConfigSpec.ConfigValue<Int>? = null
-        @JvmField
+        
         var VESSEL_CHARGER_BASE_MAX_TRANSFER: ModConfigSpec.ConfigValue<Int>? = null
 
-        @JvmField
+        
         var TRAIN_EXEMPT_DAMAGE_SOURCES: ModConfigSpec.ConfigValue<List<String>>? = null
-        @JvmField
+        
         var VESSEL_EXEMPT_DAMAGE_SOURCES: ModConfigSpec.ConfigValue<List<String>>? = null
 
 
-        @JvmField
+        
         val CHUNK_LOADING_LEVEL: ModConfigSpec.ConfigValue<Int>
-        @JvmField
+        
         val DISABLE_CHUNK_MANAGEMENT: ModConfigSpec.ConfigValue<Boolean>
-        @JvmField
+        
         val MAX_REGISTRERED_VEHICLES_PER_PLAYER: ModConfigSpec.ConfigValue<Int>
-        @JvmField
+        
         val OFFLINE_LOADING: ModConfigSpec.ConfigValue<Boolean>
 
 

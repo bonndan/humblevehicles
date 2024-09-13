@@ -14,7 +14,7 @@ import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.level.Level
 import net.neoforged.neoforge.items.SlotItemHandler
 
-abstract class AbstractHeadVehicleContainer<T : HeadVehicleDataAccessor?, U>(
+abstract class AbstractHeadVehicleContainer<T : HeadVehicleDataAccessor, U>(
     containerType: MenuType<*>,
     windowId: Int,
     world: Level,
@@ -22,37 +22,38 @@ abstract class AbstractHeadVehicleContainer<T : HeadVehicleDataAccessor?, U>(
     playerInventory: Inventory,
     player: Player?
 ) :
-    AbstractItemHandlerContainer(containerType, windowId, playerInventory, player) where U : Entity?, U : HeadVehicle? {
-    protected var entity: U? = world.getEntity(data!!.entityUUID) as U?
+    AbstractItemHandlerContainer(containerType, windowId, playerInventory, player) where U : Entity, U : HeadVehicle {
+
+    protected var entity: U? = data.getEntityUUID()?.let { world.getEntity(it) as U? }
 
     init {
         this.player = playerInventory.player
         layoutPlayerInventorySlots(8, 84)
         this.addDataSlots(data)
 
-        addSlot(
-            SlotItemHandler(
-                entity!!.getRouteItemHandler(),
-                0, 98, 57
-            ).setBackground(EMPTY_ATLAS_LOC, entity!!.getRouteIcon())
-        )
+        entity?.let {
+            addSlot(
+                SlotItemHandler(it.getRouteItemHandler(), 0, 98, 57)
+                    .setBackground(EMPTY_ATLAS_LOC, it.getRouteIcon())
+            )
+        }
     }
 
     override val slotNum: Int
         get() = 2
 
     val isLit: Boolean
-        get() = data!!.isLit
+        get() = data.isLit
 
     val isOn: Boolean
-        get() = data!!.isOn
+        get() = data.isOn
 
     fun routeSize(): Int {
-        return data!!.routeSize()
+        return data.routeSize()
     }
 
     fun visitedSize(): Int {
-        return data!!.visitedSize()
+        return data.visitedSize()
     }
 
     fun setEngine(state: Boolean) {
@@ -64,17 +65,17 @@ abstract class AbstractHeadVehicleContainer<T : HeadVehicleDataAccessor?, U>(
     }
 
     val owner: String
-        get() = entity!!.owner()!!
+        get() = entity?.owner()!!
 
     fun canMove(): Boolean {
-        return data!!.canMove()
+        return data.canMove()
     }
 
     val routeText: String
         get() = visitedSize().toString() + "/" + routeSize()
 
     override fun stillValid(pPlayer: Player): Boolean {
-        return entity!!.isValid(pPlayer)
+        return entity?.isValid(pPlayer) == true
     }
 
     companion object {

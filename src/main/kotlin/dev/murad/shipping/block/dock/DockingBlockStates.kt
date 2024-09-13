@@ -13,11 +13,11 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty
 import java.util.*
 
 object DockingBlockStates {
-    @JvmField
+    
     val INVERTED: BooleanProperty = BlockStateProperties.INVERTED
-    @JvmField
+    
     val FACING: DirectionProperty = HorizontalDirectionalBlock.FACING
-    @JvmField
+    
     val POWERED: BooleanProperty = BlockStateProperties.POWERED
 
     fun getTileEntity(world: Level, pos: BlockPos?): Optional<AbstractDockTileEntity<*>> {

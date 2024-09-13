@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.phys.Vec2
 import java.util.*
 
-class TugRouteNode(var name: String?, @JvmField val x: Double, @JvmField val z: Double) {
+class TugRouteNode(var name: String?,  val x: Double,  val z: Double) {
     constructor(x: Double, y: Double) : this(null, x, y)
 
     fun getDisplayName(index: Int): String {

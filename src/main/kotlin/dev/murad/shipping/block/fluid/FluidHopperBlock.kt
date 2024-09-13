@@ -189,7 +189,7 @@ class FluidHopperBlock(p_i48440_1_: Properties) : Block(p_i48440_1_),
     }
 
     companion object {
-        @JvmField
+        
         val FACING: DirectionProperty = HorizontalDirectionalBlock.FACING
     }
 }

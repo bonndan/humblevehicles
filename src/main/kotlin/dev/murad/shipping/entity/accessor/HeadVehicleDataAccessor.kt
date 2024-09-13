@@ -24,7 +24,8 @@ open class HeadVehicleDataAccessor(private val data: ContainerData) : DataAccess
     }
 
     abstract class Builder {
-        lateinit var arr: SupplierIntArray
+
+        protected val arr: SupplierIntArray = SupplierIntArray(20)
 
         fun withId(id: Int): Builder {
             arr[0] = id

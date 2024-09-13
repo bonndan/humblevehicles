@@ -10,7 +10,7 @@ class ModTags {
     class Blocks
 
     object Items {
-        @JvmField
+        
         val WRENCHES: TagKey<Item> = forge("tools/wrench")
 
         private fun forge(path: String): TagKey<Item> {
