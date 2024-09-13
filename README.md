@@ -22,7 +22,7 @@ This is a NeoForge port of [LittleLogistics](https://littlelogistics.murad.dev/)
 
 ## Next Steps
 
-- [ ] get the port running in minecraft server and client without NPEs, all items, blocks etc. appearing (bugs allowed)
+- [ ] get the port running in minecraft server and client without NPEs, all items, blocks etc. appearing (bugs allowed). See https://gist.github.com/ChampionAsh5357/d895a7b1a34341e19c80870720f9880f
 
 
 ### License
