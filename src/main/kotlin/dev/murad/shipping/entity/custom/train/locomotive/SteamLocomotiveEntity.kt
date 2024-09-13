@@ -46,7 +46,6 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
             return burnTime * 13 / i
         }
 
-
     override val dataAccessor: SteamHeadVehicleDataAccessor
         get() = SteamHeadVehicleDataAccessor.Builder()
             .withBurnProgress { this.burnProgress }
@@ -59,15 +58,15 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
             .build() as SteamHeadVehicleDataAccessor
 
     override fun tickFuel(): Boolean {
-        if (burnTime > 0) {
+        return if (burnTime > 0) {
             burnTime--
-            return true
+            true
         } else {
             val burnTime = fuelItemHandler.tryConsumeFuel()
-            val adjustedBurnTime = ceil(burnTime * FURNACE_FUEL_MULTIPLIER!!.get()) as Int
+            val adjustedBurnTime = ceil(burnTime * FURNACE_FUEL_MULTIPLIER!!.get()).toInt()
             this.burnCapacity = adjustedBurnTime
             this.burnTime = adjustedBurnTime
-            return adjustedBurnTime > 0
+            adjustedBurnTime > 0
         }
     }
 

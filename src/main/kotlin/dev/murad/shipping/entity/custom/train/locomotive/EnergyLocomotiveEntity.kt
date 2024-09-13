@@ -1,9 +1,7 @@
 package dev.murad.shipping.entity.custom.train.locomotive
 
-import cpw.mods.util.Lazy
 import dev.murad.shipping.ShippingConfig
 import dev.murad.shipping.capability.ReadWriteEnergyStorage
-import dev.murad.shipping.entity.accessor.DataAccessor
 import dev.murad.shipping.entity.accessor.EnergyHeadVehicleDataAccessor
 import dev.murad.shipping.entity.container.EnergyHeadVehicleContainer
 import dev.murad.shipping.item.EnergyUtil
@@ -24,46 +22,39 @@ import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
-import net.neoforged.neoforge.energy.IEnergyStorage
-import net.neoforged.neoforge.items.IItemHandler
 import net.neoforged.neoforge.items.ItemStackHandler
 
 class EnergyLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContainerWrapper, WorldlyContainer {
-    private val energyItemHandler = createHandler()
-    private val energyItemHandlerOpt: Lazy<IItemHandler> = Lazy.of { energyItemHandler }
+
+    private val energyItemHandler = object : ItemStackHandler() {
+
+        override fun isItemValid(slot: Int, stack: ItemStack): Boolean {
+            return EnergyUtil.getEnergyStorage(stack).isPresent
+        }
+
+        override fun insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack {
+            if (!isItemValid(slot, stack)) {
+                return stack
+            }
+
+            return super.insertItem(slot, stack, simulate)
+        }
+    }
 
     private val internalBattery = ReadWriteEnergyStorage(MAX_ENERGY, MAX_TRANSFER, Int.MAX_VALUE)
-    private val internalBatteryOpt: Lazy<IEnergyStorage> = Lazy.of { internalBattery }
 
     constructor(type: EntityType<*>, level: Level) : super(type, level) {
         internalBattery.setEnergy(0)
     }
 
     constructor(level: Level, x: Double, y: Double, z: Double) : super(
-        ModEntityTypes.ENERGY_LOCOMOTIVE.get(), level, x, y, z) {
+        ModEntityTypes.ENERGY_LOCOMOTIVE.get(), level, x, y, z
+    ) {
         internalBattery.setEnergy(0)
     }
 
-    private fun createHandler(): ItemStackHandler {
-        return object : ItemStackHandler() {
-            override fun isItemValid(slot: Int, stack: ItemStack): Boolean {
-                return EnergyUtil.getEnergyStorage(stack).isPresent
-            }
-
-            override fun insertItem(slot: Int, stack: ItemStack, simulate: Boolean): ItemStack {
-                if (!isItemValid(slot, stack)) {
-                    return stack
-                }
-
-                return super.insertItem(slot, stack, simulate)
-            }
-        }
-    }
-
+    //TODO the itemhandler capability allowed only energy items, the battery capabiltiy is ReadWriteEnergyStorage
     /*
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == ForgeCapabilities.ITEM_HANDLER) {
             return energyItemHandlerOpt.cast();
         } else if (cap == ForgeCapabilities.ENERGY) {
@@ -71,9 +62,8 @@ class EnergyLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaConta
         }
 
         return super.getCapability(cap, side);
-    }
-
      */
+
     override fun remove(r: RemovalReason) {
         if (!level().isClientSide) {
             Containers.dropContents(this.level(), this, this)

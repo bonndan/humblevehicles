@@ -113,7 +113,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
         if (!level().isClientSide) {
             pPlayer.openMenu(createContainerProvider(), dataAccessor::write)
-            //NetworkHooks.openScreen((ServerPlayer) pPlayer, );
         }
 
         return InteractionResult.CONSUME

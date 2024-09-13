@@ -31,13 +31,9 @@ class TrainChunkManagerManager : SavedData {
                 val uuid = cell.getUUID("UUID")
                 server.execute {
                     PlayerTrainChunkManager.Companion.getSaved(level, uuid)
-                        .ifPresent(Consumer<PlayerTrainChunkManager> { manager: PlayerTrainChunkManager ->
-                            managers.put(
-                                dimension,
-                                uuid,
-                                manager
-                            )
-                        })
+                        .ifPresent { manager: PlayerTrainChunkManager ->
+                            managers.put(dimension, uuid, manager)
+                        }
                 }
             }
         }
@@ -81,14 +77,13 @@ class TrainChunkManagerManager : SavedData {
                 .dataStorage
                 .computeIfAbsent(
                     getPlayerTrainChunkManagerFactory(server),
-                    "humblevehicles:trainchunkmanagermanager"
+                    "humblevehicles_trainchunkmanagermanager"
                 )
         }
 
         private fun getPlayerTrainChunkManagerFactory(server: MinecraftServer): Factory<TrainChunkManagerManager> {
-            return Factory(
-                { TrainChunkManagerManager(server) },
-                { tag: CompoundTag, provider: HolderLookup.Provider? -> TrainChunkManagerManager(tag, server) },
+            return Factory({ TrainChunkManagerManager(server) },
+                { tag: CompoundTag, _ -> TrainChunkManagerManager(tag, server) },
                 DataFixTypes.CHUNK
             )
         }

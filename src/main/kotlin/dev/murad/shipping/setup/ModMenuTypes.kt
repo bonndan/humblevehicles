@@ -100,6 +100,7 @@ object ModMenuTypes {
 
     fun register() {}
 
+    //on a NPE check if somewhere player.openMenu(...) is called without 2nd param  getDataAccessor(...)::write
     private fun makeIntArray(buffer: FriendlyByteBuf): SimpleContainerData {
 
         val size = (buffer.readableBytes() + 1) / 4

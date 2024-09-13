@@ -22,7 +22,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank
 import java.util.*
 
-class FluidHopperTileEntity(pos: BlockPos?, state: BlockState?) :
+class FluidHopperTileEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(ModTileEntitiesTypes.FLUID_HOPPER.get(), pos, state), IVesselLoader {
     private var cooldownTime = 0
 
@@ -36,7 +36,7 @@ class FluidHopperTileEntity(pos: BlockPos?, state: BlockState?) :
         protected set
 
 
-    fun use(player: Player, hand: InteractionHand?): Boolean {
+    fun use(player: Player, hand: InteractionHand): Boolean {
         val result = FluidUtil.interactWithFluidHandler(player, hand, tank)
         player.displayClientMessage(FluidDisplayUtil.getFluidDisplay(tank), false)
         return result
@@ -138,8 +138,8 @@ class FluidHopperTileEntity(pos: BlockPos?, state: BlockState?) :
 
     companion object {
         const val CAPACITY: Int = FluidType.BUCKET_VOLUME * 10
-        @JvmStatic
-        fun serverTick(level: Level?, blockPos: BlockPos?, blockState: BlockState?, e: FluidHopperTileEntity) {
+
+        fun serverTick(level: Level?, blockPos: BlockPos, blockState: BlockState, e: FluidHopperTileEntity) {
             e.serverTickInternal()
         }
     }

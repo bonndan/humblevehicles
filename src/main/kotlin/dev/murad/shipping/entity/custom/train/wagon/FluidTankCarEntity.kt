@@ -1,5 +1,6 @@
 package dev.murad.shipping.entity.custom.train.wagon
 
+import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity
 import dev.murad.shipping.entity.custom.vessel.tug.AbstractTugEntity
 import dev.murad.shipping.setup.ModEntityTypes
 import dev.murad.shipping.setup.ModItems
@@ -28,10 +29,10 @@ class FluidTankCarEntity : AbstractWagonEntity {
     companion object {
         var CAPACITY: Int = FluidType.BUCKET_VOLUME * 10
         private val VOLUME: EntityDataAccessor<Int> = SynchedEntityData.defineId(
-            AbstractTugEntity::class.java, EntityDataSerializers.INT
+            AbstractTrainCarEntity::class.java, EntityDataSerializers.INT
         )
         private val FLUID_TYPE: EntityDataAccessor<String> = SynchedEntityData.defineId(
-            AbstractTugEntity::class.java, EntityDataSerializers.STRING
+            AbstractTrainCarEntity::class.java, EntityDataSerializers.STRING
         )
     }
 

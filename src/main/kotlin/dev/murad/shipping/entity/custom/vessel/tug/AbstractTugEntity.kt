@@ -273,7 +273,7 @@ abstract class AbstractTugEntity :
             if (color != null) {
                 getEntityData().set(COLOR_DATA, color.getId())
             } else {
-                player.openMenu(createContainerProvider())
+                player.openMenu(createContainerProvider(), getDataAccessor()::write)
             }
         }
 

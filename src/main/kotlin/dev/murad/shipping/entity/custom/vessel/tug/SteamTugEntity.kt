@@ -32,13 +32,7 @@ class SteamTugEntity : AbstractTugEntity {
 
     constructor(type: EntityType<out WaterAnimal>, world: Level) : super(type, world)
 
-    constructor(worldIn: Level, x: Double, y: Double, z: Double) : super(
-        ModEntityTypes.STEAM_TUG.get(),
-        worldIn,
-        x,
-        y,
-        z
-    )
+    constructor(worldIn: Level, x: Double, y: Double, z: Double) : super(ModEntityTypes.STEAM_TUG.get(), worldIn, x, y, z)
 
     override fun createContainerProvider(): MenuProvider {
         return object : MenuProvider {

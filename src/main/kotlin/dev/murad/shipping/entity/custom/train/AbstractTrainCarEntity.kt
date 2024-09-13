@@ -72,7 +72,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
         z
     ) {
         val pos = BlockPos.containing(x, y, z)
-        val state = level().getBlockState(pos)
+        val state = level.getBlockState(pos)
         if (state.block is BaseRailBlock) {
             val railshape: RailShape = (state.block as BaseRailBlock).getRailDirection(state, this.level(), pos, this)
             val exit = RailHelper.EXITS[railshape]!!.first
@@ -360,12 +360,12 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
      * the vanilla code does not (leading to lots of flipping)
      */
     override fun getPosOffs(pX: Double, pY: Double, pZ: Double, pOffset: Double): Vec3? {
-        var pX = pX
-        var pY = pY
-        var pZ = pZ
-        val i = Mth.floor(pX)
-        var j = Mth.floor(pY)
-        val k = Mth.floor(pZ)
+        var x = pX
+        var y = pY
+        var z = pZ
+        val i = Mth.floor(x)
+        var j = Mth.floor(y)
+        val k = Mth.floor(z)
         if (level().getBlockState(BlockPos(i, j - 1, k)).`is`(BlockTags.RAILS)) {
             --j
         }
@@ -377,9 +377,9 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
                 this.level(), BlockPos(i, j, k),
                 this
             )
-            pY = j.toDouble()
+            y = j.toDouble()
             if (railshape.isAscending) {
-                pY = (j + 1).toDouble()
+                y = (j + 1).toDouble()
             }
 
             val pair = exits(railshape)
@@ -409,15 +409,15 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
             val dist = sqrt(xDiff * xDiff + zDiff * zDiff)
             xDiff /= dist
             zDiff /= dist
-            pX += xDiff * pOffset
-            pZ += zDiff * pOffset
-            if (exit1.y != 0 && Mth.floor(pX) - i == exit1.x && Mth.floor(pZ) - k == exit1.z) {
-                pY += exit1.y.toDouble()
-            } else if (exit2.y != 0 && Mth.floor(pX) - i == exit2.x && Mth.floor(pZ) - k == exit2.z) {
-                pY += exit2.y.toDouble()
+            x += xDiff * pOffset
+            z += zDiff * pOffset
+            if (exit1.y != 0 && Mth.floor(x) - i == exit1.x && Mth.floor(z) - k == exit1.z) {
+                y += exit1.y.toDouble()
+            } else if (exit2.y != 0 && Mth.floor(x) - i == exit2.x && Mth.floor(z) - k == exit2.z) {
+                y += exit2.y.toDouble()
             }
 
-            return this.getPos(pX, pY, pZ)
+            return this.getPos(x, y, z)
         } else {
             return null
         }
@@ -708,8 +708,8 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
             val eastUnder = east.below()
             val northUnder = north.below()
             val southUnder = south.below()
-            enumMap[RailShape.NORTH_SOUTH] = Pair.of(north, south)
-            enumMap[RailShape.EAST_WEST] = Pair.of(west, east)
+            enumMap[RailShape.NORTH_SOUTH] = Pair(north, south)
+            enumMap[RailShape.EAST_WEST] = Pair(west, east)
             enumMap[RailShape.ASCENDING_EAST] = Pair.of(westUnder, east)
             enumMap[RailShape.ASCENDING_WEST] = Pair.of(west, eastUnder)
             enumMap[RailShape.ASCENDING_NORTH] = Pair.of(north, southUnder)

@@ -48,8 +48,7 @@ class TugRouteItem(properties: Properties) : Item(properties) {
         val itemstack = player.getItemInHand(hand)
         if (!player.level().isClientSide) {
             if (player.isShiftKeyDown) {
-                player.openMenu(createContainerProvider(hand))
-                //NetworkHooks.openScreen((ServerPlayer) player, createContainerProvider(hand), getDataAccessor(player, hand)::write);
+                player.openMenu(createContainerProvider(hand), getDataAccessor(player, hand)::write)
             } else {
                 val x = floor(player.x) as Int
                 val z = floor(player.z) as Int
