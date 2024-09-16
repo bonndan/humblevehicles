@@ -38,6 +38,25 @@ class PlayerTrainChunkManager : SavedData {
     val uuid: UUID
     val level: ServerLevel
 
+    internal constructor(level: ServerLevel, uuid: UUID) {
+        this.level = level
+        this.uuid = uuid
+        TrainChunkManagerManager.Companion.get(level.server).enroll(this)
+        // active when creating a new one
+        isActive = true
+        setDirty()
+    }
+
+    internal constructor(tag: CompoundTag, level: ServerLevel, uuid: UUID) {
+        this.level = level
+        this.uuid = uuid
+        numVehicles = tag.getInt("numVehicles")
+        Arrays.stream(tag.getLongArray("chunksToLoad")).forEach { chunk: Long -> toLoad.add(ChunkPos(chunk)) }
+        if (ShippingConfig.Server.OFFLINE_LOADING.get()) {
+            activate()
+        }
+    }
+
     fun deactivate() {
         updateToLoad()
         numVehicles = enrolled.size
@@ -176,24 +195,7 @@ class PlayerTrainChunkManager : SavedData {
     }
 
 
-    internal constructor(level: ServerLevel, uuid: UUID) {
-        this.level = level
-        this.uuid = uuid
-        TrainChunkManagerManager.Companion.get(level.server).enroll(this)
-        // active when creating a new one
-        isActive = true
-        setDirty()
-    }
 
-    internal constructor(tag: CompoundTag, level: ServerLevel, uuid: UUID) {
-        this.level = level
-        this.uuid = uuid
-        numVehicles = tag.getInt("numVehicles")
-        Arrays.stream(tag.getLongArray("chunksToLoad")).forEach { chunk: Long -> toLoad.add(ChunkPos(chunk)) }
-        if (ShippingConfig.Server.OFFLINE_LOADING.get()) {
-            activate()
-        }
-    }
 
     override fun save(pTag: CompoundTag, pRegistries: HolderLookup.Provider): CompoundTag {
         pTag.putInt("numVehicles", numVehicles)
@@ -221,10 +223,7 @@ class PlayerTrainChunkManager : SavedData {
         fun getSaved(level: ServerLevel, uuid: UUID): Optional<PlayerTrainChunkManager> {
             val storage = level.dataStorage
             return Optional.ofNullable(
-                storage.get(
-                    getPlayerTrainChunkManagerFactory(level, uuid),
-                    "humblevehicles_chunkmanager-$uuid"
-                )
+                storage.get(getPlayerTrainChunkManagerFactory(level, uuid), "humblevehicles_chunkmanager-$uuid")
             )
         }
 
@@ -234,7 +233,7 @@ class PlayerTrainChunkManager : SavedData {
         ): Factory<PlayerTrainChunkManager> {
             return Factory(
                 { PlayerTrainChunkManager(level, uuid) },
-                { _, _ -> PlayerTrainChunkManager(level, uuid) },
+                { tag , _ -> PlayerTrainChunkManager(tag, level, uuid) },
                 DataFixTypes.CHUNK
             )
         }

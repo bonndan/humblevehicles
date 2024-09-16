@@ -445,6 +445,7 @@ abstract class AbstractTugEntity :
     }
 
     override fun setDominant(entity: VesselEntity) {
+        throw IllegalStateException("Tugs cannot have a dominant")
     }
 
     override fun removeDominated() {
@@ -457,6 +458,7 @@ abstract class AbstractTugEntity :
     }
 
     override fun removeDominant() {
+        throw IllegalStateException("Tugs cannot have a dominant")
     }
 
     override fun setTrain(train: Train<VesselEntity>) {

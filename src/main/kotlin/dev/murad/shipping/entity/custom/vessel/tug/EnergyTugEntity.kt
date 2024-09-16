@@ -24,6 +24,7 @@ import net.neoforged.neoforge.common.ModConfigSpec
 import net.neoforged.neoforge.items.ItemStackHandler
 
 class EnergyTugEntity : AbstractTugEntity {
+
     private val itemHandler = createHandler()
     private val internalBattery = ReadWriteEnergyStorage(MAX_ENERGY.get(), MAX_TRANSFER.get(), Int.MAX_VALUE)
 

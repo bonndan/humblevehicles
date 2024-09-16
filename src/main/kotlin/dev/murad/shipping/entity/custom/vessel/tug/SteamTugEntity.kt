@@ -24,9 +24,10 @@ import kotlin.math.ceil
 
 class SteamTugEntity : AbstractTugEntity {
 
-    private val FURNACE_FUEL_MULTIPLIER: ModConfigSpec.ConfigValue<Double>? =
-        ShippingConfig.Server.STEAM_TUG_FUEL_MULTIPLIER
+    private val FURNACE_FUEL_MULTIPLIER: ModConfigSpec.ConfigValue<Double>? = ShippingConfig.Server.STEAM_TUG_FUEL_MULTIPLIER
+
     private val fuelItemHandler: FuelItemStackHandler = FuelItemStackHandler()
+
     protected var burnTime: Int = 0
     protected var burnCapacity: Int = 0
 

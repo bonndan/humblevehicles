@@ -3,8 +3,10 @@ package dev.murad.shipping.util
 import java.util.*
 
 class Train<V : LinkableEntity<V>>(var head: V) {
+
     val tug: Optional<V> =
         if (head is LinkableEntityHead<*>) Optional.of(head) else Optional.empty()
+
     var tail: V = head
 
     fun asListOfTugged(): List<V> {

@@ -4,9 +4,7 @@ import dev.murad.shipping.ShippingConfig
 import dev.murad.shipping.block.rail.MultiShapeRail
 import dev.murad.shipping.block.rail.blockentity.LocomotiveDockTileEntity
 import dev.murad.shipping.capability.StallingCapability
-import dev.murad.shipping.entity.accessor.DataAccessor
 import dev.murad.shipping.entity.accessor.HeadVehicleDataAccessor
-import dev.murad.shipping.entity.accessor.SteamHeadVehicleDataAccessor
 import dev.murad.shipping.entity.custom.HeadVehicle
 import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity
 import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart
@@ -277,33 +275,35 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     }
 
     private fun checkStopSign(pos: BlockPos, prevExitTaken: Direction): Boolean {
-        return RailHelper.getRail(pos, this.level()).flatMap { block: BlockPos? ->
 
-            if (level().getBlockState(block).block is MultiShapeRail) {
+        return RailHelper.getRail(pos, this.level())
+            .flatMap { block: BlockPos ->
 
-                val r = level().getBlockState(block).block as MultiShapeRail
-                if (level().getEntitiesOfClass<Entity>(
-                        Entity::class.java, AABB(pos)
-                    ) { e: Entity -> e == this || e == frontHitbox }.isNotEmpty()
-                ) {
-                    return@flatMap Optional.empty<Boolean>()
-                }
+                if (level().getBlockState(block).block is MultiShapeRail) {
 
-                return@flatMap r.getPriorityDirectionsToCheck(level().getBlockState(block), prevExitTaken.opposite)
-                    .stream()
-                    .map<Optional<Int>> { direction ->
-                        railHelper.traverse(
-                            pos.relative(direction),
-                            this.level(),
-                            direction,
-                            { _, f: BlockPos -> checkLocoCollision(f) },
-                            2
-                        )
+                    val r = level().getBlockState(block).block as MultiShapeRail
+                    if (level().getEntitiesOfClass<Entity>(
+                            Entity::class.java, AABB(pos)
+                        ) { e: Entity -> e == this || e == frontHitbox }.isNotEmpty()
+                    ) {
+                        return@flatMap Optional.empty<Boolean>()
                     }
-                    .map<Boolean> { obj -> obj.isPresent }
-                    .reduce { a: Boolean, b: Boolean -> java.lang.Boolean.logicalOr(a, b) }
-            } else return@flatMap Optional.of<Boolean>(false)
-        }.orElse(false)
+
+                    return@flatMap r.getPriorityDirectionsToCheck(level().getBlockState(block), prevExitTaken.opposite)
+                        .stream()
+                        .map<Optional<Int>> { direction ->
+                            railHelper.traverse(
+                                pos.relative(direction),
+                                this.level(),
+                                direction,
+                                { _, f: BlockPos -> checkLocoCollision(f) },
+                                2
+                            )
+                        }
+                        .map<Boolean> { obj -> obj.isPresent }
+                        .reduce { a: Boolean, b: Boolean -> java.lang.Boolean.logicalOr(a, b) }
+                } else return@flatMap Optional.of<Boolean>(false)
+            }.orElse(false)
     }
 
     private fun checkCollision(pos: BlockPos): Boolean {
@@ -312,10 +312,11 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
             Entity::class.java, aabb
         ) { entity ->
             when (entity) {
-                //TODO check this kotlin conversion
+
                 is AbstractTrainCarEntity -> {
-                    entity.getTrain()?.tug?.map { f -> f?.uuid != this.getUUID() }
-                        ?.orElse(true) ?: true
+                    entity.getTrain().tug
+                        .map { tug -> tug.uuid != this.getUUID() }
+                        .orElse(true)
                 }
 
                 is AbstractMinecart -> {
@@ -504,6 +505,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     }
 
     override fun setDominant(entity: AbstractTrainCarEntity) {
+        throw IllegalStateException("Locomotive cannot have a dominant")
     }
 
 
@@ -513,6 +515,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     }
 
     override fun removeDominant() {
+        throw IllegalStateException("Locomotive cannot have a dominant")
     }
 
     override fun setTrain(train: Train<AbstractTrainCarEntity>) {

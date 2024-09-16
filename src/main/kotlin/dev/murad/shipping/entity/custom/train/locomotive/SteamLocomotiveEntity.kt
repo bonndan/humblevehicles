@@ -25,6 +25,7 @@ import net.neoforged.neoforge.items.ItemStackHandler
 import kotlin.math.ceil
 
 class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContainerWrapper, WorldlyContainer {
+
     private val fuelItemHandler = FuelItemStackHandler()
 
     // How many ticks left on this fuel

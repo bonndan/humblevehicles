@@ -30,10 +30,8 @@ class TrainChunkManagerManager : SavedData {
                 val level = server.getLevel(dimension) ?: return
                 val uuid = cell.getUUID("UUID")
                 server.execute {
-                    PlayerTrainChunkManager.Companion.getSaved(level, uuid)
-                        .ifPresent { manager: PlayerTrainChunkManager ->
-                            managers.put(dimension, uuid, manager)
-                        }
+                    PlayerTrainChunkManager.getSaved(level, uuid)
+                        .ifPresent { manager: PlayerTrainChunkManager -> managers.put(dimension, uuid, manager) }
                 }
             }
         }

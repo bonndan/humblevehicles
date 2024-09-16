@@ -3,13 +3,12 @@ package dev.murad.shipping.entity.container
 import dev.murad.shipping.entity.accessor.SteamHeadVehicleDataAccessor
 import dev.murad.shipping.entity.custom.HeadVehicle
 import dev.murad.shipping.setup.ModMenuTypes
+import dev.murad.shipping.util.ItemHandlerVanillaContainerWrapper
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
-import net.neoforged.neoforge.capabilities.Capabilities
 import net.neoforged.neoforge.items.SlotItemHandler
-import java.util.*
 
 class SteamHeadVehicleContainer<T>(
     windowId: Int,
@@ -25,10 +24,13 @@ class SteamHeadVehicleContainer<T>(
     playerInventory,
     player
 ) where T : Entity, T : HeadVehicle {
+
     init {
         if (null != entity) {
-            Optional.ofNullable(entity!!.getCapability(Capabilities.ItemHandler.ENTITY))
-                .ifPresent { h -> addSlot(SlotItemHandler(h, 0, 42, 40)) }
+            val e = entity
+            if (e is ItemHandlerVanillaContainerWrapper) {
+                addSlot(SlotItemHandler(e.getRawHandler(), 0, 42, 40))
+            }
         }
         this.addDataSlots(data.getRawData())
     }
