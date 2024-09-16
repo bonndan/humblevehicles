@@ -25,7 +25,7 @@ class TugRouteClientHandler(
     fun initializeWidget(width: Int, height: Int, y0: Int, y1: Int, itemHeight: Int): TugList {
         this.widget = TugList(minecraft, width, height, y0, itemHeight)
         for (i in route.indices) {
-            widget!!.add(route[i]!!, i)
+            widget!!.add(route[i], i)
         }
 
         return this.widget!!
@@ -101,9 +101,6 @@ class TugRouteClientHandler(
 
     inner class TugList(minecraft: Minecraft, width: Int, height: Int, y0: Int, itemHeight: Int) :
         ObjectSelectionList<TugList.Entry>(minecraft, width, height, y0, itemHeight) {
-        override fun getChildAt(p_212930_1_: Double, p_212930_3_: Double): Optional<GuiEventListener> {
-            return super.getChildAt(p_212930_1_, p_212930_3_)
-        }
 
         fun add(node: TugRouteNode, index: Int) {
             this.addEntry(Entry(node, index))
@@ -134,7 +131,7 @@ class TugRouteClientHandler(
                 val s = node.getDisplayName(index) + ": " + node.displayCoords
 
                 graphics.blit(
-                    TugRouteScreen.Companion.GUI,
+                    TugRouteScreen.GUI,
                     rowLeft,
                     rowTop,
                     0,
@@ -142,7 +139,7 @@ class TugRouteClientHandler(
                     width - 3,
                     height
                 )
-                graphics.drawString(screen.font, s, rowLeft + 3, rowTop + 4, 16777215)
+                graphics.drawString(screen.getFont(), s, rowLeft + 3, rowTop + 4, 16777215)
             }
 
             fun setIndex(index: Int) {

@@ -20,6 +20,7 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.neoforged.neoforge.common.ModConfigSpec
+import net.neoforged.neoforge.items.ItemStackHandler
 import kotlin.math.ceil
 
 class SteamTugEntity : AbstractTugEntity {
@@ -45,6 +46,10 @@ class SteamTugEntity : AbstractTugEntity {
                 return SteamHeadVehicleContainer<SteamTugEntity>(i, level(), getDataAccessor(), playerInventory, player)
             }
         }
+    }
+
+    override fun getRawHandler(): ItemStackHandler {
+        return fuelItemHandler
     }
 
     val burnProgress: Int

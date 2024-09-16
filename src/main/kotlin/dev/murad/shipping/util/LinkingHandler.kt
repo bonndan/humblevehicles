@@ -34,7 +34,7 @@ class LinkingHandler<T>(
         }
 
         if (leader.isEmpty && dominantNBT != null) {
-            tryToLoadFromNBT(dominantNBT!!).ifPresent { entity: T -> entity.setDominant(entity) }
+            tryToLoadFromNBT(dominantNBT!!).ifPresent { entity1: T -> entity.setDominant(entity1) }
             leader.ifPresent { d: T ->
                 d.setDominated(entity)
                 dominantNBT = null // done loading

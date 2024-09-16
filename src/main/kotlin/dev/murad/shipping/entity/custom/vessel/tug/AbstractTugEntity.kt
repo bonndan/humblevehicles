@@ -54,7 +54,7 @@ import kotlin.math.floor
 import kotlin.math.hypot
 
 abstract class AbstractTugEntity :
-    VesselEntity, LinkableEntityHead<VesselEntity>, Container, WorldlyContainer, HeadVehicle {
+    VesselEntity, LinkableEntityHead<VesselEntity>, Container, WorldlyContainer, HeadVehicle, ItemHandlerVanillaContainerWrapper{
 
     protected val enrollmentHandler: ChunkManagerEnrollmentHandler
 
@@ -483,13 +483,13 @@ abstract class AbstractTugEntity :
     }
 
     // Have to implement IInventory to work with hoppers
-    override fun removeItem(p_70298_1_: Int, p_70298_2_: Int): ItemStack? {
-        return null
-    }
-
-    override fun removeItemNoUpdate(p_70304_1_: Int): ItemStack? {
-        return null
-    }
+//    override fun removeItem(pIndex: Int, pCount: Int): ItemStack? {
+//        return
+//    }
+//
+//    override fun removeItemNoUpdate(pIndex: Int): ItemStack? {
+//        return null
+//    }
 
 
     override fun canPlaceItem(p_94041_1_: Int, p_94041_2_: ItemStack): Boolean {
@@ -516,8 +516,8 @@ abstract class AbstractTugEntity :
         }
     }
 
-    override fun clearContent() {
-    }
+//    override fun clearContent() {
+//    }
 
     override fun canTakeItemThroughFace(p_180461_1_: Int, p_180461_2_: ItemStack, p_180461_3_: Direction): Boolean {
         return false

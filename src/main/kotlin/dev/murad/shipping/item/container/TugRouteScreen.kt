@@ -218,11 +218,9 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
         graphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false)
     }
 
-    var font: Font
-        get() = font
-        set(font) {
-            super.font = font
-        }
+    fun getFont(): Font {
+        return font
+    }
 
     companion object {
         private val LOGGER: Logger = LogManager.getLogger(

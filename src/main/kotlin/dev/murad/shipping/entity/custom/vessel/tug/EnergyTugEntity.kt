@@ -76,6 +76,10 @@ class EnergyTugEntity : AbstractTugEntity {
         }
     }
 
+    override fun getRawHandler(): ItemStackHandler {
+        return itemHandler
+    }
+
     override fun makeSmoke() {
     }
 
