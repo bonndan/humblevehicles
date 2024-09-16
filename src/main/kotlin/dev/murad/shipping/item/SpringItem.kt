@@ -1,6 +1,7 @@
 package dev.murad.shipping.item
 
 import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart
+import dev.murad.shipping.item.ItemStackUtil.getCompoundTag
 import dev.murad.shipping.util.LinkableEntity
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
@@ -43,18 +44,18 @@ class SpringItem(properties: Properties) : Item(properties) {
 
     // because 'itemInteractionForEntity' is only for Living entities
     fun onUsedOnEntity(stack: ItemStack, player: Player, world: Level, target: Entity) {
-        var target = target
-        if (target is VehicleFrontPart) {
-            target = target.parent!!
+        var current = target
+        if (current is VehicleFrontPart) {
+            current = current.parent!!
         }
         if (world.isClientSide) return
         when (getState(stack)) {
             State.WAITING_NEXT -> {
-                createSpringHelper(stack, player, world, target)
+                createSpringHelper(stack, player, world, current)
             }
 
             else -> {
-                setDominant(world, stack, target)
+                setDominant(stack, current)
             }
         }
     }
@@ -80,18 +81,13 @@ class SpringItem(properties: Properties) : Item(properties) {
     }
 
 
-    private fun setDominant(worldIn: Level, stack: ItemStack, entity: Entity) {
-        ItemStackUtil.getCompoundTag(stack)
-            .ifPresent { compoundTag: CompoundTag? -> compoundTag!!.putInt(LINKED, entity.id) }
+    private fun setDominant(stack: ItemStack, entity: Entity) {
+        ItemStackUtil.getOrCreateTag(stack).putInt(LINKED, entity.id)
     }
 
     private fun getDominant(worldIn: Level, stack: ItemStack): Entity? {
-        if (ItemStackUtil.contains(stack, LINKED)) {
-            val id = ItemStackUtil.getCompoundTag(stack).map { compoundTag: CompoundTag? ->
-                compoundTag!!.getInt(
-                    LINKED
-                )
-            }.orElseThrow()
+        if (isLinked(stack)) {
+            val id = getCompoundTag(stack)?.getInt(LINKED)!!
             return worldIn.getEntity(id)
         }
         resetLinked(stack)
@@ -99,11 +95,7 @@ class SpringItem(properties: Properties) : Item(properties) {
     }
 
     private fun resetLinked(itemstack: ItemStack) {
-        ItemStackUtil.getCompoundTag(itemstack).ifPresent { compoundTag: CompoundTag? ->
-            compoundTag!!.remove(
-                LINKED
-            )
-        }
+        getCompoundTag(itemstack)?.remove(LINKED)
     }
 
     override fun use(worldIn: Level, playerIn: Player, handIn: InteractionHand): InteractionResultHolder<ItemStack> {
@@ -120,7 +112,11 @@ class SpringItem(properties: Properties) : Item(properties) {
         const val LINKED: String = "linked"
 
         fun getState(stack: ItemStack): State {
-            return if (ItemStackUtil.contains(stack, LINKED)) State.WAITING_NEXT else State.READY
+            return if (isLinked(stack)) State.WAITING_NEXT else State.READY
+        }
+
+        private fun isLinked(stack: ItemStack): Boolean {
+            return getCompoundTag(stack)?.let { compoundTag: CompoundTag -> compoundTag.contains(LINKED) } == true
         }
     }
 }

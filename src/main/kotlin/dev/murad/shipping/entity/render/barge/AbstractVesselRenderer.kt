@@ -87,7 +87,7 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
             val dist = bargeEntity.getLeader().get().distanceTo(bargeEntity).toDouble()
             val ivertexbuilderChain =
                 buffer.getBuffer(chainModel.renderType(CHAIN_TEXTURE))
-            val segments = ceil(dist * 4) as Int
+            val segments = ceil(dist * 4).toInt()
             matrixStack.pushPose()
             for (i in 0 until segments) {
                 matrixStack.pushPose()
@@ -221,7 +221,7 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
     }
 
     companion object {
-        private val CHAIN_TEXTURE = ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "textures/entity/chain.png")
+        private val CHAIN_TEXTURE = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/entity/chain.png")
 
         private fun addVertexPair(
             p_174308_: VertexConsumer,

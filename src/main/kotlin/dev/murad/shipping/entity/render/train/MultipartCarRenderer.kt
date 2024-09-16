@@ -14,7 +14,6 @@ import dev.murad.shipping.entity.render.RenderWithAttachmentPoints
 import net.minecraft.client.Minecraft
 import net.minecraft.client.model.EntityModel
 import net.minecraft.client.model.geom.ModelLayerLocation
-import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.entity.EntityRenderer
@@ -68,7 +67,6 @@ open class MultipartCarRenderer<T : AbstractTrainCarEntity> protected constructo
         buffer: MultiBufferSource,
         pPackedLight: Int
     ) {
-        //TODO getAndRenderChain(car, pose, buffer, pPackedLight)
         if (car.getLeader().isPresent()) return
 
         pose.pushPose()
@@ -80,9 +78,9 @@ open class MultipartCarRenderer<T : AbstractTrainCarEntity> protected constructo
         while (t.getFollower().isPresent()) {
             val nextT = t.getFollower().get()
             val renderer =
-                Minecraft.getInstance().getEntityRenderDispatcher().getRenderer<AbstractTrainCarEntity?>(nextT)
+                Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(nextT)
             if (renderer is RenderWithAttachmentPoints<*>) {
-                val attachmentRenderer = renderer as RenderWithAttachmentPoints<AbstractTrainCarEntity?>
+                val attachmentRenderer = renderer as RenderWithAttachmentPoints<AbstractTrainCarEntity>
 
                 // translate to next train location
                 val nextTPos = nextT.getPosition(pPartialTicks)
@@ -127,11 +125,11 @@ open class MultipartCarRenderer<T : AbstractTrainCarEntity> protected constructo
         matrixStack.pushPose()
         val vec = from.vectorTo(to)
         val dist = vec.length()
-        val segments = ceil(dist * 4) as Int
+        val segments = ceil(dist * 4).toInt()
 
         // TODO: fix pitch
-        matrixStack.mulPose(Axis.YP.rotation(-atan2(vec.z, vec.x) as Float))
-        matrixStack.mulPose(Axis.ZP.rotation((asin(vec.y / dist)) as Float))
+        matrixStack.mulPose(Axis.YP.rotation(-atan2(vec.z, vec.x).toFloat()))
+        matrixStack.mulPose(Axis.ZP.rotation((asin(vec.y / dist)).toFloat()))
         matrixStack.pushPose()
         val ivertexbuilderChain = buffer.getBuffer(chainModel.renderType(MultipartCarRenderer.Companion.CHAIN_TEXTURE))
         for (i in 1 until segments) {

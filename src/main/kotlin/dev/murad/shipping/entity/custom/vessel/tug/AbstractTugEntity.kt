@@ -7,7 +7,6 @@ import dev.murad.shipping.capability.StallingCapability
 import dev.murad.shipping.entity.accessor.DataAccessor
 import dev.murad.shipping.entity.custom.HeadVehicle
 import dev.murad.shipping.entity.custom.vessel.VesselEntity
-import dev.murad.shipping.entity.custom.vessel.barge.AbstractBargeEntity
 import dev.murad.shipping.entity.navigation.TugPathNavigator
 import dev.murad.shipping.item.TugRouteItem
 import dev.murad.shipping.item.TugRouteItem.Companion.getRoute
@@ -140,7 +139,7 @@ abstract class AbstractTugEntity :
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
         if (compound.contains("inv")) {
-            val old: ItemStackHandler = ItemStackHandler()
+            val old = ItemStackHandler()
             old.deserializeNBT(this.registryAccess(), compound.getCompound("inv"))
             routeItemHandler.setStackInSlot(0, old.getStackInSlot(0))
         } else {
@@ -470,7 +469,7 @@ abstract class AbstractTugEntity :
 
     override fun remove(r: RemovalReason) {
         if (!level().isClientSide) {
-            val stack: ItemStack = ItemStack(this.getDropItem())
+            val stack = ItemStack(this.getDropItem())
             if (this.hasCustomName()) {
                 //TODO stack.setHoverName(this.getCustomName());
             }
@@ -633,7 +632,7 @@ abstract class AbstractTugEntity :
 
     init {
         this.blocksBuilding = true
-        getLinkingHandler()!!.train = (Train(this))
+        getLinkingHandler()!!.train = Train(this)
         this.path = TugRoute()
         frontHitbox = VehicleFrontPart(this)
         enrollmentHandler = ChunkManagerEnrollmentHandler(this)

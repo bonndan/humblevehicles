@@ -41,12 +41,12 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         builder(itemGenerated, "tug_route")
             .override()
             .model(builder(itemGenerated, "tug_route_empty"))
-            .predicate(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "routestate"), 1f).end()
+            .predicate(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "routestate"), 1f).end()
 
         builder(itemGenerated, "spring")
             .override()
             .model(builder(itemGenerated, "spring_dominant_selected"))
-            .predicate(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "springstate"), 1f).end()
+            .predicate(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "springstate"), 1f).end()
 
         builder(itemGenerated, "conductors_wrench")
         builder(itemGenerated, "creative_capacitor")

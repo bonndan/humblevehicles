@@ -8,6 +8,7 @@ import dev.murad.shipping.global.TrainChunkManagerManager
 import dev.murad.shipping.item.SpringItem
 import dev.murad.shipping.util.LinkableEntity
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.item.ShearsItem
 import net.neoforged.bus.api.EventPriority
@@ -16,6 +17,7 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.entity.player.PlayerEvent
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteractSpecific
 import net.neoforged.neoforge.event.tick.LevelTickEvent
 import java.util.function.Consumer
 
@@ -24,6 +26,7 @@ import java.util.function.Consumer
  */
 @EventBusSubscriber(modid = HumVeeMod.MOD_ID)
 object ForgeEventHandler {
+
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun entityInteract(event: PlayerInteractEvent.EntityInteract) {
         handleEvent(event, event.target)
@@ -38,10 +41,13 @@ object ForgeEventHandler {
     fun onWorldTick(event: LevelTickEvent.Post) {
 
         // Don't do anything client side
-        if (event.level is ServerLevel ) {
+        if (event.level is ServerLevel) {
             val server = event.level.getServer()
-            if (server != null)
-            TrainChunkManagerManager.get(server).getManagers(event.level.dimension()).forEach{ obj -> obj.tick() }
+            if (server != null) {
+                TrainChunkManagerManager.get(server)
+                    .getManagers(event.level.dimension())
+                    .forEach { obj -> obj.tick() }
+            }
         }
     }
 
@@ -69,22 +75,27 @@ object ForgeEventHandler {
     }
 
     private fun handleEvent(event: PlayerInteractEvent, target: Entity) {
-        if (!event.itemStack.isEmpty) {
-            val item = event.itemStack.item
-            if (item is SpringItem) {
-                if (target is LinkableEntity<*> || target is VehicleFrontPart) {
-                    item.onUsedOnEntity(event.itemStack, event.entity, event.level, target)
 
-                    (event as ICancellableEvent).isCanceled = true
-                    //event.setCancellationResult(InteractionResult.SUCCESS);
+        if (event.itemStack.isEmpty) return
+
+        val item = event.itemStack.item
+        if (item is SpringItem) {
+            if (target is LinkableEntity<*> || target is VehicleFrontPart) {
+                item.onUsedOnEntity(event.itemStack, event.entity, event.level, target)
+
+                (event as ICancellableEvent).isCanceled = true
+                if (event is EntityInteractSpecific) {
+                    event.cancellationResult = (InteractionResult.SUCCESS)
                 }
             }
+        }
 
-            if (item is ShearsItem) {
-                if (target is LinkableEntity<*>) {
-                    target.handleShearsCut()
-                    (event as ICancellableEvent).isCanceled = true
-                    //event.setCancellationResult(InteractionResult.SUCCESS);
+        if (item is ShearsItem) {
+            if (target is LinkableEntity<*>) {
+                target.handleShearsCut()
+                (event as ICancellableEvent).isCanceled = true
+                if (event is EntityInteractSpecific) {
+                    event.cancellationResult = (InteractionResult.SUCCESS)
                 }
             }
         }

@@ -26,17 +26,6 @@ import org.apache.logging.log4j.Logger
 import kotlin.math.floor
 
 class TugRouteItem(properties: Properties) : Item(properties) {
-    protected fun createContainerProvider(hand: InteractionHand): MenuProvider {
-        return object : MenuProvider {
-            override fun getDisplayName(): Component {
-                return Component.translatable("screen.humblevehicles.tug_route")
-            }
-
-            override fun createMenu(i: Int, playerInventory: Inventory, Player: Player): AbstractContainerMenu? {
-                return TugRouteContainer(i, Player.level(), getDataAccessor(Player, hand), playerInventory, Player)
-            }
-        }
-    }
 
     fun getDataAccessor(entity: Player, hand: InteractionHand): TugRouteScreenDataAccessor {
         return TugRouteScreenDataAccessor.Builder(entity.id)
@@ -50,8 +39,8 @@ class TugRouteItem(properties: Properties) : Item(properties) {
             if (player.isShiftKeyDown) {
                 player.openMenu(createContainerProvider(hand), getDataAccessor(player, hand)::write)
             } else {
-                val x = floor(player.x) as Int
-                val z = floor(player.z) as Int
+                val x = floor(player.x).toInt()
+                val z = floor(player.z).toInt()
                 if (!tryRemoveSpecific(itemstack, x, z)) {
                     player.displayClientMessage(
                         Component.translatable("item.humblevehicles.tug_route.added", x, z),
@@ -70,14 +59,26 @@ class TugRouteItem(properties: Properties) : Item(properties) {
         return InteractionResultHolder.pass(itemstack)
     }
 
+    private fun createContainerProvider(hand: InteractionHand): MenuProvider {
+
+        return object : MenuProvider {
+            override fun getDisplayName(): Component {
+                return Component.translatable("screen.humblevehicles.tug_route")
+            }
+
+            override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
+                return TugRouteContainer(i, player.level(), getDataAccessor(player, hand), playerInventory, player)
+            }
+        }
+    }
+
     override fun verifyComponentsAfterLoad(pStack: ItemStack) {
         super.verifyComponentsAfterLoad(pStack)
 
         // convert old nbt format of route: "" into compound format
         // Precond: nbt is non-null, and nbt.tag is nonnull type 10
-        val outer = ItemStackUtil.getCompoundTag(pStack)
-        outer.ifPresent { compoundTag: CompoundTag? ->
-            val tag = compoundTag!!.getCompound("tag")
+        ItemStackUtil.getCompoundTag(pStack)?.let { compoundTag: CompoundTag ->
+            val tag = compoundTag.getCompound("tag")
             if (tag.contains(ROUTE_NBT, 8)) {
                 LOGGER.info("Found legacy tug route tag, replacing now")
                 val routeString = tag.getString(ROUTE_NBT)
@@ -108,26 +109,14 @@ class TugRouteItem(properties: Properties) : Item(properties) {
 
         private const val ROUTE_NBT = "route"
 
-        @JvmStatic
+
         fun getRoute(itemStack: ItemStack): TugRoute {
             return ItemStackUtil.getCompoundTag(itemStack)
-                .filter { compoundTag: CompoundTag? -> compoundTag!!.contains(ROUTE_NBT, 10) }
-                .map { compoundTag: CompoundTag? ->
-                    fromNBT(
-                        compoundTag!!.getCompound(ROUTE_NBT)
-                    )
-                }
-                .orElse(TugRoute())
-        }
-
-        fun popRoute(itemStack: ItemStack): Boolean {
-            val route = getRoute(itemStack)
-            if (route.size == 0) {
-                return false
-            }
-            route.removeAt(route.size - 1)
-            saveRoute(route, itemStack)
-            return true
+                ?.let { compoundTag: CompoundTag ->
+                    return if (compoundTag.contains(ROUTE_NBT, 10))
+                        fromNBT(compoundTag.getCompound(ROUTE_NBT))
+                    else TugRoute()
+                } ?: TugRoute()
         }
 
         fun tryRemoveSpecific(itemStack: ItemStack, x: Int, z: Int): Boolean {
@@ -147,14 +136,9 @@ class TugRouteItem(properties: Properties) : Item(properties) {
         }
 
         // should only be called server side
-        @JvmStatic
         fun saveRoute(route: TugRoute, itemStack: ItemStack) {
-            ItemStackUtil.getCompoundTag(itemStack).ifPresent { compoundTag: CompoundTag? ->
-                compoundTag!!.put(
-                    ROUTE_NBT,
-                    route.toNBT()
-                )
-            }
+            ItemStackUtil.getCompoundTag(itemStack)
+                ?.let { compoundTag: CompoundTag -> compoundTag.put(ROUTE_NBT, route.toNBT()) }
         }
     }
 }

@@ -6,17 +6,16 @@ import com.mojang.serialization.DataResult
 import com.mojang.serialization.DynamicOps
 import dev.murad.shipping.HumVeeMod
 import net.minecraft.core.component.DataComponentType
-import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.codec.ByteBufCodecs
+import net.minecraft.network.codec.ByteBufCodecs.COMPOUND_TAG
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.util.Unit
 import net.neoforged.bus.api.IEventBus
 import net.neoforged.neoforge.energy.EnergyStorage
 import net.neoforged.neoforge.registries.DeferredRegister
 import java.util.function.Supplier
-import java.util.function.UnaryOperator
 
 /**
  * Registers this mod's [DataComponentTypes][DataComponentType].
@@ -28,17 +27,6 @@ object ModDataComponents {
     private val DATA_COMPONENT_TYPES = DeferredRegister.createDataComponents(HumVeeMod.MOD_ID)
 
     private var isInitialised = false
-
-    private val TAG_PROPERTIES_BUILDER: DataComponentType.Builder<CompoundTag> =
-        DataComponentType.Builder<CompoundTag>()
-            .persistent(CompoundTag.CODEC) //TODO.networkSynchronized(CompoundTag.NETWORK_CODEC)
-            .cacheEncoding()
-
-    private val ENERGY_PROPERTIES_BUILDER: DataComponentType.Builder<EnergyStorage> =
-        DataComponentType.Builder<EnergyStorage>()
-            .persistent(EnergyProperties.CODEC)
-            .networkSynchronized(EnergyProperties.NETWORK_CODEC)
-            .cacheEncoding()
 
     private var TAG_PROPERTIES: Supplier<DataComponentType<CompoundTag>>? = null
 
@@ -57,27 +45,30 @@ object ModDataComponents {
 
         DATA_COMPONENT_TYPES.register(modEventBus)
 
-        TAG_PROPERTIES = register("tag_properties") { TAG_PROPERTIES_BUILDER }
-        ENERGY = register("energy") { ENERGY_PROPERTIES_BUILDER }
+        TAG_PROPERTIES = DATA_COMPONENT_TYPES.registerComponentType("tag_properties") { builder ->
+            builder.persistent(CompoundTag.CODEC)
+                .networkSynchronized(COMPOUND_TAG)
+                .cacheEncoding()
+        }
+
+        ENERGY = DATA_COMPONENT_TYPES.registerComponentType("energy") { builder ->
+            builder.persistent(EnergyProperties.CODEC)
+                .networkSynchronized(EnergyProperties.NETWORK_CODEC)
+                .cacheEncoding()
+        }
 
         isInitialised = true
     }
 
     fun getCompoundTag(): Supplier<DataComponentType<CompoundTag>> {
-        if (!isInitialised) throw IllegalStateException("Get before initialised")
+
+        check(isInitialised) { "Get before initialised" }
 
         return TAG_PROPERTIES!!
     }
 
     fun getEnergyStorage(): Supplier<DataComponentType<EnergyStorage>> {
         return ENERGY!!
-    }
-
-    private fun <T> register(
-        name: String,
-        builder: UnaryOperator<DataComponentType.Builder<T>>
-    ): Supplier<DataComponentType<T>> {
-        return DATA_COMPONENT_TYPES.register(name, Supplier { builder.apply(DataComponentType.builder()).build() })
     }
 
     private fun unit(builder: DataComponentType.Builder<Unit>): DataComponentType.Builder<Unit> {

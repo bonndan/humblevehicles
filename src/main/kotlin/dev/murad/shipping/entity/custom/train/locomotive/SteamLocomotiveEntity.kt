@@ -46,8 +46,7 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
             return burnTime * 13 / i
         }
 
-    override val dataAccessor: SteamHeadVehicleDataAccessor
-        get() = SteamHeadVehicleDataAccessor.Builder()
+     override fun getDataAccessor(): SteamHeadVehicleDataAccessor  = SteamHeadVehicleDataAccessor.Builder()
             .withBurnProgress { this.burnProgress }
             .withId(this.id)
             .withOn { isEngineOn() }
@@ -82,9 +81,7 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
             }
 
             override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
-                return SteamHeadVehicleContainer<SteamLocomotiveEntity>(
-                    i, level(), dataAccessor, playerInventory, player
-                )
+                return SteamHeadVehicleContainer<SteamLocomotiveEntity>(i, level(), getDataAccessor(), playerInventory, player)
             }
         }
     }

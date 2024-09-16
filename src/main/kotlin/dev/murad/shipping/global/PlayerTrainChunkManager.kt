@@ -205,20 +205,17 @@ class PlayerTrainChunkManager : SavedData {
     }
 
     companion object {
-        private val TRAVEL_TICKET: TicketType<UUID> = TicketType.create(
-            "humblevehicles:travelticket"
-        ) { obj: UUID, `val`: UUID? -> obj.compareTo(`val`) }
-        private val LOAD_TICKET: TicketType<UUID> = TicketType.create(
-            "humblevehicles:loadticket",
-            { obj: UUID, `val`: UUID? -> obj.compareTo(`val`) }, 500
-        )
 
-        @JvmStatic
+        private val TRAVEL_TICKET: TicketType<UUID> =
+            TicketType.create("humblevehicles:travelticket") { obj, uuid: UUID? -> obj.compareTo(uuid) }
+        private val LOAD_TICKET: TicketType<UUID> =
+            TicketType.create("humblevehicles:loadticket", { obj, uuid: UUID? -> obj.compareTo(uuid) }, 500)
+
         fun get(level: ServerLevel, uuid: UUID): PlayerTrainChunkManager {
             val storage = level.dataStorage
 
             val factory = getPlayerTrainChunkManagerFactory(level, uuid)
-            return storage.computeIfAbsent(factory, "humblevehicles:chunkmanager-$uuid")
+            return storage.computeIfAbsent(factory, "humblevehicles_chunkmanager-$uuid")
         }
 
         fun getSaved(level: ServerLevel, uuid: UUID): Optional<PlayerTrainChunkManager> {
@@ -226,7 +223,7 @@ class PlayerTrainChunkManager : SavedData {
             return Optional.ofNullable(
                 storage.get(
                     getPlayerTrainChunkManagerFactory(level, uuid),
-                    "humblevehicles:chunkmanager-$uuid"
+                    "humblevehicles_chunkmanager-$uuid"
                 )
             )
         }
@@ -237,12 +234,11 @@ class PlayerTrainChunkManager : SavedData {
         ): Factory<PlayerTrainChunkManager> {
             return Factory(
                 { PlayerTrainChunkManager(level, uuid) },
-                { tag, provider -> PlayerTrainChunkManager(level, uuid) },
+                { _, _ -> PlayerTrainChunkManager(level, uuid) },
                 DataFixTypes.CHUNK
             )
         }
 
-        @JvmStatic
         fun enroll(entity: Entity, uuid: UUID): Boolean {
             if (!entity.level().isClientSide) {
                 val manager = get(entity.level() as ServerLevel, uuid)
@@ -256,7 +252,6 @@ class PlayerTrainChunkManager : SavedData {
             return false
         }
 
-        @JvmStatic
         fun enrollIfAllowed(entity: Entity, uuid: UUID): Boolean {
             if (!entity.level().isClientSide) {
                 val manager = get(entity.level() as ServerLevel, uuid)

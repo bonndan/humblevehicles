@@ -5,6 +5,8 @@ import dev.murad.shipping.block.rail.MultiShapeRail
 import dev.murad.shipping.block.rail.blockentity.LocomotiveDockTileEntity
 import dev.murad.shipping.capability.StallingCapability
 import dev.murad.shipping.entity.accessor.DataAccessor
+import dev.murad.shipping.entity.accessor.HeadVehicleDataAccessor
+import dev.murad.shipping.entity.accessor.SteamHeadVehicleDataAccessor
 import dev.murad.shipping.entity.custom.HeadVehicle
 import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity
 import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart
@@ -112,7 +114,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         }
 
         if (!level().isClientSide) {
-            pPlayer.openMenu(createContainerProvider(), dataAccessor::write)
+            pPlayer.openMenu(createContainerProvider(), getDataAccessor()::write)
         }
 
         return InteractionResult.CONSUME
@@ -136,7 +138,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
     protected abstract fun createContainerProvider(): MenuProvider
 
-    abstract val dataAccessor: DataAccessor
+    abstract fun getDataAccessor(): HeadVehicleDataAccessor
 
     protected abstract fun tickFuel(): Boolean
 

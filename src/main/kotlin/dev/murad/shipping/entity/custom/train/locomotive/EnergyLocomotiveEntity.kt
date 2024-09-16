@@ -3,6 +3,7 @@ package dev.murad.shipping.entity.custom.train.locomotive
 import dev.murad.shipping.ShippingConfig
 import dev.murad.shipping.capability.ReadWriteEnergyStorage
 import dev.murad.shipping.entity.accessor.EnergyHeadVehicleDataAccessor
+import dev.murad.shipping.entity.accessor.HeadVehicleDataAccessor
 import dev.murad.shipping.entity.container.EnergyHeadVehicleContainer
 import dev.murad.shipping.item.EnergyUtil
 import dev.murad.shipping.setup.ModEntityTypes
@@ -80,14 +81,14 @@ class EnergyLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaConta
             override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
                 return EnergyHeadVehicleContainer<EnergyLocomotiveEntity>(
                     i, level(),
-                    dataAccessor, playerInventory, player
+                    getDataAccessor() as EnergyHeadVehicleDataAccessor, playerInventory, player
                 )
             }
         }
     }
 
-    override val dataAccessor: EnergyHeadVehicleDataAccessor
-        get() = EnergyHeadVehicleDataAccessor.Builder()
+    override fun getDataAccessor(): HeadVehicleDataAccessor {
+        return EnergyHeadVehicleDataAccessor.Builder()
             .withEnergy { internalBattery.energyStored }
             .withCapacity { internalBattery.maxEnergyStored }
             .withLit { internalBattery.energyStored > 0 } // has energy
@@ -97,6 +98,7 @@ class EnergyLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaConta
             .withVisitedSize { navigator.visitedSize }
             .withCanMove { enrollmentHandler.mayMove() }
             .build() as EnergyHeadVehicleDataAccessor
+    }
 
     override fun tick() {
         // grab energy from capacitor

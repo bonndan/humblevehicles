@@ -11,8 +11,9 @@ import net.minecraft.world.level.block.Blocks
 import net.neoforged.neoforge.common.Tags
 import java.util.concurrent.CompletableFuture
 
-class ModRecipeProvider(packOutput: PackOutput?, pRegistries: CompletableFuture<HolderLookup.Provider?>?) :
+class ModRecipeProvider(packOutput: PackOutput?, pRegistries: CompletableFuture<HolderLookup.Provider>) :
     RecipeProvider(packOutput, pRegistries) {
+
     override fun buildRecipes(consumer: RecipeOutput) {
         ShapedRecipeBuilder.shaped(RecipeCategory.TRANSPORTATION, ModBlocks.TUG_DOCK.get(), 2)
             .define('#', ModItems.SPRING.get())

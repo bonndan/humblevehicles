@@ -83,9 +83,9 @@ class LinkingHandler<T>(
 
     private fun writeNBT(entity: Entity, globalCompound: CompoundTag) {
         val compound = CompoundTag()
-        compound.putInt("X", floor(entity.x) as Int)
-        compound.putInt("Y", floor(entity.y) as Int)
-        compound.putInt("Z", floor(entity.z) as Int)
+        compound.putInt("X", floor(entity.x).toInt())
+        compound.putInt("Y", floor(entity.y).toInt())
+        compound.putInt("Z", floor(entity.z).toInt())
 
         compound.putString("UUID", entity.uuid.toString())
 
@@ -135,11 +135,7 @@ class LinkingHandler<T>(
     }
 
     private fun fetchDominatedClient() {
-        val potential = entity.level().getEntity(
-            entity.entityData.get(
-                dominatedID
-            )
-        )
+        val potential = entity.level().getEntity(entity.entityData.get(dominatedID))
         if (clazz.isInstance(potential)) {
             follower = Optional.of((clazz.cast(potential)))
         } else {

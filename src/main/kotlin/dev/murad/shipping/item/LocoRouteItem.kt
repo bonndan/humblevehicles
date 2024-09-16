@@ -1,11 +1,10 @@
 package dev.murad.shipping.item
 
+import dev.murad.shipping.setup.ModDataComponents
 import dev.murad.shipping.util.LocoRoute
-import dev.murad.shipping.util.LocoRouteNode
 import dev.murad.shipping.util.LocoRouteNode.Companion.fromBlocKPos
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
-import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.world.InteractionResult
@@ -78,14 +77,13 @@ class LocoRouteItem(properties: Properties) : Item(properties) {
     }
 
     private fun saveRoute(stack: ItemStack, route: LocoRoute) {
-        val tag = ItemStackUtil.getCompoundTag(stack)
 
         if (route.isEmpty()) {
-            tag.ifPresent { compoundTag: CompoundTag -> compoundTag.remove(ROUTE_NBT) }
-            return
+            // remove tag from stack
+            stack.set(ModDataComponents.getCompoundTag(), null)
         }
 
-        tag.ifPresent { compoundTag: CompoundTag -> compoundTag.put(ROUTE_NBT, route.toNBT()) }
+        ItemStackUtil.getOrCreateTag(stack).put(ROUTE_NBT, route.toNBT())
     }
 
     override fun appendHoverText(
@@ -103,12 +101,12 @@ class LocoRouteItem(properties: Properties) : Item(properties) {
     }
 
     companion object {
+
         private const val ROUTE_NBT = "route"
 
         fun getRoute(stack: ItemStack): LocoRoute {
-            return ItemStackUtil.getCompoundTag(stack)
-                .map { obj -> LocoRoute.fromNBT(obj) }
-                .orElse(LocoRoute())
+
+            return ItemStackUtil.getCompoundTag(stack)?.let { LocoRoute.fromNBT(it) } ?: LocoRoute()
         }
     }
 }
