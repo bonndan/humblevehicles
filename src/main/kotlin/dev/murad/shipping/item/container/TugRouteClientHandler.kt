@@ -8,7 +8,6 @@ import dev.murad.shipping.util.TugRouteNode
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.ObjectSelectionList
-import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.network.chat.Component
 import java.util.*
 
@@ -101,6 +100,7 @@ class TugRouteClientHandler(
 
     inner class TugList(minecraft: Minecraft, width: Int, height: Int, y0: Int, itemHeight: Int) :
         ObjectSelectionList<TugList.Entry>(minecraft, width, height, y0, itemHeight) {
+
 
         fun add(node: TugRouteNode, index: Int) {
             this.addEntry(Entry(node, index))

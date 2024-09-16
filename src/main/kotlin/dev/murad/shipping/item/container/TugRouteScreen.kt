@@ -14,11 +14,10 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.item.ItemStack
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 
 class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Component) :
-    AbstractContainerScreen<TugRouteContainer?>(menu, inventory, title) {
+    AbstractContainerScreen<TugRouteContainer>(menu, inventory, title) {
+
     private val stack: ItemStack
 
     init {
@@ -59,8 +58,6 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
 
     override fun init() {
         super.init()
-
-        LOGGER.info("Initializing TugRouteScreen")
 
         val route = TugRouteClientHandler(this, this.minecraft, TugRouteItem.getRoute(stack), menu!!.isOffHand)
 
@@ -223,9 +220,6 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
     }
 
     companion object {
-        private val LOGGER: Logger = LogManager.getLogger(
-            TugRouteScreen::class.java
-        )
         val GUI: ResourceLocation =
             ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/container/tug_route.png")
     }
