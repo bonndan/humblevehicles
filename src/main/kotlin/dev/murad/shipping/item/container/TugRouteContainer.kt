@@ -19,9 +19,10 @@ class TugRouteContainer(
     player: Player
 ) :
     AbstractContainerMenu(ModMenuTypes.TUG_ROUTE_CONTAINER.get(), windowId) {
+
     val isOffHand: Boolean = data.isOffHand
-    val itemStack: ItemStack =
-        player.getItemInHand(if (isOffHand) InteractionHand.OFF_HAND else InteractionHand.MAIN_HAND)
+
+    val itemStack: ItemStack = player.getItemInHand(if (isOffHand) InteractionHand.OFF_HAND else InteractionHand.MAIN_HAND)
 
     init {
         LOGGER.debug("Got item stack {} in {}hand", itemStack.toString(), if (isOffHand) "off" else "main")

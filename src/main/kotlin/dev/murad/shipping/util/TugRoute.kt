@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import java.util.*
 
-class TugRoute @JvmOverloads constructor(private val name: String? = null, nodes: List<TugRouteNode> = ArrayList()) :
+class TugRoute constructor(private val name: String? = null, nodes: List<TugRouteNode> = ArrayList()) :
     ArrayList<TugRouteNode>(nodes) {
 
     constructor(nodes: List<TugRouteNode>) : this(null, nodes)
@@ -45,7 +45,6 @@ class TugRoute @JvmOverloads constructor(private val name: String? = null, nodes
         private const val NODES_TAG = "nodes"
         private const val HASH_TAG = "hash" // # :)
 
-        @JvmStatic
         fun fromNBT(tag: CompoundTag): TugRoute {
             var name: String? = null
             if (tag.contains(NAME_TAG)) {

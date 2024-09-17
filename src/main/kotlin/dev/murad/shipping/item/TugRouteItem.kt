@@ -2,13 +2,10 @@ package dev.murad.shipping.item
 
 import dev.murad.shipping.entity.accessor.TugRouteScreenDataAccessor
 import dev.murad.shipping.item.container.TugRouteContainer
-import dev.murad.shipping.util.LegacyTugRouteUtil.convertLegacyRoute
-import dev.murad.shipping.util.LegacyTugRouteUtil.parseLegacyRouteString
 import dev.murad.shipping.util.TugRoute
 import dev.murad.shipping.util.TugRoute.Companion.fromNBT
 import dev.murad.shipping.util.TugRouteNode
 import net.minecraft.ChatFormatting
-import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.world.InteractionHand
@@ -21,8 +18,6 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.Level
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import kotlin.math.floor
 
 class TugRouteItem(properties: Properties) : Item(properties) {
@@ -34,26 +29,29 @@ class TugRouteItem(properties: Properties) : Item(properties) {
     }
 
     override fun use(world: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
+
         val itemstack = player.getItemInHand(hand)
-        if (!player.level().isClientSide) {
-            if (player.isShiftKeyDown) {
-                player.openMenu(createContainerProvider(hand), getDataAccessor(player, hand)::write)
-            } else {
-                val x = floor(player.x).toInt()
-                val z = floor(player.z).toInt()
-                if (!tryRemoveSpecific(itemstack, x, z)) {
-                    player.displayClientMessage(
-                        Component.translatable("item.humblevehicles.tug_route.added", x, z),
-                        false
-                    )
-                    pushRoute(itemstack, x, z)
-                } else {
-                    player.displayClientMessage(
-                        Component.translatable("item.humblevehicles.tug_route.removed", x, z),
-                        false
-                    )
-                }
-            }
+
+        if (player.level().isClientSide) {
+            return InteractionResultHolder.pass(itemstack)
+        }
+
+        if (player.isShiftKeyDown) {
+            player.openMenu(createContainerProvider(hand), getDataAccessor(player, hand)::write)
+            return InteractionResultHolder.pass(itemstack)
+        }
+
+        val x = floor(player.x).toInt()
+        val z = floor(player.z).toInt()
+        if (!tryRemoveSpecific(itemstack, x, z)) {
+            player.displayClientMessage(
+                Component.translatable("item.humblevehicles.tug_route.added", x, z), false
+            )
+            pushRoute(itemstack, x, z)
+        } else {
+            player.displayClientMessage(
+                Component.translatable("item.humblevehicles.tug_route.removed", x, z), false
+            )
         }
 
         return InteractionResultHolder.pass(itemstack)
@@ -68,23 +66,6 @@ class TugRouteItem(properties: Properties) : Item(properties) {
 
             override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
                 return TugRouteContainer(i, player.level(), getDataAccessor(player, hand), playerInventory, player)
-            }
-        }
-    }
-
-    override fun verifyComponentsAfterLoad(pStack: ItemStack) {
-        super.verifyComponentsAfterLoad(pStack)
-
-        // convert old nbt format of route: "" into compound format
-        // Precond: nbt is non-null, and nbt.tag is nonnull type 10
-        ItemStackUtil.getCompoundTag(pStack)?.let { compoundTag: CompoundTag ->
-            val tag = compoundTag.getCompound("tag")
-            if (tag.contains(ROUTE_NBT, 8)) {
-                LOGGER.info("Found legacy tug route tag, replacing now")
-                val routeString = tag.getString(ROUTE_NBT)
-                val legacyRoute = parseLegacyRouteString(routeString)
-                val route = convertLegacyRoute(legacyRoute)
-                tag.put(ROUTE_NBT, route.toNBT())
             }
         }
     }
@@ -105,21 +86,21 @@ class TugRouteItem(properties: Properties) : Item(properties) {
     }
 
     companion object {
-        private val LOGGER: Logger = LogManager.getLogger(TugRouteItem::class.java)
 
         private const val ROUTE_NBT = "route"
 
 
         fun getRoute(itemStack: ItemStack): TugRoute {
+
             return ItemStackUtil.getCompoundTag(itemStack)
-                ?.let { compoundTag: CompoundTag ->
+                ?.let { compoundTag ->
                     return if (compoundTag.contains(ROUTE_NBT, 10))
                         fromNBT(compoundTag.getCompound(ROUTE_NBT))
                     else TugRoute()
                 } ?: TugRoute()
         }
 
-        fun tryRemoveSpecific(itemStack: ItemStack, x: Int, z: Int): Boolean {
+        private fun tryRemoveSpecific(itemStack: ItemStack, x: Int, z: Int): Boolean {
             val route = getRoute(itemStack)
             if (route.size == 0) {
                 return false
@@ -129,7 +110,7 @@ class TugRouteItem(properties: Properties) : Item(properties) {
             return removed
         }
 
-        fun pushRoute(itemStack: ItemStack, x: Int, y: Int) {
+        private fun pushRoute(itemStack: ItemStack, x: Int, y: Int) {
             val route = getRoute(itemStack)
             route.add(TugRouteNode(x.toDouble(), y.toDouble()))
             saveRoute(route, itemStack)
@@ -137,8 +118,8 @@ class TugRouteItem(properties: Properties) : Item(properties) {
 
         // should only be called server side
         fun saveRoute(route: TugRoute, itemStack: ItemStack) {
-            ItemStackUtil.getCompoundTag(itemStack)
-                ?.let { compoundTag: CompoundTag -> compoundTag.put(ROUTE_NBT, route.toNBT()) }
+
+            ItemStackUtil.getOrCreateTag(itemStack).put(ROUTE_NBT, route.toNBT())
         }
     }
 }

@@ -25,7 +25,7 @@ import kotlin.math.ceil
 
 class SteamTugEntity : AbstractTugEntity {
 
-    private val FURNACE_FUEL_MULTIPLIER: ModConfigSpec.ConfigValue<Double>? = ShippingConfig.Server.STEAM_TUG_FUEL_MULTIPLIER
+    private val furnaceFuelMultiplier: ModConfigSpec.ConfigValue<Double>? = ShippingConfig.Server.STEAM_TUG_FUEL_MULTIPLIER
 
     private val fuelItemHandler: FuelItemStackHandler = FuelItemStackHandler()
 
@@ -82,7 +82,7 @@ class SteamTugEntity : AbstractTugEntity {
             return true
         } else {
             val burnTime: Int = fuelItemHandler.tryConsumeFuel()
-            val adjustedBurnTime: Int = ceil(burnTime * FURNACE_FUEL_MULTIPLIER!!.get()) as Int
+            val adjustedBurnTime: Int = ceil(burnTime * furnaceFuelMultiplier!!.get()).toInt()
             this.burnCapacity = adjustedBurnTime
             this.burnTime = adjustedBurnTime
             return adjustedBurnTime > 0

@@ -76,9 +76,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
                     val selectedOpt = route.selected
                     if (selectedOpt.isPresent) {
                         val selected = selectedOpt.get()
-                        minecraft!!.pushGuiLayer(StringInputScreen(
-                            selected.second!!, selected.first!!
-                        ) { name: String? -> route.renameSelected(name) })
+                        minecraft!!.pushGuiLayer(StringInputScreen(selected.second!!, selected.first!!) { name: String? -> route.renameSelected(name) })
                     }
                 },
                 getTooltip(Component.translatable("screen.humblevehicles.tug_route.rename_button"))

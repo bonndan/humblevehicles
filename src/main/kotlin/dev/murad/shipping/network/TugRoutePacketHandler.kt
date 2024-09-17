@@ -17,7 +17,6 @@ object TugRoutePacketHandler {
 
     private val LOGGER: Logger = LogManager.getLogger(TugRoutePacketHandler::class.java)
 
-
     @SubscribeEvent
     fun on(event: RegisterPayloadHandlersEvent) {
         val registrar = event.registrar("1")
@@ -25,9 +24,8 @@ object TugRoutePacketHandler {
             SetRouteTagPacket.TYPE,
             SetRouteTagPacket.STREAM_CODEC,
             DirectionalPayloadHandler<SetRouteTagPacket>(
-                IPayloadHandler { obj, operation -> handleSetTag(obj,  operation) },
-                IPayloadHandler { obj, operation -> handleSetTag(obj, operation)
-                }
+                { obj, operation -> handleSetTag(obj,  operation) },
+                { obj, operation -> handleSetTag(obj, operation) }
             )
         )
     }
