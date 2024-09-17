@@ -9,6 +9,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent
 
 @EventBusSubscriber(modid = HumVeeMod.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 object DataGenerators {
+
     @SubscribeEvent
     fun gatherData(gatherDataEvent: GatherDataEvent) {
         val gen = gatherDataEvent.generator
@@ -23,6 +24,12 @@ object DataGenerators {
         gen.addProvider(true, blockTags)
         gen.addProvider(true, ModItemTagsProvider(pack, lookupProvider, blockTags.contentsGetter(), existingFileHelper))
         gen.addProvider(true, ModLootTableProvider(pack, lookupProvider))
-        gen.addProvider(true, ModRecipeProvider(pack, lookupProvider))
+
+        val modRecipeProvider = ModRecipeProvider(pack, lookupProvider)
+        gen.addProvider(true, modRecipeProvider)
+        if (gatherDataEvent.includeDev()) {
+            val graph = RecipeGraph(modRecipeProvider)
+            graph.build()
+        }
     }
 }

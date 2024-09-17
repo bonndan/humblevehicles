@@ -14,6 +14,10 @@ import java.util.concurrent.CompletableFuture
 class ModRecipeProvider(packOutput: PackOutput?, pRegistries: CompletableFuture<HolderLookup.Provider>) :
     RecipeProvider(packOutput, pRegistries) {
 
+    internal fun build(consumer: RecipeOutput) {
+        buildRecipes(consumer)
+    }
+
     override fun buildRecipes(consumer: RecipeOutput) {
         ShapedRecipeBuilder.shaped(RecipeCategory.TRANSPORTATION, ModBlocks.TUG_DOCK.get(), 2)
             .define('#', ModItems.SPRING.get())

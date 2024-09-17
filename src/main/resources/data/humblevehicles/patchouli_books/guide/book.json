@@ -1,6 +1,6 @@
 {
-  "name": "Little Logistics Guide",
-  "landing_text": "A short tutorial on Little Logistics! Visit the $(l:https://humblevehicles.murad.dev)online guide$() for video instructions.",
+  "name": "Humble Vehicles Guide",
+  "landing_text": "A short tutorial. Visit the $(l:https://humblevehicles.murad.dev)online guide$() for video instructions.",
   "version": 3,
   "creative_tab": "transportation",
   "show_toasts ": false,
