@@ -4,12 +4,11 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import java.util.*
 
-class LocoRoute @JvmOverloads constructor(
+class LocoRoute(
     private val name: String? = null,
     private val owner: String? = null,
     nodes: Set<LocoRouteNode> = HashSet()
-) :
-    HashSet<LocoRouteNode>(nodes) {
+) : HashSet<LocoRouteNode>(nodes) {
     constructor(nodes: Set<LocoRouteNode>) : this(null, null, nodes)
 
     fun hasCustomName(): Boolean {
@@ -57,7 +56,7 @@ class LocoRoute @JvmOverloads constructor(
         private const val OWNER_TAG = "owner"
         private const val NODES_TAG = "nodes"
 
-        @JvmStatic
+
         fun fromNBT(tag: CompoundTag): LocoRoute {
             var name: String? = null
             var owner: String? = null

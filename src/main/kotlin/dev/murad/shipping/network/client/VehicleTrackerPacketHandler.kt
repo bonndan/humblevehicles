@@ -17,21 +17,21 @@ object VehicleTrackerPacketHandler {
     @SubscribeEvent
     fun register(event: RegisterPayloadHandlersEvent) {
         val registrar = event.registrar("1")
-        registrar.playBidirectional<VehicleTrackerClientPacket>(
-            VehicleTrackerClientPacket.Companion.TYPE,
-            VehicleTrackerClientPacket.Companion.STREAM_CODEC,
-            DirectionalPayloadHandler<VehicleTrackerClientPacket?>(
-                IPayloadHandler { obj, packet: IPayloadContext -> handleData(obj, packet) },
-                IPayloadHandler { obj, packet: IPayloadContext -> handleData(obj, packet) }
+        registrar.playBidirectional(
+            VehicleTrackerClientPacket.TYPE,
+            VehicleTrackerClientPacket.STREAM_CODEC,
+            DirectionalPayloadHandler(
+                { obj, packet: IPayloadContext -> handleData(obj, packet) },
+                { obj, packet: IPayloadContext -> handleData(obj, packet) }
             )
         )
     }
 
-    fun handleData(packet: VehicleTrackerClientPacket, ctx: IPayloadContext) {
-        ctx.enqueueWork(Runnable {
+    private fun handleData(packet: VehicleTrackerClientPacket, ctx: IPayloadContext) {
+        ctx.enqueueWork {
             toRender = packet.parse()
             toRenderDimension = packet.dimension
-        })
+        }
     }
 
     fun flush() {

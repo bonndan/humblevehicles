@@ -17,36 +17,12 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseRailBlock
 
 class LocoRouteItem(properties: Properties) : Item(properties) {
-    private fun removeAndDisplay(player: Player?, route: LocoRoute, pos: BlockPos): Boolean {
-        val removed = route.removeIf { n -> n?.isAt(pos) ?: false }
-        if (removed && player != null) player.displayClientMessage(
-            Component.translatable(
-                "item.humblevehicles.locomotive_route.removed",
-                pos.x, pos.y, pos.z
-            ), false
-        )
-        return removed
-    }
-
-    private fun addAndDisplay(player: Player?, route: LocoRoute, pos: BlockPos, level: Level) {
-        if (level.getBlockState(pos).block is BaseRailBlock) {
-            // blockpos should be a railtype, either our custom rail or vanilla.
-            // Though for pathfinding purposes, it is not guaranteed to be a rail, as the
-            // world can change
-            player?.displayClientMessage(
-                Component.translatable(
-                    "item.humblevehicles.locomotive_route.added",
-                    pos.x, pos.y, pos.z
-                ), false
-            )
-
-            // add
-            route.add(fromBlocKPos(pos))
-        }
-    }
 
     override fun useOn(pContext: UseOnContext): InteractionResult {
-        if (pContext.level.isClientSide) return InteractionResult.SUCCESS
+
+        if (pContext.level.isClientSide) {
+            return InteractionResult.SUCCESS
+        }
 
         // item used on block
         val stack = pContext.itemInHand
@@ -71,8 +47,36 @@ class LocoRouteItem(properties: Properties) : Item(properties) {
             // save route
             saveRoute(stack, route)
             return InteractionResult.SUCCESS
-        } else {
-            return InteractionResult.PASS
+        }
+
+        return InteractionResult.PASS
+    }
+
+    private fun removeAndDisplay(player: Player?, route: LocoRoute, pos: BlockPos): Boolean {
+        val removed = route.removeIf { n -> n.isAt(pos) }
+        if (removed && player != null) {
+            player.displayClientMessage(
+                Component.translatable("item.humblevehicles.locomotive_route.removed", pos.x, pos.y, pos.z),
+                false
+            )
+        }
+        return removed
+    }
+
+    private fun addAndDisplay(player: Player?, route: LocoRoute, pos: BlockPos, level: Level) {
+        if (level.getBlockState(pos).block is BaseRailBlock) {
+            // blockpos should be a railtype, either our custom rail or vanilla.
+            // Though for pathfinding purposes, it is not guaranteed to be a rail, as the
+            // world can change
+            player?.displayClientMessage(
+                Component.translatable(
+                    "item.humblevehicles.locomotive_route.added",
+                    pos.x, pos.y, pos.z
+                ), false
+            )
+
+            // add
+            route.add(fromBlocKPos(pos))
         }
     }
 

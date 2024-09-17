@@ -1,5 +1,6 @@
 package dev.murad.shipping.event
 
+import com.mojang.blaze3d.vertex.ByteBufferBuilder
 import com.mojang.math.Axis
 import dev.murad.shipping.event.ForgeClientEventHandler.BEAM_LOCATION
 import dev.murad.shipping.event.ForgeClientEventHandler.computeFixedDistance
@@ -16,14 +17,14 @@ import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent
 import org.joml.Vector2d
 
-class TugRouteRenderer(private val bufferSource: MultiBufferSource.BufferSource) {
+class TugRouteRenderer {
 
-     fun renderTugRoute(stack: ItemStack, event: RenderLevelStageEvent, player: Player) {
+    fun renderTugRoute(stack: ItemStack, event: RenderLevelStageEvent, player: Player) {
 
         val camera = Minecraft.getInstance().entityRenderDispatcher.camera
         val camPos = camera.position
 
-        val renderTypeBuffer = bufferSource
+        val renderTypeBuffer = MultiBufferSource.immediate(ByteBufferBuilder(1536))
         val route = TugRouteItem.getRoute(stack)
         var i = 0
         val routeSize = route.size
@@ -37,7 +38,6 @@ class TugRouteRenderer(private val bufferSource: MultiBufferSource.BufferSource)
 
 
             val matrixStack = event.poseStack
-            //matrixStack.mulPose(event.projectionMatrix) //???
             matrixStack.pushPose()
             run {
                 matrixStack.translate(node.x - camPos.x, 0.0, node.z - camPos.z)

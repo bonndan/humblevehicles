@@ -1,8 +1,6 @@
 package dev.murad.shipping.event
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat
-import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.VertexFormat
+import com.mojang.blaze3d.vertex.*
 import com.mojang.math.Axis
 import dev.murad.shipping.event.ForgeClientEventHandler.BEAM_LOCATION
 import dev.murad.shipping.item.LocoRouteItem
@@ -20,11 +18,11 @@ import net.minecraft.world.phys.AABB
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent
 import java.util.*
 
-class LocoRouteRenderer(private val bufferSource: MultiBufferSource.BufferSource) {
+class LocoRouteRenderer {
 
     fun renderLocoRoute(event: RenderLevelStageEvent, stack: ItemStack, player: Player) {
 
-        val buffer = bufferSource
+        val buffer = MultiBufferSource.immediate(ByteBufferBuilder(1536))
         val pose = PoseStack()
         pose.mulPose(event.projectionMatrix)
         val cameraOff = Minecraft.getInstance().gameRenderer.mainCamera.position

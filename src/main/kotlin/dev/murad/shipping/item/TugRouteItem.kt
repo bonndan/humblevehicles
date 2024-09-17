@@ -89,7 +89,6 @@ class TugRouteItem(properties: Properties) : Item(properties) {
 
         private const val ROUTE_NBT = "route"
 
-
         fun getRoute(itemStack: ItemStack): TugRoute {
 
             return ItemStackUtil.getCompoundTag(itemStack)
