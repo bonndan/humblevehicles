@@ -3,7 +3,7 @@ package dev.murad.shipping.event
 import com.mojang.blaze3d.vertex.*
 import com.mojang.math.Axis
 import dev.murad.shipping.event.ForgeClientEventHandler.BEAM_LOCATION
-import dev.murad.shipping.item.LocoRouteItem
+import dev.murad.shipping.util.LocoRoute
 import dev.murad.shipping.util.RailHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.LevelRenderer
@@ -23,79 +23,71 @@ class LocoRouteRenderer {
     fun renderLocoRoute(event: RenderLevelStageEvent, stack: ItemStack, player: Player) {
 
         val buffer = MultiBufferSource.immediate(ByteBufferBuilder(1536))
-        val pose = PoseStack()
-        pose.mulPose(event.projectionMatrix)
+        val matrixStack = event.poseStack
+
         val cameraOff = Minecraft.getInstance().gameRenderer.mainCamera.position
 
 
         // Render Beacon Beams
-        for (node in LocoRouteItem.getRoute(stack)) {
+        for (node in LocoRoute.getRoute(stack)) {
             val block = node.toBlockPos()
 
-            pose.pushPose()
+            matrixStack.pushPose()
 
-            pose.translate(
-                (block.x - cameraOff.x).toFloat(),
-                (1 - cameraOff.y).toFloat(),
-                (block.z - cameraOff.z).toFloat()
-            )
-            pose.popPose()
-
-
+            matrixStack.translate((block.x - cameraOff.x).toFloat(), (1 - cameraOff.y).toFloat(), (block.z - cameraOff.z).toFloat())
             BeaconRenderer.renderBeaconBeam(
-                pose, buffer, BEAM_LOCATION, event.partialTick.gameTimeDeltaTicks,
+                matrixStack, buffer, BEAM_LOCATION, event.partialTick.gameTimeDeltaTicks,
                 1f, player.level().gameTime, player.level().minBuildHeight + 1, 1024,
                 DyeColor.YELLOW.textureDiffuseColor, 0.1f, 0.2f
             )
+            matrixStack.popPose()
+            matrixStack.pushPose()
 
-            pose.popPose()
-            pose.pushPose()
-            run {
-                // handling for removed blocks and blocks out of distance
-                val shape = RailHelper.getRail(block, player.level())
-                    .map { pos -> RailHelper.getShape(pos, player.level()) }
-                    .orElse(RailShape.EAST_WEST)
-                var baseY = (if (shape.isAscending) 0.1 else 0.0)
-                var baseX = 0.0
-                var baseZ = 0.0
-                var rotation = Axis.ZP.rotationDegrees(0f)
-                when (shape) {
-                    RailShape.ASCENDING_EAST -> {
-                        baseX = 0.2
-                        rotation = Axis.ZP.rotationDegrees(45f)
-                    }
-
-                    RailShape.ASCENDING_WEST -> {
-                        baseX = 0.1
-                        baseY += 0.7
-                        rotation = Axis.ZP.rotationDegrees(-45f)
-                    }
-
-                    RailShape.ASCENDING_NORTH -> {
-                        baseZ = 0.1
-                        baseY += 0.7
-                        rotation = Axis.XP.rotationDegrees(45f)
-                    }
-
-                    RailShape.ASCENDING_SOUTH -> {
-                        baseZ = 0.2
-                        rotation = Axis.XP.rotationDegrees(-45f)
-                    }
-
-                    else -> {}
+            // handling for removed blocks and blocks out of distance
+            val shape = RailHelper.getRail(block, player.level())
+                .map { pos -> RailHelper.getShape(pos, player.level()) }
+                .orElse(RailShape.EAST_WEST)
+            var baseY = (if (shape.isAscending) 0.1 else 0.0)
+            var baseX = 0.0
+            var baseZ = 0.0
+            var rotation = Axis.ZP.rotationDegrees(0f)
+            when (shape) {
+                RailShape.ASCENDING_EAST -> {
+                    baseX = 0.2
+                    rotation = Axis.ZP.rotationDegrees(45f)
                 }
 
-                pose.translate(
-                    block.x + baseX - cameraOff.x,
-                    block.y + baseY - cameraOff.y,
-                    block.z + baseZ - cameraOff.z
-                )
-                pose.mulPose(rotation)
+                RailShape.ASCENDING_WEST -> {
+                    baseX = 0.1
+                    baseY += 0.7
+                    rotation = Axis.ZP.rotationDegrees(-45f)
+                }
 
-                val a = AABB(0.0, 0.0, 0.0, 1.0, 0.2, 1.0)
-                LevelRenderer.renderLineBox(pose, buffer.getBuffer(ModRenderType.LINES), a, 1.0f, 1.0f, 0.3f, 0.5f)
+                RailShape.ASCENDING_NORTH -> {
+                    baseZ = 0.1
+                    baseY += 0.7
+                    rotation = Axis.XP.rotationDegrees(45f)
+                }
+
+                RailShape.ASCENDING_SOUTH -> {
+                    baseZ = 0.2
+                    rotation = Axis.XP.rotationDegrees(-45f)
+                }
+
+                else -> {}
             }
-            pose.popPose()
+
+            matrixStack.translate(
+                block.x + baseX - cameraOff.x,
+                block.y + baseY - cameraOff.y,
+                block.z + baseZ - cameraOff.z
+            )
+            matrixStack.mulPose(rotation)
+
+            val a = AABB(0.0, 0.0, 0.0, 1.0, 0.2, 1.0)
+            LevelRenderer.renderLineBox(matrixStack, buffer.getBuffer(ModRenderType.LINES), a, 1.0f, 1.0f, 0.3f, 0.5f)
+
+            matrixStack.popPose()
         }
 
         buffer.endBatch()

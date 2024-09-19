@@ -560,7 +560,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     private fun updateNavigatorFromItem() {
         val stack = routeItemHandler.getStackInSlot(0)
         if (stack.item is LocoRouteItem) {
-            navigator.updateWithLocoRouteItem(LocoRouteItem.getRoute(stack))
+            navigator.updateWithLocoRouteItem(LocoRoute.getRoute(stack))
         } else {
             navigator.updateWithLocoRouteItem(LocoRoute())
         }

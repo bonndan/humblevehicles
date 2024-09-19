@@ -3,6 +3,7 @@ package dev.murad.shipping.item.container
 import com.mojang.datafixers.util.Pair
 import dev.murad.shipping.network.SetRouteTagPacket
 import dev.murad.shipping.network.TugRoutePacketHandler
+import dev.murad.shipping.util.RouteNode
 import dev.murad.shipping.util.TugRoute
 import dev.murad.shipping.util.TugRouteNode
 import net.minecraft.client.Minecraft
@@ -78,17 +79,12 @@ class TugRouteClientHandler(
         }
     }
 
-    val selected: Optional<Pair<Int, TugRouteNode>>
+    val selected: Optional<Pair<Int, RouteNode>>
         get() {
             val selected = widget!!.selected
             if (selected != null) {
                 val index = selected.getIndex()
-                return Optional.of(
-                    Pair(
-                        index,
-                        route[index]
-                    )
-                )
+                return Optional.of(Pair(index, route[index]))
             }
 
             return Optional.empty()
@@ -102,7 +98,7 @@ class TugRouteClientHandler(
         ObjectSelectionList<TugList.Entry>(minecraft, width, height, y0, itemHeight) {
 
 
-        fun add(node: TugRouteNode, index: Int) {
+        fun add(node: RouteNode, index: Int) {
             this.addEntry(Entry(node, index))
         }
 
@@ -114,7 +110,7 @@ class TugRouteClientHandler(
             return (this.width + rowWidth) / 2 + 5
         }
 
-        inner class Entry(private val node: TugRouteNode, private var index: Int) : ObjectSelectionList.Entry<Entry>() {
+        inner class Entry(private val node: RouteNode, private var index: Int) : ObjectSelectionList.Entry<Entry>() {
 
             override fun render(
                 graphics: GuiGraphics,
@@ -128,7 +124,7 @@ class TugRouteClientHandler(
                 hovered: Boolean,
                 partialTicks: Float
             ) {
-                val s = node.getDisplayName(index) + ": " + node.displayCoords
+                val s = node.getDisplayName(index) + ": " + node.getDisplayCoords()
 
                 graphics.blit(
                     TugRouteScreen.GUI,

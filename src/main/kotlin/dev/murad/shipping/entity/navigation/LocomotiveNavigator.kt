@@ -16,6 +16,7 @@ import java.util.*
 import java.util.stream.Collectors
 
 class LocomotiveNavigator(private val locomotive: AbstractLocomotiveEntity) {
+
     private val routeNodes: MutableSet<BlockPos> = HashSet()
 
     private val visitedNodes: MutableSet<BlockPos> = HashSet()

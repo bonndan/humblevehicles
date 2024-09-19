@@ -2,7 +2,8 @@ package dev.murad.shipping.item
 
 import dev.murad.shipping.setup.ModDataComponents
 import dev.murad.shipping.util.LocoRoute
-import dev.murad.shipping.util.LocoRouteNode.Companion.fromBlocKPos
+import dev.murad.shipping.util.LocoRouteNode
+import dev.murad.shipping.util.Route
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
@@ -16,7 +17,7 @@ import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseRailBlock
 
-class LocoRouteItem(properties: Properties) : Item(properties) {
+class LocoRouteItem(properties: Properties) : RouteItem(properties) {
 
     override fun useOn(pContext: UseOnContext): InteractionResult {
 
@@ -45,7 +46,7 @@ class LocoRouteItem(properties: Properties) : Item(properties) {
             }
 
             // save route
-            saveRoute(stack, route)
+            route.save(stack)
             return InteractionResult.SUCCESS
         }
 
@@ -76,18 +77,8 @@ class LocoRouteItem(properties: Properties) : Item(properties) {
             )
 
             // add
-            route.add(fromBlocKPos(pos))
+            route.add(LocoRouteNode(null, pos.x, pos.y, pos.z))
         }
-    }
-
-    private fun saveRoute(stack: ItemStack, route: LocoRoute) {
-
-        if (route.isEmpty()) {
-            // remove tag from stack
-            stack.set(ModDataComponents.getCompoundTag(), null)
-        }
-
-        ItemStackUtil.getOrCreateTag(stack).put(ROUTE_NBT, route.toNBT())
     }
 
     override fun appendHoverText(
@@ -104,13 +95,7 @@ class LocoRouteItem(properties: Properties) : Item(properties) {
         )
     }
 
-    companion object {
-
-        private const val ROUTE_NBT = "route"
-
-        fun getRoute(stack: ItemStack): LocoRoute {
-
-            return ItemStackUtil.getCompoundTag(stack)?.let { LocoRoute.fromNBT(it) } ?: LocoRoute()
-        }
+    override fun getRoute(itemStack: ItemStack): LocoRoute {
+        return LocoRoute.getRoute(itemStack)
     }
 }

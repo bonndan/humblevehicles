@@ -1,6 +1,7 @@
 package dev.murad.shipping.item.container
 
 import dev.murad.shipping.HumVeeMod
+import dev.murad.shipping.util.RouteNode
 import dev.murad.shipping.util.TugRouteNode
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -12,7 +13,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.util.function.Consumer
 
-class StringInputScreen(node: TugRouteNode, index: Int, private val callback: Consumer<String?>) :
+class StringInputScreen(node: RouteNode, index: Int, private val callback: Consumer<String?>) :
     Screen(Component.translatable("screen.humblevehicles.tug_route.rename", node.getDisplayName(index))) {
     private var text: String?
     private var textFieldWidget: EditBox? = null

@@ -3,6 +3,7 @@ package dev.murad.shipping.item.container
 import com.mojang.math.Divisor
 import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.item.TugRouteItem
+import dev.murad.shipping.util.TugRoute
 import it.unimi.dsi.fastutil.ints.IntIterator
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.Font
@@ -64,7 +65,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
     override fun init() {
         super.init()
 
-        val route = TugRouteClientHandler(this, this.minecraft, TugRouteItem.getRoute(stack), menu!!.isOffHand)
+        val route = TugRouteClientHandler(this, this.minecraft, TugRoute.getRoute(stack), menu!!.isOffHand)
 
         this.addRenderableWidget(
             route.initializeWidget(

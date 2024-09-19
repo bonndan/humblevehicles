@@ -1,63 +1,21 @@
 package dev.murad.shipping.util
 
+import dev.murad.shipping.item.ItemStackUtil
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
+import net.minecraft.world.item.ItemStack
 import java.util.*
 
 class LocoRoute(
-    private val name: String? = null,
-    private val owner: String? = null,
+    name: String? = null,
+    owner: String? = null,
     nodes: Set<LocoRouteNode> = HashSet()
-) : HashSet<LocoRouteNode>(nodes) {
-    constructor(nodes: Set<LocoRouteNode>) : this(null, null, nodes)
-
-    fun hasCustomName(): Boolean {
-        return this.name != null
-    }
-
-    fun hasOwner(): Boolean {
-        return this.owner != null
-    }
-
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        if (!super.equals(o)) return false
-        val that = o as LocoRoute
-        return name == that.name && owner == that.owner
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(super.hashCode(), name, owner)
-    }
-
-    fun toNBT(): CompoundTag {
-        val tag = CompoundTag()
-
-        val list = ListTag()
-        for (node in this) {
-            list.add(node.toNBT())
-        }
-
-        tag.put(NODES_TAG, list)
-        if (hasCustomName()) {
-            tag.putString(NAME_TAG, this.name)
-        }
-
-        if (hasOwner()) {
-            tag.putString(OWNER_TAG, this.owner)
-        }
-
-        return tag
-    }
+) : Route(name, owner, nodes) {
 
     companion object {
-        private const val NAME_TAG = "name"
-        private const val OWNER_TAG = "owner"
-        private const val NODES_TAG = "nodes"
-
 
         fun fromNBT(tag: CompoundTag): LocoRoute {
+
             var name: String? = null
             var owner: String? = null
             if (tag.contains(NAME_TAG)) {
@@ -76,6 +34,16 @@ class LocoRoute(
             }
 
             return LocoRoute(name, owner, nodes)
+        }
+
+        fun getRoute(itemStack: ItemStack): LocoRoute {
+
+            return ItemStackUtil.getCompoundTag(itemStack)
+                ?.let { compoundTag ->
+                    return if (compoundTag.contains(ROUTE_NBT, 10))
+                        fromNBT(compoundTag.getCompound(ROUTE_NBT))
+                    else LocoRoute()
+                } ?: LocoRoute()
         }
     }
 }

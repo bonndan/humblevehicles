@@ -9,7 +9,6 @@ import dev.murad.shipping.entity.custom.HeadVehicle
 import dev.murad.shipping.entity.custom.vessel.VesselEntity
 import dev.murad.shipping.entity.navigation.TugPathNavigator
 import dev.murad.shipping.item.TugRouteItem
-import dev.murad.shipping.item.TugRouteItem.Companion.getRoute
 import dev.murad.shipping.setup.ModBlocks
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.setup.ModSounds
@@ -163,7 +162,7 @@ abstract class AbstractTugEntity :
     private fun tickRouteCheck() {
         if (contentsChanged) {
             val stack: ItemStack = routeItemHandler.getStackInSlot(0)
-            this.setPath(getRoute(stack))
+            this.setPath(TugRoute.getRoute(stack))
             contentsChanged = false
         }
 
@@ -383,11 +382,11 @@ abstract class AbstractTugEntity :
     private fun followPath() {
         pathfindCooldown--
         if (!path!!.isEmpty() && !this.isDocked && engineOn && !shouldFreezeTrain() && tickFuel()) {
-            val stop: TugRouteNode = path!!.get(nextStop)
+            val stop = path!!.get(nextStop)
             if (navigation.getPath() == null || navigation.getPath()!!.isDone()
             ) {
                 if (pathfindCooldown < 0 || navigation.getPath() != null) {  //only go on cooldown when the path was not completed
-                    navigation.moveTo(stop.x, this.getY(), stop.z, 0.3)
+                    navigation.moveTo(stop.x.toDouble(), this.getY(), stop.z.toDouble(), 0.3)
                     pathfindCooldown = 20
                 } else {
                     return

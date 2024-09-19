@@ -1,6 +1,5 @@
 package dev.murad.shipping.network
 
-import dev.murad.shipping.item.TugRouteItem.Companion.saveRoute
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.util.TugRoute
 import net.minecraft.world.InteractionHand
@@ -9,7 +8,6 @@ import net.neoforged.neoforge.network.PacketDistributor
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler
 import net.neoforged.neoforge.network.handling.IPayloadContext
-import net.neoforged.neoforge.network.handling.IPayloadHandler
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
@@ -24,7 +22,7 @@ object TugRoutePacketHandler {
             SetRouteTagPacket.TYPE,
             SetRouteTagPacket.STREAM_CODEC,
             DirectionalPayloadHandler<SetRouteTagPacket>(
-                { obj, operation -> handleSetTag(obj,  operation) },
+                { obj, operation -> handleSetTag(obj, operation) },
                 { obj, operation -> handleSetTag(obj, operation) }
             )
         )
@@ -49,7 +47,8 @@ object TugRoutePacketHandler {
 
             val routeTag = operation.getTag()
             LOGGER.info(routeTag)
-            saveRoute(TugRoute.fromNBT(routeTag!!), heldStack)
+            val tugRoute = TugRoute.fromNBT(routeTag!!)
+            tugRoute.save(heldStack)
         })
     }
 
