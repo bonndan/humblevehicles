@@ -1,7 +1,7 @@
 # Humble Vehicles Recipes
 
 
-## humblevehicles:tug_dock
+## tug_dock
 
 Requires: humblevehicles:spring
 
@@ -18,7 +18,7 @@ Pattern:
 | minecraft:iron_ingot | minecraft:iron_ingot | minecraft:iron_ingot |
 
 
-## humblevehicles:barge_dock
+## barge_dock
 
 Requires: humblevehicles:spring
 
@@ -35,7 +35,7 @@ Pattern:
 | minecraft:iron_ingot | minecraft:iron_ingot | minecraft:iron_ingot |
 
 
-## humblevehicles:vessel_detector
+## vessel_detector
 
 Requires: humblevehicles:spring
 
@@ -52,7 +52,7 @@ Pattern:
 | minecraft:barrier | minecraft:barrier | minecraft:barrier |
 
 
-## humblevehicles:guide_rail_corner
+## guide_rail_corner
 
 Requires: minecraft:powered_rail
 
@@ -69,7 +69,7 @@ Pattern:
 | humblevehicles:spring | minecraft:barrier | minecraft:barrier |
 
 
-## humblevehicles:switch_rail
+## switch_rail
 
 Requires: minecraft:rail
 
@@ -86,7 +86,7 @@ Pattern:
 | minecraft:rail |  |
 
 
-## humblevehicles:tee_junction_rail
+## tee_junction_rail
 
 Requires: minecraft:rail
 
@@ -102,7 +102,7 @@ Pattern:
 |  | minecraft:rail |  |
 
 
-## humblevehicles:junction_rail
+## junction_rail
 
 Requires: minecraft:rail
 
@@ -119,7 +119,7 @@ Pattern:
 |  | minecraft:rail |  |
 
 
-## humblevehicles:locomotive_dock_rail
+## locomotive_dock_rail
 
 Requires: minecraft:rail
 
@@ -136,7 +136,7 @@ Pattern:
 | minecraft:rail |
 
 
-## humblevehicles:car_dock_rail
+## car_dock_rail
 
 Requires: minecraft:rail
 
@@ -153,7 +153,7 @@ Pattern:
 |  | minecraft:rail |  |
 
 
-## humblevehicles:guide_rail_tug
+## guide_rail_tug
 
 Requires: minecraft:powered_rail
 
@@ -170,7 +170,7 @@ Pattern:
 | minecraft:barrier | minecraft:barrier | minecraft:barrier |
 
 
-## humblevehicles:fluid_hopper
+## fluid_hopper
 
 Requires: minecraft:hopper
 
@@ -186,7 +186,7 @@ Pattern:
 |  | minecraft:glass |  |
 
 
-## humblevehicles:vessel_charger
+## vessel_charger
 
 Requires: minecraft:redstone
 
@@ -203,7 +203,7 @@ Pattern:
 | minecraft:redstone_block | minecraft:iron_ingot | minecraft:redstone_block |
 
 
-## humblevehicles:spring
+## spring
 
 Requires: minecraft:string
 
@@ -219,7 +219,7 @@ Pattern:
 | minecraft:iron_nugget | minecraft:barrier | minecraft:iron_nugget |
 
 
-## humblevehicles:tug_route
+## tug_route
 
 Requires: minecraft:redstone
 
@@ -236,7 +236,7 @@ Pattern:
 |  | minecraft:redstone |  |
 
 
-## humblevehicles:locomotive_route
+## locomotive_route
 
 Requires: minecraft:redstone
 
@@ -253,7 +253,7 @@ Pattern:
 |  | minecraft:iron_nugget |  |
 
 
-## humblevehicles:tug
+## tug
 
 Requires: minecraft:piston
 
@@ -270,7 +270,7 @@ Pattern:
 | minecraft:iron_ingot | minecraft:iron_ingot | minecraft:iron_ingot |
 
 
-## humblevehicles:energy_tug
+## energy_tug
 
 Requires: minecraft:piston
 
@@ -287,7 +287,7 @@ Pattern:
 | minecraft:iron_ingot | minecraft:iron_ingot | minecraft:iron_ingot |
 
 
-## humblevehicles:barge
+## barge
 
 Requires: minecraft:chest
 
@@ -303,7 +303,7 @@ Pattern:
 | minecraft:iron_ingot | minecraft:iron_ingot | minecraft:iron_ingot |
 
 
-## humblevehicles:barrel_barge
+## barrel_barge
 
 Requires: minecraft:barrel
 
@@ -319,7 +319,7 @@ Pattern:
 | minecraft:iron_ingot | minecraft:iron_ingot | minecraft:iron_ingot |
 
 
-## humblevehicles:vacuum_barge
+## vacuum_barge
 
 Requires: minecraft:hopper
 
@@ -335,7 +335,7 @@ Pattern:
 | minecraft:iron_ingot | minecraft:iron_ingot | minecraft:iron_ingot |
 
 
-## humblevehicles:seater_barge
+## seater_barge
 
 Requires: minecraft:iron_ingot
 
@@ -351,7 +351,7 @@ Pattern:
 | minecraft:iron_ingot | minecraft:iron_ingot | minecraft:iron_ingot |
 
 
-## humblevehicles:fishing_barge
+## fishing_barge
 
 Requires: minecraft:fishing_rod
 
@@ -367,7 +367,7 @@ Pattern:
 | minecraft:iron_ingot | minecraft:iron_ingot | minecraft:iron_ingot |
 
 
-## humblevehicles:fluid_barge
+## fluid_barge
 
 Requires: minecraft:glass
 
@@ -384,7 +384,7 @@ Pattern:
 | minecraft:iron_ingot | minecraft:iron_ingot | minecraft:iron_ingot |
 
 
-## humblevehicles:rapid_hopper
+## rapid_hopper
 
 Requires: minecraft:hopper
 
@@ -400,7 +400,7 @@ Pattern:
 |  | minecraft:redstone_block |  |
 
 
-## humblevehicles:seater_car
+## seater_car
 
 Requires: minecraft:iron_ingot
 
@@ -416,7 +416,7 @@ Pattern:
 | minecraft:iron_ingot |  | minecraft:iron_ingot |
 
 
-## humblevehicles:chest_car
+## chest_car
 
 Requires: humblevehicles:seater_car
 
@@ -432,7 +432,7 @@ Pattern:
 | humblevehicles:seater_car |
 
 
-## humblevehicles:barrel_car
+## barrel_car
 
 Requires: humblevehicles:seater_car
 
@@ -448,7 +448,7 @@ Pattern:
 | humblevehicles:seater_car |
 
 
-## humblevehicles:fluid_car
+## fluid_car
 
 Requires: humblevehicles:seater_car
 
@@ -465,7 +465,7 @@ Pattern:
 |  | humblevehicles:seater_car |  |
 
 
-## humblevehicles:energy_locomotive
+## energy_locomotive
 
 Requires: humblevehicles:seater_car
 
@@ -482,7 +482,7 @@ Pattern:
 | minecraft:iron_ingot | humblevehicles:seater_car | minecraft:iron_ingot |
 
 
-## humblevehicles:steam_locomotive
+## steam_locomotive
 
 Requires: humblevehicles:seater_car
 
@@ -499,7 +499,7 @@ Pattern:
 | minecraft:iron_ingot | humblevehicles:seater_car | minecraft:iron_ingot |
 
 
-## humblevehicles:receiver_component
+## receiver_component
 
 Requires: minecraft:ender_eye
 
@@ -516,7 +516,7 @@ Pattern:
 | minecraft:stone_slab |
 
 
-## humblevehicles:transmitter_component
+## transmitter_component
 
 Requires: minecraft:ender_eye
 
@@ -533,7 +533,7 @@ Pattern:
 | minecraft:stone_slab |
 
 
-## humblevehicles:conductors_wrench
+## conductors_wrench
 
 Requires: humblevehicles:spring
 

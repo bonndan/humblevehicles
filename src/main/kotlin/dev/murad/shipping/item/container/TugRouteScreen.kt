@@ -1,7 +1,9 @@
 package dev.murad.shipping.item.container
 
+import com.mojang.math.Divisor
 import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.item.TugRouteItem
+import it.unimi.dsi.fastutil.ints.IntIterator
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
@@ -12,6 +14,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.item.ItemStack
 
@@ -27,11 +30,13 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
         this.stack = this.menu!!.itemStack
     }
 
-    private val right: Int
-        get() = this.leftPos + imageWidth
+    private fun getRight(): Int {
+        return this.leftPos + imageWidth
+    }
 
-    private val bot: Int
-        get() = this.topPos + imageHeight
+    private fun getBottom(): Int {
+        return this.topPos + imageHeight
+    }
 
     // https://github.com/ChAoSUnItY/EkiLib/blob/9b63591608cefafce32113a68bc8fd4b71972ece/src/main/java/com/chaos/eki_lib/gui/screen/StationSelectionScreen.java
     // https://github.com/ChAoSUnItY/EkiLib/blob/9b63591608cefafce32113a68bc8fd4b71972ece/src/main/java/com/chaos/eki_lib/utils/handlers/StationHandler.java#L21
@@ -70,13 +75,17 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
 
         this.addRenderableWidget(
             buildButton(
-                right - 92, bot - 24, 20, 20,
+                getRight() - 92, getBottom() - 24, 20, 20,
                 Component.literal("..ꕯ").withStyle(ChatFormatting.BOLD),
-                { button: Button? ->
+                { button: Button ->
                     val selectedOpt = route.selected
                     if (selectedOpt.isPresent) {
                         val selected = selectedOpt.get()
-                        minecraft!!.pushGuiLayer(StringInputScreen(selected.second!!, selected.first!!) { name: String? -> route.renameSelected(name) })
+                        minecraft!!.pushGuiLayer(
+                            StringInputScreen(
+                                selected.second!!,
+                                selected.first!!
+                            ) { name: String? -> route.renameSelected(name) })
                     }
                 },
                 getTooltip(Component.translatable("screen.humblevehicles.tug_route.rename_button"))
@@ -85,7 +94,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
 
         this.addRenderableWidget(
             buildButton(
-                right - 70, bot - 24, 20, 20,
+                getRight() - 70, getBottom() - 24, 20, 20,
                 Component.literal("▲"),
                 { button: Button? -> route.moveSelectedUp() },
                 getTooltip(Component.translatable("screen.humblevehicles.tug_route.up_button"))
@@ -94,7 +103,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
 
         this.addRenderableWidget(
             buildButton(
-                right - 47, bot - 24, 20, 20,
+                getRight() - 47, getBottom() - 24, 20, 20,
                 Component.literal("▼"),
                 { button: Button? -> route.moveSelectedDown() },
                 getTooltip(Component.translatable("screen.humblevehicles.tug_route.down_button"))
@@ -103,7 +112,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
 
         this.addRenderableWidget(
             buildButton(
-                right - 24, bot - 24, 20, 20,
+                getRight() - 24, getBottom() - 24, 20, 20,
                 Component.literal("✘"),
                 { button: Button? -> route.deleteSelected() },
                 getTooltip(Component.translatable("screen.humblevehicles.tug_route.delete_button"))
@@ -130,8 +139,6 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
 //        RenderSystem.setShaderTexture(0, GUI);
         val left = this.guiLeft
         val top = this.guiTop
-        val right = this.right
-        val bot = this.bot
 
         // topleft
         graphics.blit(
@@ -143,69 +150,83 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
         // topright
         graphics.blit(
             GUI,
-            right - 4, top,
+            getRight() - 4, top,
             8, 0,
             4, 4
         )
         // botleft
         graphics.blit(
             GUI,
-            left, bot - 4,
+            left, getBottom() - 4,
             0, 8,
             4, 4
         )
         // botright
         graphics.blit(
             GUI,
-            right - 4, bot - 4,
+            getRight() - 4, getBottom() - 4,
             8, 8,
             4, 4
         )
 
         // top
-        graphics.blit(
-            GUI,
-            left + 4, top,
-            (xSize - 8).toFloat(), 4f,
-            4, 0,
-            4, 4
-        )
+        blitRepeating(GUI, left + 4, top, (xSize - 8), 4, 4, 0, 4, 4, graphics = graphics)
 
         // bottom
-        graphics.blit(
-            GUI,
-            left + 4, bot - 4,
-            (xSize - 8).toFloat(), 4f,
-            4, 8,
-            4, 4
-        )
+        blitRepeating(GUI, left + 4, getBottom() - 4, (xSize - 8), 4, 4, 8, 4, 4, graphics = graphics)
 
         // left
-        graphics.blit(
-            GUI,
-            left, top + 4,
-            4f, (ySize - 8).toFloat(),
-            0, 4,
-            4, 4
-        )
+        blitRepeating(GUI, left, top + 4, 4, (ySize - 8), 0, 4, 4, 4, graphics = graphics)
 
         // right
-        graphics.blit(
-            GUI,
-            right - 4, top + 4,
-            4f, (ySize - 8).toFloat(),
-            8, 4,
-            4, 4
-        )
+        blitRepeating(GUI, getRight() - 4, top + 4, 4, (ySize - 8), 8, 4, 4, 4, graphics = graphics)
 
         // middle
-        graphics.blit(
-            GUI,
-            left + 4, top + 4,
-            (xSize - 8).toFloat(), (ySize - 8).toFloat(),
-            4, 4,
-            4, 4
-        )
+        blitRepeating(GUI, left + 4, top + 4, (xSize - 8), (ySize - 8), 4, 4, 4, 4, graphics = graphics)
+    }
+
+    fun blitRepeating(
+        resourceLocation: ResourceLocation,
+        p_283575_: Int,
+        p_283192_: Int,
+        p_281790_: Int,
+        p_283642_: Int,
+        p_282691_: Int,
+        p_281912_: Int,
+        p_281728_: Int,
+        p_282324_: Int,
+        textureWidth: Int = 256,
+        textureHeight: Int = 256,
+        graphics: GuiGraphics
+    ) {
+        var i = p_283575_
+
+        var j: Int
+        val intiterator: IntIterator = slices(p_281790_, p_281728_)
+        while (intiterator.hasNext()) {
+            j = intiterator.nextInt()
+            val k = (p_281728_ - j) / 2
+            var l = p_283192_
+
+            var i1: Int
+            val intiterator1: IntIterator = slices(p_283642_, p_282324_)
+            while (intiterator1.hasNext()) {
+                i1 = intiterator1.nextInt()
+                val j1 = (p_282324_ - i1) / 2
+                graphics.blit(
+                    resourceLocation, i, l,
+                    (p_282691_ + k).toFloat(),
+                    (p_281912_ + j1).toFloat(), j, i1, textureWidth, textureHeight
+                )
+                l += i1
+            }
+            i += j
+        }
+    }
+
+    private fun slices(p_282197_: Int, p_282161_: Int): IntIterator {
+        val i = Mth.positiveCeilDiv(p_282197_, p_282161_)
+        return Divisor(p_282197_, i)
     }
 
     // remove inventory tag
