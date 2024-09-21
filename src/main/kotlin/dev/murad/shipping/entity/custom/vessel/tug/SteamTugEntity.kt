@@ -67,7 +67,7 @@ class SteamTugEntity : AbstractTugEntity {
         get() = burnTime > 0
 
     override fun getDataAccessor(): SteamHeadVehicleDataAccessor = SteamHeadVehicleDataAccessor.Builder()
-        .withBurnProgress({ this.burnProgress })
+        .withBurnProgress { this.burnProgress }
         .withId(this.id)
         .withLit { this.isLit }
         .withVisitedSize { getNextStop() }

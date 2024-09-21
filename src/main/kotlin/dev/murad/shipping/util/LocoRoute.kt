@@ -2,9 +2,7 @@ package dev.murad.shipping.util
 
 import dev.murad.shipping.item.ItemStackUtil
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.ListTag
 import net.minecraft.world.item.ItemStack
-import java.util.*
 
 class LocoRoute(
     name: String? = null,
@@ -14,7 +12,7 @@ class LocoRoute(
 
     companion object {
 
-        fun fromNBT(tag: CompoundTag): LocoRoute {
+        private fun fromNBT(tag: CompoundTag): LocoRoute {
 
             var name: String? = null
             var owner: String? = null

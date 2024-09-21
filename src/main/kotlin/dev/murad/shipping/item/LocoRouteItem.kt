@@ -1,16 +1,13 @@
 package dev.murad.shipping.item
 
-import dev.murad.shipping.setup.ModDataComponents
 import dev.murad.shipping.util.LocoRoute
 import dev.murad.shipping.util.LocoRouteNode
-import dev.murad.shipping.util.Route
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.item.context.UseOnContext
@@ -69,15 +66,13 @@ class LocoRouteItem(properties: Properties) : RouteItem(properties) {
             // blockpos should be a railtype, either our custom rail or vanilla.
             // Though for pathfinding purposes, it is not guaranteed to be a rail, as the
             // world can change
-            player?.displayClientMessage(
-                Component.translatable(
-                    "item.humblevehicles.locomotive_route.added",
-                    pos.x, pos.y, pos.z
-                ), false
-            )
 
-            // add
-            route.add(LocoRouteNode(null, pos.x, pos.y, pos.z))
+            if (route.add(LocoRouteNode(null, pos.x, pos.y, pos.z))) {
+                player?.displayClientMessage(
+                    Component.translatable("item.humblevehicles.locomotive_route.added", pos.x, pos.y, pos.z),
+                    false
+                )
+            }
         }
     }
 

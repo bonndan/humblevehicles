@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation
 class SetRouteTagPacket(private val routeChecksum: Int, private val isOffhand: Boolean, private val tag: CompoundTag?) :
     CustomPacketPayload {
 
-    override fun type(): CustomPacketPayload.Type<out CustomPacketPayload?> {
+    override fun type(): CustomPacketPayload.Type<out CustomPacketPayload> {
         return TYPE
     }
 
@@ -29,7 +29,7 @@ class SetRouteTagPacket(private val routeChecksum: Int, private val isOffhand: B
 
     companion object {
 
-        val TYPE: CustomPacketPayload.Type<SetRouteTagPacket?> = CustomPacketPayload.Type<SetRouteTagPacket?>(
+        val TYPE: CustomPacketPayload.Type<SetRouteTagPacket> = CustomPacketPayload.Type<SetRouteTagPacket>(
             ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "tug_route_channel")
         )
 

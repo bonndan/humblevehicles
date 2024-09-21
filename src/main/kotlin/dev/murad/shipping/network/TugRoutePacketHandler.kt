@@ -2,6 +2,7 @@ package dev.murad.shipping.network
 
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.util.TugRoute
+import net.minecraft.network.chat.Component
 import net.minecraft.world.InteractionHand
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.network.PacketDistributor
@@ -22,14 +23,14 @@ object TugRoutePacketHandler {
             SetRouteTagPacket.TYPE,
             SetRouteTagPacket.STREAM_CODEC,
             DirectionalPayloadHandler<SetRouteTagPacket>(
-                { obj, operation -> handleSetTag(obj, operation) },
-                { obj, operation -> handleSetTag(obj, operation) }
+                { obj, operation -> handleSetTag(obj, operation, true) },
+                { obj, operation -> handleSetTag(obj, operation, false) }
             )
         )
     }
 
 
-    fun handleSetTag(operation: SetRouteTagPacket, ctx: IPayloadContext) {
+    private fun handleSetTag(operation: SetRouteTagPacket, ctx: IPayloadContext, isClient: Boolean) {
 
         ctx.enqueueWork(Runnable {
             val player = ctx.player()
@@ -41,16 +42,23 @@ object TugRoutePacketHandler {
             val heldStack =
                 player.getItemInHand(if (operation.isOffhand()) InteractionHand.OFF_HAND else InteractionHand.MAIN_HAND)
             LOGGER.info("Item in hand is {}", heldStack)
-            if (heldStack.getItem() !== ModItems.TUG_ROUTE.get()) {
+            if (heldStack.item !== ModItems.TUG_ROUTE.get()) {
                 LOGGER.error("Item held in hand was not tug_route item, perhaps client has de-synced? Dropping packet")
                 return@Runnable
             }
 
             val routeTag = operation.getTag()
-            LOGGER.info(routeTag)
+            if (isClient) {
+                LOGGER.info(routeTag)
+            }
+
             val tugRoute = TugRoute.fromNBT(routeTag!!)
             tugRoute.save(heldStack)
-        })
+        }).exceptionally { e ->
+            // Handle exception
+            ctx.disconnect(Component.translatable("my_mod.networking.failed", e.message));
+            null
+        }
     }
 
     fun sendToServer(setRouteTagPacket: SetRouteTagPacket) {

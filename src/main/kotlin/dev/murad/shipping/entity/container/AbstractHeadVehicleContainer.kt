@@ -48,11 +48,11 @@ abstract class AbstractHeadVehicleContainer<T : HeadVehicleDataAccessor, U>(
     val isOn: Boolean
         get() = data.isOn
 
-    fun routeSize(): Int {
+    private fun routeSize(): Int {
         return data.routeSize()
     }
 
-    fun visitedSize(): Int {
+    private fun visitedSize(): Int {
         return data.visitedSize()
     }
 

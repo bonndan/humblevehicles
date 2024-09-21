@@ -37,7 +37,7 @@ class TugRoute(
             return ItemStackUtil.getCompoundTag(itemStack)
                 ?.let { compoundTag ->
                     return if (compoundTag.contains(ROUTE_NBT, 10))
-                        TugRoute.fromNBT(compoundTag.getCompound(ROUTE_NBT))
+                        fromNBT(compoundTag.getCompound(ROUTE_NBT))
                     else TugRoute()
                 } ?: TugRoute()
         }

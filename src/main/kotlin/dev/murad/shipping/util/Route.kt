@@ -5,12 +5,11 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.world.item.ItemStack
 import java.util.*
-import kotlin.reflect.KClass
 
 abstract class Route(
     private val name: String? = null,
     private val owner: String? = null,
-    nodes: Set<out RouteNode> = HashSet()
+    nodes: Set<RouteNode> = HashSet()
 ) : ArrayList<RouteNode>(nodes) {
     constructor(nodes: Set<LocoRouteNode>) : this(null, null, nodes)
 
