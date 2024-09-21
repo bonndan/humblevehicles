@@ -13,6 +13,8 @@ import dev.murad.shipping.setup.ModBlocks
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.setup.ModSounds
 import dev.murad.shipping.util.*
+import net.minecraft.client.player.Input
+import net.minecraft.client.player.LocalPlayer
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleTypes
@@ -23,16 +25,20 @@ import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.Mth
 import net.minecraft.util.RandomSource
 import net.minecraft.world.*
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.MoverType
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.ai.goal.Goal
 import net.minecraft.world.entity.ai.navigation.PathNavigation
 import net.minecraft.world.entity.animal.WaterAnimal
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
@@ -43,7 +49,6 @@ import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.entity.PartEntity
 import net.neoforged.neoforge.items.ItemStackHandler
 import java.util.*
-import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Predicate
 import java.util.function.Supplier
@@ -53,7 +58,8 @@ import kotlin.math.floor
 import kotlin.math.hypot
 
 abstract class AbstractTugEntity :
-    VesselEntity, LinkableEntityHead<VesselEntity>, Container, WorldlyContainer, HeadVehicle, ItemHandlerVanillaContainerWrapper{
+    VesselEntity, LinkableEntityHead<VesselEntity>, Container, WorldlyContainer, HeadVehicle,
+    ItemHandlerVanillaContainerWrapper {
 
     protected val enrollmentHandler: ChunkManagerEnrollmentHandler
 
@@ -79,6 +85,13 @@ abstract class AbstractTugEntity :
     private var nextStop: Int = 0
 
     protected fun getNextStop(): Int = nextStop
+
+    private var inputLeft = false
+    private var inputRight = false
+    private var inputUp = false
+    private var inputDown = false
+    private var deltaRotation = 0f
+
 
     constructor(type: EntityType<out WaterAnimal>, world: Level) : super(type, world)
 
@@ -185,13 +198,10 @@ abstract class AbstractTugEntity :
     private val sideDirections: List<Direction>
         // MOB STUFF
         get() {
-            return if (this.getDirection() == Direction.NORTH || this.getDirection() == Direction.SOUTH) Arrays.asList(
-                Direction.EAST,
-                Direction.WEST
-            ) else Arrays.asList(
-                Direction.NORTH,
-                Direction.SOUTH
-            )
+            return if (this.getDirection() == Direction.NORTH || this.getDirection() == Direction.SOUTH)
+                listOf(Direction.EAST, Direction.WEST)
+            else
+                listOf(Direction.NORTH, Direction.SOUTH)
         }
 
 
@@ -265,18 +275,45 @@ abstract class AbstractTugEntity :
     }
 
     public override fun mobInteract(player: Player, hand: InteractionHand): InteractionResult {
+
         if (!level().isClientSide) {
             val color: DyeColor? = DyeColor.getColor(player.getItemInHand(hand))
 
             if (color != null) {
                 getEntityData().set(COLOR_DATA, color.getId())
             } else {
-                player.openMenu(createContainerProvider(), getDataAccessor()::write)
+
+                val shiftKey = player.isSecondaryUseActive
+                if (isVehicle) {
+
+                    if (shiftKey && isControlledByLocalInstance) {
+                        player.stopRiding()
+                    } else {
+                        player.openMenu(createContainerProvider(), getDataAccessor()::write)
+                    }
+
+                } else {
+
+                    if (!shiftKey) {
+                        if (!player.startRiding(this))
+                            return InteractionResult.FAIL
+                    } else {
+                        player.openMenu(createContainerProvider(), getDataAccessor()::write)
+                    }
+                }
+
             }
         }
 
         return InteractionResult.sidedSuccess(level().isClientSide)
     }
+
+    override fun getControllingPassenger(): LivingEntity? =
+        if (this.firstPassenger is LivingEntity) {
+            this.firstPassenger as LivingEntity
+        } else {
+            super.getControllingPassenger()
+        }
 
     override fun enroll(uuid: UUID) {
         enrollmentHandler.enroll(uuid)
@@ -334,16 +371,79 @@ abstract class AbstractTugEntity :
     }
 
     override fun tick() {
+
         if (level().isClientSide && independentMotion) {
             makeSmoke()
         }
 
         if (!level().isClientSide) {
             enrollmentHandler.tick()
-            enrollmentHandler.playerName.ifPresent(Consumer { name: String -> entityData.set(OWNER, name) })
+            enrollmentHandler.playerName.ifPresent { name: String -> entityData.set(OWNER, name) }
+        }
+
+
+
+        if (this.isControlledByLocalInstance) {
+
+
+            if (level().isClientSide && this.isVehicle) {
+                val passenger = controllingPassenger
+                if (passenger is LocalPlayer) {
+
+                    if (passenger.isShiftKeyDown() && this.isPassenger) {
+                        passenger.input.shiftKeyDown = false
+                    }
+
+                    this.controlBoat(passenger.input)
+                }
+            }
+
+            this.move(MoverType.SELF, this.deltaMovement)
+        } else {
+            this.deltaMovement = Vec3.ZERO
         }
 
         super.tick()
+    }
+
+    private fun controlBoat(input: Input) {
+
+        inputLeft = input.left
+        inputRight = input.right
+        inputUp = input.up
+        inputDown = input.down
+
+        var f = 0.0f
+        if (this.inputLeft) {
+            this.deltaRotation--
+        }
+
+        if (this.inputRight) {
+            this.deltaRotation++
+        }
+
+        if (this.inputRight != this.inputLeft && !this.inputUp && !this.inputDown) {
+            f += 0.005f
+        }
+
+        this.yRot = this.yRot + this.deltaRotation
+        if (this.inputUp) {
+            f += 0.04f
+        }
+
+        if (this.inputDown) {
+            f -= 0.005f
+        }
+
+        this.deltaMovement = deltaMovement
+            .add(
+                (Mth.sin(-this.yRot * (Math.PI / 180.0).toFloat()) * f).toDouble(),
+                0.0,
+                (Mth.cos(this.yRot * (Math.PI / 180.0).toFloat()) * f).toDouble()
+            )
+    }
+    override fun canAddPassenger(p_184219_1_: Entity): Boolean {
+        return this.getPassengers().isEmpty()
     }
 
     private fun followGuideRail() {

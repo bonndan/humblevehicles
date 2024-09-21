@@ -221,10 +221,6 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
         val firstTrain = this.getTrain()
         val secondTrain = entity.getTrain()
 
-        if (firstTrain == null || secondTrain == null) {
-            return false;
-        }
-
         if (this.distanceTo(entity) > 15) {
             player.displayClientMessage(Component.translatable("item.humblevehicles.spring.tooFar"), true)
         } else if (firstTrain.tug.isPresent && secondTrain.tug.isPresent) {
@@ -276,7 +272,7 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
         return ItemStack(getDropItem())
     }
 
-    private fun floatBoat() {
+    protected fun floatBoat() {
         val d0 = -0.04
         var d1 = if (this.isNoGravity) 0.0 else -0.04
         var d2 = 0.0
