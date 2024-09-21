@@ -30,6 +30,7 @@ object TugRoutePacketHandler {
 
 
     fun handleSetTag(operation: SetRouteTagPacket, ctx: IPayloadContext) {
+
         ctx.enqueueWork(Runnable {
             val player = ctx.player()
             if (player == null) {

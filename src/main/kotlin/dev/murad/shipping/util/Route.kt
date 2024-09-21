@@ -53,18 +53,6 @@ abstract class Route(
         return tag
     }
 
-
-
-    fun getRouteTag(itemStack: ItemStack): CompoundTag? {
-
-        return ItemStackUtil.getCompoundTag(itemStack)
-            ?.let { compoundTag ->
-                return if (compoundTag.contains(ROUTE_NBT, 10))
-                    compoundTag.getCompound(ROUTE_NBT)
-                else null
-            }
-    }
-
     fun save(itemStack: ItemStack) {
 
         ItemStackUtil.getOrCreateTag(itemStack).put(ROUTE_NBT, toNBT())

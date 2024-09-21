@@ -43,6 +43,7 @@ object ForgeClientEventHandler {
         val offStack = player.getItemInHand(InteractionHand.OFF_HAND)
 
         // TODO: figure out if we want to disable offstack rendering when mainstack is rendered successfully.
+        //TODO stack tag nodes are not updated
         renderRouteOnStack(event, player, mainStack)
         renderRouteOnStack(event, player, offStack)
 

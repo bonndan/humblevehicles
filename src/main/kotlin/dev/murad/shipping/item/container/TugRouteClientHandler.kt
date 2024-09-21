@@ -5,7 +5,6 @@ import dev.murad.shipping.network.SetRouteTagPacket
 import dev.murad.shipping.network.TugRoutePacketHandler
 import dev.murad.shipping.util.RouteNode
 import dev.murad.shipping.util.TugRoute
-import dev.murad.shipping.util.TugRouteNode
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.ObjectSelectionList

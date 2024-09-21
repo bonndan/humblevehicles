@@ -2,7 +2,6 @@ package dev.murad.shipping.item.container
 
 import com.mojang.math.Divisor
 import dev.murad.shipping.HumVeeMod
-import dev.murad.shipping.item.TugRouteItem
 import dev.murad.shipping.util.TugRoute
 import it.unimi.dsi.fastutil.ints.IntIterator
 import net.minecraft.ChatFormatting

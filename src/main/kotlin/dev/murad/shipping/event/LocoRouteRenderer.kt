@@ -27,7 +27,6 @@ class LocoRouteRenderer {
 
         val cameraOff = Minecraft.getInstance().gameRenderer.mainCamera.position
 
-
         // Render Beacon Beams
         for (node in LocoRoute.getRoute(stack)) {
             val block = node.toBlockPos()
