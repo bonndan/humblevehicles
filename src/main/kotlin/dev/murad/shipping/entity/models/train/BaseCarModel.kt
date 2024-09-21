@@ -14,6 +14,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition
 import net.minecraft.resources.ResourceLocation
 
 class BaseCarModel<T : AbstractTrainCarEntity>(root: ModelPart) : EntityModel<T>() {
+
     private val bb_main: ModelPart
 
     init {

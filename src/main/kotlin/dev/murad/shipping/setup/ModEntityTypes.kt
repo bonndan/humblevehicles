@@ -131,7 +131,8 @@ object ModEntityTypes {
         ENTITIES.register("seater_car", Supplier<EntityType<SeaterCarEntity>> {
             EntityType.Builder.of({ type, level -> SeaterCarEntity(type, level) }, MobCategory.MISC)
                 .sized(0.7f, 0.9f)
-                .clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
+                .clientTrackingRange(8)
+                .setShouldReceiveVelocityUpdates(true)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "seater_car").toString())
         })
 

@@ -22,6 +22,7 @@ import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.Mth
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.MenuProvider
@@ -104,17 +105,37 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     }
 
     override fun interact(pPlayer: Player, pHand: InteractionHand): InteractionResult {
+
         val ret = super.interact(pPlayer, pHand)
-        if (ret.consumesAction()) return ret
+        if (ret.consumesAction()) {
+            return ret
+        }
 
         if (pHand != InteractionHand.MAIN_HAND) {
             return InteractionResult.PASS
         }
 
-        if (!level().isClientSide) {
-            pPlayer.openMenu(createContainerProvider(), getDataAccessor()::write)
+        if (level().isClientSide) {
+            return InteractionResult.CONSUME
         }
 
+        // right click works for riding player, otherwise would dismount
+        if (this.isVehicle) {
+            return showInventoryMenu(pPlayer)
+        }
+
+        //shift: open menu
+        if (pPlayer.isSecondaryUseActive) {
+            return showInventoryMenu(pPlayer)
+        }
+
+        //default: start riding
+        return if (pPlayer.startRiding(this)) InteractionResult.CONSUME else InteractionResult.PASS
+
+    }
+
+    private fun showInventoryMenu(pPlayer: Player): InteractionResult {
+        pPlayer.openMenu(createContainerProvider(), getDataAccessor()::write)
         return InteractionResult.CONSUME
     }
 
@@ -613,6 +634,64 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     override fun getRouteItemHandler(): ItemStackHandler {
         return routeItemHandler
     }
+
+    /*
+    * Seater stuff
+    */
+
+    /**
+     * Called every tick the minecart is on an activator rail.
+     */
+    override fun activateMinecart(pX: Int, pY: Int, pZ: Int, pReceivingPower: Boolean) {
+        if (pReceivingPower) {
+            if (this.isVehicle) {
+                this.ejectPassengers()
+            }
+
+            if (this.hurtTime == 0) {
+                this.hurtDir = -this.hurtDir
+                this.hurtTime = 10
+                this.damage = 50.0f
+                this.markHurt()
+            }
+        }
+    }
+
+    override fun positionRider(passenger: Entity, pCallback: MoveFunction) {
+        if (this.hasPassenger(passenger)) {
+            if (passenger is Player) {
+                // Position player differently than all other entities
+                // TODO: Maybe we could override Entity#getPassengersRidingOffset instead
+                val f = -0.22f
+                val vector3d = Vec3(
+                    f.toDouble(),
+                    0.0,
+                    0.0
+                ).yRot(-this.yRot * (Math.PI.toFloat() / 180f) - (Math.PI.toFloat() / 2f))
+                pCallback.accept(passenger, this.x + vector3d.x, this.y, this.z + vector3d.z)
+            } else {
+                super.positionRider(passenger, pCallback)
+            }
+        }
+    }
+
+    private fun clampRotation(p_184454_1_: Entity) {
+        p_184454_1_.setYBodyRot(this.yRot)
+        val f = Mth.wrapDegrees(p_184454_1_.yRot - this.yRot)
+        val f1 = Mth.clamp(f, -105.0f, 105.0f)
+        p_184454_1_.yRotO += f1 - f
+        p_184454_1_.yRot = p_184454_1_.yRot + f1 - f
+        p_184454_1_.yHeadRot = p_184454_1_.yRot
+    }
+
+    override fun onPassengerTurned(p_184190_1_: Entity) {
+        this.clampRotation(p_184190_1_)
+    }
+
+    override fun getMinecartType(): Type {
+        return Type.RIDEABLE
+    }
+
 
     companion object {
         // item handler for loco routes

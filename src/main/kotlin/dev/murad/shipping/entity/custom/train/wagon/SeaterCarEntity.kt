@@ -28,7 +28,9 @@ class SeaterCarEntity : AbstractWagonEntity {
 
     override fun interact(pPlayer: Player, pHand: InteractionHand): InteractionResult {
         val ret = super.interact(pPlayer, pHand)
-        if (ret.consumesAction()) return ret
+        if (ret.consumesAction()) {
+            return ret
+        }
 
         return if (pPlayer.isSecondaryUseActive) {
             InteractionResult.PASS
