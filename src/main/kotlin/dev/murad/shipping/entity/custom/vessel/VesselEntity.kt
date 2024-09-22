@@ -53,6 +53,7 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
     WaterAnimal(type, world), LinkableEntity<VesselEntity>, Colorable {
 
     var isFrozen: Boolean = false
+    protected var deltaRotation = 0f
 
     private val linkingHandler: LinkingHandler<VesselEntity> = LinkingHandler(
         this,
@@ -111,9 +112,32 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
             this.oldStatus = this.status
             this.status = this.getStatus()
 
-            this.floatBoat()
+            this.floatBoat()//Boat.floatBoat runs on both sides
             this.unDrown()
+        }else {
+            floatBoatClientSide()
         }
+    }
+
+    private fun floatBoatClientSide() {
+        var invFriction = 0.05f
+
+            if (this.status == Boat.Status.IN_WATER) {
+                invFriction = 0.9f
+            } else if (this.status == Boat.Status.UNDER_FLOWING_WATER) {
+                invFriction = 0.9f
+            } else if (this.status == Boat.Status.UNDER_WATER) {
+                invFriction = 0.45f
+            } else if (this.status == Boat.Status.IN_AIR) {
+                invFriction = 0.9f
+            } else if (this.status == Boat.Status.ON_LAND) {
+                invFriction = this.landFriction
+                if (this.controllingPassenger is Player) {
+                    this.landFriction /= 2.0f
+                }
+            }
+
+            this.deltaRotation = this.deltaRotation * invFriction
     }
 
     private fun unDrown() {
@@ -309,6 +333,7 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
                 vector3d.y + d1,
                 vector3d.z * invFriction.toDouble()
             )
+            this.deltaRotation = this.deltaRotation * invFriction
             if (d2 > 0.0) {
                 val vector3d1 = this.deltaMovement
                 this.setDeltaMovement(vector3d1.x, (vector3d1.y + d2 * 0.10153846016296973) * 0.75, vector3d1.z)

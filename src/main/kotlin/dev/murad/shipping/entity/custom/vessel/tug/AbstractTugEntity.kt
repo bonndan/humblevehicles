@@ -90,8 +90,6 @@ abstract class AbstractTugEntity :
     private var inputRight = false
     private var inputUp = false
     private var inputDown = false
-    private var deltaRotation = 0f
-
 
     constructor(type: EntityType<out WaterAnimal>, world: Level) : super(type, world)
 
