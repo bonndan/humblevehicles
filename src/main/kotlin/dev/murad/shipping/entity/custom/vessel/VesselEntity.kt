@@ -65,7 +65,7 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
     /**
      * The linking handler can be null if used in constructors.
      */
-    protected fun getLinkingHandler(): LinkingHandler<VesselEntity>? {
+    protected fun getLinkingHandler(): LinkingHandler<VesselEntity> {
         return linkingHandler
     }
 
@@ -114,30 +114,32 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
 
             this.floatBoat()//Boat.floatBoat runs on both sides
             this.unDrown()
-        }else {
+        } else {
             floatBoatClientSide()
         }
     }
 
     private fun floatBoatClientSide() {
+
+        this.deltaRotation = this.deltaRotation * calculateInverseFriction()
+    }
+
+    private fun calculateInverseFriction(): Float {
+
         var invFriction = 0.05f
 
-            if (this.status == Boat.Status.IN_WATER) {
-                invFriction = 0.9f
-            } else if (this.status == Boat.Status.UNDER_FLOWING_WATER) {
-                invFriction = 0.9f
-            } else if (this.status == Boat.Status.UNDER_WATER) {
-                invFriction = 0.45f
-            } else if (this.status == Boat.Status.IN_AIR) {
-                invFriction = 0.9f
-            } else if (this.status == Boat.Status.ON_LAND) {
-                invFriction = this.landFriction
-                if (this.controllingPassenger is Player) {
-                    this.landFriction /= 2.0f
-                }
-            }
-
-            this.deltaRotation = this.deltaRotation * invFriction
+        if (this.status == Boat.Status.IN_WATER) {
+            invFriction = 0.9f
+        } else if (this.status == Boat.Status.UNDER_FLOWING_WATER) {
+            invFriction = 0.9f
+        } else if (this.status == Boat.Status.UNDER_WATER) {
+            invFriction = 0.45f
+        } else if (this.status == Boat.Status.IN_AIR) {
+            invFriction = 0.9f
+        } else if (this.status == Boat.Status.ON_LAND) {
+            invFriction = this.landFriction
+        }
+        return invFriction
     }
 
     private fun unDrown() {
@@ -184,7 +186,9 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
 
     override fun setColor(color: Int?) {
         var color = color
-        if (color == null) color = -1
+        if (color == null) {
+            color = -1
+        }
         getEntityData().set(COLOR_DATA, color)
     }
 
@@ -296,48 +300,45 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
         return ItemStack(getDropItem())
     }
 
-    protected fun floatBoat() {
+    private fun floatBoat() {
+
         val d0 = -0.04
         var d1 = if (this.isNoGravity) 0.0 else -0.04
         var d2 = 0.0
         // MOB STUFF
-        var invFriction = 0.05f
+        val invFriction = calculateInverseFriction()
         if (this.oldStatus == Boat.Status.IN_AIR && this.status != Boat.Status.IN_AIR && this.status != Boat.Status.ON_LAND) {
             this.waterLevel = this.getY(1.0)
             this.setPos(this.x, (this.waterLevelAbove - this.bbHeight).toDouble() + 0.101, this.z)
             this.deltaMovement = deltaMovement.multiply(1.0, 0.0, 1.0)
             this.lastYd = 0.0
             this.status = Boat.Status.IN_WATER
-        } else {
-            if (this.status == Boat.Status.IN_WATER) {
-                d2 = (this.waterLevel - this.y) / this.bbHeight.toDouble()
-                invFriction = 0.9f
-            } else if (this.status == Boat.Status.UNDER_FLOWING_WATER) {
-                d1 = -7.0E-4
-                invFriction = 0.9f
-            } else if (this.status == Boat.Status.UNDER_WATER) {
-                d2 = 0.01
-                invFriction = 0.45f
-            } else if (this.status == Boat.Status.IN_AIR) {
-                invFriction = 0.9f
-            } else if (this.status == Boat.Status.ON_LAND) {
-                invFriction = this.landFriction
-                if (this.controllingPassenger is Player) {
-                    this.landFriction /= 2.0f
-                }
-            }
+            return
+        }
 
-            val vector3d = this.deltaMovement
-            this.setDeltaMovement(
-                vector3d.x * invFriction.toDouble(),
-                vector3d.y + d1,
-                vector3d.z * invFriction.toDouble()
-            )
-            this.deltaRotation = this.deltaRotation * invFriction
-            if (d2 > 0.0) {
-                val vector3d1 = this.deltaMovement
-                this.setDeltaMovement(vector3d1.x, (vector3d1.y + d2 * 0.10153846016296973) * 0.75, vector3d1.z)
+        if (this.status == Boat.Status.IN_WATER) {
+            d2 = (this.waterLevel - this.y) / this.bbHeight.toDouble()
+        } else if (this.status == Boat.Status.UNDER_FLOWING_WATER) {
+            d1 = -7.0E-4
+        } else if (this.status == Boat.Status.UNDER_WATER) {
+            d2 = 0.01
+        } else if (this.status == Boat.Status.IN_AIR) {
+        } else if (this.status == Boat.Status.ON_LAND) {
+            if (this.controllingPassenger is Player) {
+                this.landFriction /= 2.0f
             }
+        }
+
+        val vector3d = this.deltaMovement
+        this.setDeltaMovement(
+            vector3d.x * invFriction.toDouble(),
+            vector3d.y + d1,
+            vector3d.z * invFriction.toDouble()
+        )
+        //this.deltaRotation = this.deltaRotation * invFriction
+        if (d2 > 0.0) {
+            val vector3d1 = this.deltaMovement
+            this.setDeltaMovement(vector3d1.x, (vector3d1.y + d2 * 0.10153846016296973) * 0.75, vector3d1.z)
         }
     }
 

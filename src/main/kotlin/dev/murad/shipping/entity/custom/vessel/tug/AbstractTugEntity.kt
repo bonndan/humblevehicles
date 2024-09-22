@@ -38,7 +38,6 @@ import net.minecraft.world.entity.ai.goal.Goal
 import net.minecraft.world.entity.ai.navigation.PathNavigation
 import net.minecraft.world.entity.animal.WaterAnimal
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
@@ -379,10 +378,7 @@ abstract class AbstractTugEntity :
             enrollmentHandler.playerName.ifPresent { name: String -> entityData.set(OWNER, name) }
         }
 
-
-
         if (this.isControlledByLocalInstance) {
-
 
             if (level().isClientSide && this.isVehicle) {
                 val passenger = controllingPassenger
@@ -411,7 +407,7 @@ abstract class AbstractTugEntity :
         inputUp = input.up
         inputDown = input.down
 
-        var f = 0.0f
+        var force = 0.0f
         if (this.inputLeft) {
             this.deltaRotation--
         }
@@ -421,27 +417,27 @@ abstract class AbstractTugEntity :
         }
 
         if (this.inputRight != this.inputLeft && !this.inputUp && !this.inputDown) {
-            f += 0.005f
+            force += 0.005f
         }
 
-        this.yRot = this.yRot + this.deltaRotation
         if (this.inputUp) {
-            f += 0.04f
+            force += 0.05f
         }
 
         if (this.inputDown) {
-            f -= 0.005f
+            force -= 0.005f
         }
 
+        this.yRot += this.deltaRotation
         this.deltaMovement = deltaMovement
             .add(
-                (Mth.sin(-this.yRot * (Math.PI / 180.0).toFloat()) * f).toDouble(),
+                (Mth.sin(-this.yRot * (Math.PI / 180.0).toFloat()) * force).toDouble(),
                 0.0,
-                (Mth.cos(this.yRot * (Math.PI / 180.0).toFloat()) * f).toDouble()
+                (Mth.cos(this.yRot * (Math.PI / 180.0).toFloat()) * force).toDouble()
             )
     }
-    override fun canAddPassenger(p_184219_1_: Entity): Boolean {
-        return this.getPassengers().isEmpty()
+    override fun canAddPassenger(entity: Entity): Boolean {
+        return this.passengers.isEmpty()
     }
 
     private fun followGuideRail() {
