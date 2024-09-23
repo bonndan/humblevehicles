@@ -3,19 +3,15 @@ package dev.murad.shipping.item.container
 import dev.murad.shipping.entity.accessor.TugRouteScreenDataAccessor
 import dev.murad.shipping.setup.ModMenuTypes
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
 class TugRouteContainer(
     windowId: Int,
-    level: Level?,
     data: TugRouteScreenDataAccessor,
-    playerInventory: Inventory?,
     player: Player
 ) :
     AbstractContainerMenu(ModMenuTypes.TUG_ROUTE_CONTAINER.get(), windowId) {

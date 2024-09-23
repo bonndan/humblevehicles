@@ -90,9 +90,9 @@ object ModMenuTypes {
             Supplier {
                 IMenuTypeExtension.create { windowId: Int, inv: Inventory, data: RegistryFriendlyByteBuf ->
                     TugRouteContainer(
-                        windowId, inv.player.level(), TugRouteScreenDataAccessor(
+                        windowId, TugRouteScreenDataAccessor(
                             makeIntArray(data)
-                        ), inv, inv.player
+                        ), inv.player
                     )
                 }
             })

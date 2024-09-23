@@ -4,9 +4,7 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder
 import com.mojang.math.Axis
 import dev.murad.shipping.event.ForgeClientEventHandler.BEAM_LOCATION
 import dev.murad.shipping.event.ForgeClientEventHandler.computeFixedDistance
-import dev.murad.shipping.item.TugRouteItem
 import dev.murad.shipping.util.TugRoute
-import dev.murad.shipping.util.TugRouteNode
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
 import net.minecraft.client.renderer.MultiBufferSource

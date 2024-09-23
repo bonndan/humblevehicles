@@ -64,7 +64,7 @@ abstract class RouteItem(properties: Properties) : Item(properties) {
             }
 
             override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
-                return TugRouteContainer(i, player.level(), getDataAccessor(player, hand), playerInventory, player)
+                return TugRouteContainer(i, getDataAccessor(player, hand), player)
             }
         }
     }
