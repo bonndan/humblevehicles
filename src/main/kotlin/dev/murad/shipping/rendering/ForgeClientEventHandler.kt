@@ -1,4 +1,4 @@
-package dev.murad.shipping.event
+package dev.murad.shipping.rendering
 
 import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.ShippingConfig
@@ -9,13 +9,11 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent
 import net.neoforged.neoforge.event.level.LevelEvent
-import kotlin.math.min
 
 /**
  * Forge-wide event bus
@@ -79,13 +77,4 @@ object ForgeClientEventHandler {
         }
     }
 
-    fun computeFixedDistance(target: Vec3, position: Vec3, scale: Double): Vec3 {
-        var newTarget = target
-        newTarget = newTarget.add(0.0, 2.0, 0.0)
-        val delta = position.vectorTo(newTarget)
-
-        // The distance from the player camera to render the element
-        val dist = min(5.0, delta.length())
-        return position.add(delta.normalize().scale(dist * scale))
-    }
 }

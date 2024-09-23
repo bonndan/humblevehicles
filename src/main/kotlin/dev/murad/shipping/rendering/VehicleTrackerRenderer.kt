@@ -1,9 +1,9 @@
-package dev.murad.shipping.event
+package dev.murad.shipping.rendering
 
 import com.mojang.blaze3d.vertex.ByteBufferBuilder
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
-import dev.murad.shipping.event.ForgeClientEventHandler.computeFixedDistance
+import dev.murad.shipping.rendering.RenderUtil.computeFixedDistance
 import dev.murad.shipping.network.client.VehicleTrackerPacketHandler
 import dev.murad.shipping.setup.EntityItemMap.get
 import net.minecraft.client.Minecraft
