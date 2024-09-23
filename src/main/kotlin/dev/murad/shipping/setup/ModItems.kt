@@ -47,16 +47,8 @@ object ModItems {
     val CHEST_BARGE = registerItem(
         "barge",
         {
-            VesselItem(
-                Item.Properties()
-            ) { level: Level, x: Double, y: Double, z: Double ->
-                ChestBargeEntity(
-                    ModEntityTypes.CHEST_BARGE.get(),
-                    level,
-                    x,
-                    y,
-                    z
-                )
+            VesselItem(Item.Properties()) { level: Level, x: Double, y: Double, z: Double ->
+                ChestBargeEntity(ModEntityTypes.CHEST_BARGE.get(), level, x, y, z)
             }
         },
         Item.Properties()
@@ -65,15 +57,12 @@ object ModItems {
     val BARREL_BARGE = registerItem(
         "barrel_barge",
         {
-            VesselItem(
-                Item.Properties()
-            ) { level: Level, x: Double, y: Double, z: Double ->
+            VesselItem(Item.Properties()) { level: Level, x: Double, y: Double, z: Double ->
                 ChestBargeEntity(ModEntityTypes.BARREL_BARGE.get(), level, x, y, z)
             }
         },
         Item.Properties()
     )
-
 
     //    public static final Supplier<Item> CHUNK_LOADER_BARGE = register("chunk_loader_barge",
 
@@ -91,12 +80,7 @@ object ModItems {
         "fluid_barge",
         {
             VesselItem(Item.Properties()) { worldIn: Level, x: Double, y: Double, z: Double ->
-                FluidTankBargeEntity(
-                    worldIn,
-                    x,
-                    y,
-                    z
-                )
+                FluidTankBargeEntity(worldIn, x, y, z)
             }
         },
         Item.Properties()
@@ -107,12 +91,7 @@ object ModItems {
         "seater_barge",
         {
             VesselItem(Item.Properties()) { worldIn: Level, x: Double, y: Double, z: Double ->
-                SeaterBargeEntity(
-                    worldIn,
-                    x,
-                    y,
-                    z
-                )
+                SeaterBargeEntity(worldIn, x, y, z)
             }
         }, Item.Properties()
     )
@@ -122,12 +101,7 @@ object ModItems {
         "vacuum_barge",
         {
             VesselItem(Item.Properties()) { worldIn, x: Double, y: Double, z: Double ->
-                VacuumBargeEntity(
-                    worldIn,
-                    x,
-                    y,
-                    z
-                )
+                VacuumBargeEntity(worldIn, x, y, z)
             }
         },
         Item.Properties()
@@ -223,7 +197,6 @@ object ModItems {
         defaultItemProperties(64)
     )
 
-
     val ENERGY_LOCOMOTIVE: Supplier<Item> = registerItem(
         "energy_locomotive",
         {
@@ -278,7 +251,7 @@ object ModItems {
         return Registration.ITEMS.registerItem(name, itemSupplier, props)
     }
 
-    fun registerTabs(itemSupplier: Supplier<Item>, tabs: List<ResourceKey<CreativeModeTab>>) {
+    private fun registerTabs(itemSupplier: Supplier<Item>, tabs: List<ResourceKey<CreativeModeTab>>) {
         for (tab in tabs) {
             PRIVATE_TAB_REGISTRY.putInsert(tab, itemSupplier)
         }

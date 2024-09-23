@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Blocks
 import net.neoforged.neoforge.common.Tags
 import java.util.concurrent.CompletableFuture
 
-class ModRecipeProvider(packOutput: PackOutput?, pRegistries: CompletableFuture<HolderLookup.Provider>) :
+class ModRecipeProvider(packOutput: PackOutput, pRegistries: CompletableFuture<HolderLookup.Provider>) :
     RecipeProvider(packOutput, pRegistries) {
 
     internal fun build(consumer: RecipeOutput) {
