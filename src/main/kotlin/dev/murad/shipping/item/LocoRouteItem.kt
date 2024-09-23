@@ -1,6 +1,5 @@
 package dev.murad.shipping.item
 
-import dev.murad.shipping.network.RoutePacketHandler
 import dev.murad.shipping.util.Route
 import dev.murad.shipping.util.RouteNode
 import net.minecraft.ChatFormatting

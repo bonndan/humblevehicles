@@ -12,8 +12,7 @@ class SetRouteTagPacket(
     private val routeChecksum: Int,
     private val isOffhand: Boolean,
     private val tag: CompoundTag
-) :
-    CustomPacketPayload {
+) : CustomPacketPayload {
 
     override fun type(): CustomPacketPayload.Type<out CustomPacketPayload> {
         return TYPE

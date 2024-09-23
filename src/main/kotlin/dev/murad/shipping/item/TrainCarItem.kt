@@ -34,48 +34,50 @@ class TrainCarItem(
      * Called when this item is used when targetting a Block
      */
     override fun useOn(pContext: UseOnContext): InteractionResult {
+
         val level = pContext.level
         val blockpos = pContext.clickedPos
         val blockstate = level.getBlockState(blockpos)
+
         if (!blockstate.`is`(BlockTags.RAILS)) {
             return InteractionResult.FAIL
-        } else {
-            val itemstack = pContext.itemInHand
-            if (!level.isClientSide) {
-                val railshape =
-                    if (blockstate.block is BaseRailBlock) (blockstate.block as BaseRailBlock).getRailDirection(
-                        blockstate,
-                        level,
-                        blockpos,
-                        null
-                    ) else RailShape.NORTH_SOUTH
-                var d0 = 0.0
-                if (railshape.isAscending) {
-                    d0 = 0.5
-                }
+        }
 
-                val abstractminecart: AbstractMinecart = constructor.apply(
+        val itemstack = pContext.itemInHand
+        if (!level.isClientSide) {
+            val railshape =
+                if (blockstate.block is BaseRailBlock) (blockstate.block as BaseRailBlock).getRailDirection(
+                    blockstate,
                     level,
-                    blockpos.x.toDouble() + 0.5,
-                    blockpos.y.toDouble() + 0.0625 + d0,
-                    blockpos.z.toDouble() + 0.5
-                )
-                if (!itemstack.hoverName.string.isBlank()) {
-                    abstractminecart.customName = itemstack.hoverName
-                }
-
-
-                if (pContext.player != null && abstractminecart.direction == pContext.player!!.direction) {
-                    if (abstractminecart is AbstractLocomotiveEntity) abstractminecart.flip()
-                }
-
-                level.addFreshEntity(abstractminecart)
-                level.gameEvent(pContext.player, GameEvent.ENTITY_PLACE, blockpos)
+                    blockpos,
+                    null
+                ) else RailShape.NORTH_SOUTH
+            var d0 = 0.0
+            if (railshape.isAscending) {
+                d0 = 0.5
             }
 
-            itemstack.shrink(1)
-            return InteractionResult.sidedSuccess(level.isClientSide)
+            val abstractminecart: AbstractMinecart = constructor.apply(
+                level,
+                blockpos.x.toDouble() + 0.5,
+                blockpos.y.toDouble() + 0.0625 + d0,
+                blockpos.z.toDouble() + 0.5
+            )
+            if (!itemstack.hoverName.string.isBlank()) {
+                abstractminecart.customName = itemstack.hoverName
+            }
+
+
+            if (pContext.player != null && abstractminecart.direction == pContext.player!!.direction) {
+                if (abstractminecart is AbstractLocomotiveEntity) abstractminecart.flip()
+            }
+
+            level.addFreshEntity(abstractminecart)
+            level.gameEvent(pContext.player, GameEvent.ENTITY_PLACE, blockpos)
         }
+
+        itemstack.shrink(1)
+        return InteractionResult.sidedSuccess(level.isClientSide)
     }
 
     companion object {
