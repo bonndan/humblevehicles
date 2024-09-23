@@ -1,6 +1,7 @@
 package dev.murad.shipping.item
 
 import dev.murad.shipping.entity.accessor.RouteScreenDataAccessor
+import dev.murad.shipping.item.container.RouteContainer
 import dev.murad.shipping.network.SetRouteTagPacket
 import dev.murad.shipping.network.RoutePacketHandler
 import dev.murad.shipping.util.Route
@@ -10,7 +11,10 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
+import net.minecraft.world.MenuProvider
+import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
@@ -59,5 +63,18 @@ abstract class RouteItem(properties: Properties) : Item(properties) {
     fun updateOnClient(route: Route, hand: InteractionHand, player: ServerPlayer) {
         val packet = SetRouteTagPacket(route.hashCode(), hand == InteractionHand.OFF_HAND, route.toNBT())
         RoutePacketHandler.sendToClient(player, packet)
+    }
+
+     fun createContainerProvider(hand: InteractionHand): MenuProvider {
+
+        return object : MenuProvider {
+            override fun getDisplayName(): Component {
+                return Component.translatable("screen.humblevehicles.tug_route")
+            }
+
+            override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
+                return RouteContainer(i, getDataAccessor(player, hand), player)
+            }
+        }
     }
 }

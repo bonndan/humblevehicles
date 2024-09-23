@@ -1,6 +1,5 @@
 package dev.murad.shipping.item
 
-import dev.murad.shipping.item.container.RouteContainer
 import dev.murad.shipping.util.Route
 import dev.murad.shipping.util.RouteNode
 import net.minecraft.ChatFormatting
@@ -8,12 +7,8 @@ import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
-import net.minecraft.world.MenuProvider
-import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.item.context.UseOnContext
@@ -102,18 +97,5 @@ class LocoRouteItem(properties: Properties) : RouteItem(properties) {
             Component.translatable("item.humblevehicles.locomotive_route.num_nodes", getRoute(pStack).size)
                 .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
         )
-    }
-
-    private fun createContainerProvider(hand: InteractionHand): MenuProvider {
-
-        return object : MenuProvider {
-            override fun getDisplayName(): Component {
-                return Component.translatable("screen.humblevehicles.tug_route")
-            }
-
-            override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
-                return RouteContainer(i, getDataAccessor(player, hand), player)
-            }
-        }
     }
 }

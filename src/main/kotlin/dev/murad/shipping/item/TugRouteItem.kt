@@ -47,17 +47,4 @@ class TugRouteItem(properties: Properties) : RouteItem(properties) {
         updateOnClient(route, hand, player as ServerPlayer)
         return InteractionResultHolder.pass(itemstack)
     }
-
-    private fun createContainerProvider(hand: InteractionHand): MenuProvider {
-
-        return object : MenuProvider {
-            override fun getDisplayName(): Component {
-                return Component.translatable("screen.humblevehicles.tug_route")
-            }
-
-            override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
-                return RouteContainer(i, getDataAccessor(player, hand), player)
-            }
-        }
-    }
 }
