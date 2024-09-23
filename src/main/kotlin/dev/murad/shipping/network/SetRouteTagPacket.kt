@@ -8,7 +8,11 @@ import net.minecraft.network.codec.StreamCodec
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload
 import net.minecraft.resources.ResourceLocation
 
-class SetRouteTagPacket(private val routeChecksum: Int, private val isOffhand: Boolean, private val tag: CompoundTag?) :
+class SetRouteTagPacket(
+    private val routeChecksum: Int,
+    private val isOffhand: Boolean,
+    private val tag: CompoundTag
+) :
     CustomPacketPayload {
 
     override fun type(): CustomPacketPayload.Type<out CustomPacketPayload> {
@@ -23,7 +27,7 @@ class SetRouteTagPacket(private val routeChecksum: Int, private val isOffhand: B
         return isOffhand
     }
 
-    fun getTag(): CompoundTag? {
+    fun getTag(): CompoundTag {
         return tag
     }
 
@@ -34,12 +38,10 @@ class SetRouteTagPacket(private val routeChecksum: Int, private val isOffhand: B
         )
 
         val STREAM_CODEC: StreamCodec<ByteBuf, SetRouteTagPacket> = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT, { obj: SetRouteTagPacket? -> obj!!.getRouteChecksum() },
-            ByteBufCodecs.BOOL, { obj: SetRouteTagPacket? -> obj!!.isOffhand() },
-            ByteBufCodecs.COMPOUND_TAG, { obj: SetRouteTagPacket? -> obj!!.getTag() },
-            { routeChecksum: Int?, isOffhand: Boolean?, tag: CompoundTag? ->
-                SetRouteTagPacket(routeChecksum!!, isOffhand!!, tag)
-            }
+            ByteBufCodecs.VAR_INT, { obj -> obj.getRouteChecksum() },
+            ByteBufCodecs.BOOL, { obj -> obj.isOffhand() },
+            ByteBufCodecs.COMPOUND_TAG, { obj -> obj.getTag() },
+            { routeChecksum, isOffhand, tag -> SetRouteTagPacket(routeChecksum, isOffhand, tag) }
         )
     }
 }

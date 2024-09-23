@@ -3,8 +3,8 @@ package dev.murad.shipping.event
 import com.mojang.blaze3d.vertex.*
 import com.mojang.math.Axis
 import dev.murad.shipping.event.ForgeClientEventHandler.BEAM_LOCATION
-import dev.murad.shipping.util.LocoRoute
 import dev.murad.shipping.util.RailHelper
+import dev.murad.shipping.util.Route
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.LevelRenderer
 import net.minecraft.client.renderer.MultiBufferSource
@@ -28,7 +28,7 @@ class LocoRouteRenderer {
         val cameraOff = Minecraft.getInstance().gameRenderer.mainCamera.position
 
         // Render Beacon Beams
-        for (node in LocoRoute.getRoute(stack)) {
+        for (node in Route.getRoute(stack)) {
             val block = node.toBlockPos()
 
             matrixStack.pushPose()

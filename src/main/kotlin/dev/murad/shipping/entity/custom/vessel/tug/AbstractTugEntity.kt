@@ -77,9 +77,9 @@ abstract class AbstractTugEntity :
     private var pathfindCooldown: Int = 0
     private val frontHitbox: VehicleFrontPart
 
-    private var path: TugRoute?
+    private var path: Route?
 
-    protected fun getPath(): TugRoute? = path
+    protected fun getPath(): Route? = path
 
     private var nextStop: Int = 0
 
@@ -172,7 +172,7 @@ abstract class AbstractTugEntity :
     private fun tickRouteCheck() {
         if (contentsChanged) {
             val stack: ItemStack = routeItemHandler.getStackInSlot(0)
-            this.setPath(TugRoute.getRoute(stack))
+            this.setPath(Route.getRoute(stack))
             contentsChanged = false
         }
 
@@ -518,7 +518,7 @@ abstract class AbstractTugEntity :
     }
 
 
-    fun setPath(path: TugRoute?) {
+    private fun setPath(path: Route?) {
         if (!this.path!!.isEmpty() && !this.path!!.equals(path)) {
             this.nextStop = 0
         }
@@ -728,7 +728,7 @@ abstract class AbstractTugEntity :
     init {
         this.blocksBuilding = true
         getLinkingHandler()!!.train = Train(this)
-        this.path = TugRoute()
+        this.path = Route()
         frontHitbox = VehicleFrontPart(this)
         enrollmentHandler = ChunkManagerEnrollmentHandler(this)
     }

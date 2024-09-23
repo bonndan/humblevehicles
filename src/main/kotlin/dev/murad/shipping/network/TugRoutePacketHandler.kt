@@ -1,8 +1,9 @@
 package dev.murad.shipping.network
 
 import dev.murad.shipping.setup.ModItems
-import dev.murad.shipping.util.TugRoute
+import dev.murad.shipping.util.Route
 import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.network.PacketDistributor
@@ -19,18 +20,18 @@ object TugRoutePacketHandler {
     @SubscribeEvent
     fun on(event: RegisterPayloadHandlersEvent) {
         val registrar = event.registrar("1")
-        registrar.playBidirectional<SetRouteTagPacket>(
+        registrar.playBidirectional(
             SetRouteTagPacket.TYPE,
             SetRouteTagPacket.STREAM_CODEC,
-            DirectionalPayloadHandler<SetRouteTagPacket>(
-                { obj, operation -> handleSetTag(obj, operation, true) },
-                { obj, operation -> handleSetTag(obj, operation, false) }
+            DirectionalPayloadHandler(
+                { obj, operation -> handleSetTag(obj, operation) },
+                { obj, operation -> handleSetTag(obj, operation) }
             )
         )
     }
 
 
-    private fun handleSetTag(operation: SetRouteTagPacket, ctx: IPayloadContext, isClient: Boolean) {
+    private fun handleSetTag(operation: SetRouteTagPacket, ctx: IPayloadContext) {
 
         ctx.enqueueWork(Runnable {
             val player = ctx.player()
@@ -48,12 +49,9 @@ object TugRoutePacketHandler {
             }
 
             val routeTag = operation.getTag()
-            if (isClient) {
-                LOGGER.info(routeTag)
-            }
-
-            val tugRoute = TugRoute.fromNBT(routeTag!!)
+            val tugRoute = Route.fromNBT(routeTag)
             tugRoute.save(heldStack)
+
         }).exceptionally { e ->
             // Handle exception
             ctx.disconnect(Component.translatable("my_mod.networking.failed", e.message));
@@ -64,4 +62,9 @@ object TugRoutePacketHandler {
     fun sendToServer(setRouteTagPacket: SetRouteTagPacket) {
         PacketDistributor.sendToServer(setRouteTagPacket)
     }
+
+    fun sendToClient(player: ServerPlayer, setRouteTagPacket: SetRouteTagPacket) {
+        PacketDistributor.sendToPlayer(player, setRouteTagPacket)
+    }
+
 }

@@ -8,10 +8,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload
 import net.minecraft.resources.ResourceLocation
 import java.util.function.BiFunction
 
-@JvmRecord
 data class SetEnginePacket(val locoId: Int, val state: Boolean) : CustomPacketPayload {
-
-
 
     override fun type(): CustomPacketPayload.Type<out CustomPacketPayload?> {
         return TYPE
@@ -35,8 +32,7 @@ data class SetEnginePacket(val locoId: Int, val state: Boolean) : CustomPacketPa
                 ByteBufCodecs.VAR_INT,
                 SetEnginePacket::locoId,
                 ByteBufCodecs.BOOL,
-                SetEnginePacket::state,
-                BiFunction { locoId, state -> SetEnginePacket(locoId!!, state!!) }
-            )
+                SetEnginePacket::state
+            ) { locoId, state -> SetEnginePacket(locoId, state) }
     }
 }

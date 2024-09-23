@@ -1,8 +1,8 @@
 package dev.murad.shipping.item
 
 import dev.murad.shipping.item.container.TugRouteContainer
-import dev.murad.shipping.util.TugRoute
 import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResultHolder
 import net.minecraft.world.MenuProvider
@@ -28,19 +28,23 @@ class TugRouteItem(properties: Properties) : RouteItem(properties) {
             return InteractionResultHolder.pass(itemstack)
         }
 
+        val route = getRoute(itemstack)
+
         val x = floor(player.x).toInt()
         val z = floor(player.z).toInt()
-        if (!tryRemoveSpecific(itemstack, x, z)) {
+        if (!tryRemoveSpecific(route, x, z)) {
             player.displayClientMessage(
                 Component.translatable("item.humblevehicles.tug_route.added", x, z), false
             )
-            pushRoute(itemstack, x,0, z)
+            pushRoute(route, x, 0, z)
         } else {
             player.displayClientMessage(
                 Component.translatable("item.humblevehicles.tug_route.removed", x, z), false
             )
         }
 
+        route.save(itemstack)
+        updateOnClient(route, hand, player as ServerPlayer)
         return InteractionResultHolder.pass(itemstack)
     }
 
@@ -55,9 +59,5 @@ class TugRouteItem(properties: Properties) : RouteItem(properties) {
                 return TugRouteContainer(i, getDataAccessor(player, hand), player)
             }
         }
-    }
-
-    override fun getRoute(itemStack: ItemStack): TugRoute {
-        return TugRoute.getRoute(itemStack)
     }
 }

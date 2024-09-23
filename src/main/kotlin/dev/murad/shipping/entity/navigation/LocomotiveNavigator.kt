@@ -3,9 +3,8 @@ package dev.murad.shipping.entity.navigation
 import com.mojang.datafixers.util.Pair
 import dev.murad.shipping.block.rail.MultiShapeRail
 import dev.murad.shipping.entity.custom.train.locomotive.AbstractLocomotiveEntity
-import dev.murad.shipping.util.LocoRoute
-import dev.murad.shipping.util.LocoRouteNode
 import dev.murad.shipping.util.RailHelper
+import dev.murad.shipping.util.Route
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
@@ -106,7 +105,7 @@ class LocomotiveNavigator(private val locomotive: AbstractLocomotiveEntity) {
         }
     }
 
-    fun updateWithLocoRouteItem(route: LocoRoute) {
+    fun updateWithLocoRouteItem(route: Route) {
         val newRouteNodes: MutableSet<BlockPos> =
             route.stream().map { obj -> obj?.toBlockPos() }
                 .collect(Collectors.toSet())

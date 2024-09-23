@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder
 import com.mojang.math.Axis
 import dev.murad.shipping.event.ForgeClientEventHandler.BEAM_LOCATION
 import dev.murad.shipping.event.ForgeClientEventHandler.computeFixedDistance
-import dev.murad.shipping.util.TugRoute
+import dev.murad.shipping.util.Route
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
 import net.minecraft.client.renderer.MultiBufferSource
@@ -24,7 +24,7 @@ class TugRouteRenderer {
         val camPos = camera.position
 
         val renderTypeBuffer = MultiBufferSource.immediate(ByteBufferBuilder(1536))
-        val route = TugRoute.getRoute(stack)
+        val route = Route.getRoute(stack)
         var i = 0
         val routeSize = route.size
         val matrixStack = event.poseStack

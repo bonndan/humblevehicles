@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import java.util.*
 
-abstract class RouteNode(var name: String?, val x: Int, val y: Int, val z: Int) {
+ class RouteNode(var name: String?, val x: Int, val y: Int, val z: Int) {
 
     fun getDisplayName(index: Int): String {
         return if (!this.hasCustomName()) {
@@ -71,7 +71,17 @@ abstract class RouteNode(var name: String?, val x: Int, val y: Int, val z: Int) 
         const val Z_TAG = "z"
         private const val COORDS_TAG = "coordinates"
 
-        fun getCoordsFromNBT(tag: CompoundTag): BlockPos =
+        fun fromNBT(tag: CompoundTag): RouteNode {
+            var name: String? = null
+            if (tag.contains(NAME_TAG)) {
+                name = tag.getString(NAME_TAG)
+            }
+
+            val coords = getCoordsFromNBT(tag)
+            return RouteNode(name, coords.x, coords.y, coords.z)
+        }
+
+        private fun getCoordsFromNBT(tag: CompoundTag): BlockPos =
             tag.getCompound(COORDS_TAG).let { coords ->
                 BlockPos(coords.getInt(X_TAG), coords.getInt(Y_TAG), coords.getInt(Z_TAG))
             }

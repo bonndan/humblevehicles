@@ -3,8 +3,8 @@ package dev.murad.shipping.item.container
 import com.mojang.datafixers.util.Pair
 import dev.murad.shipping.network.SetRouteTagPacket
 import dev.murad.shipping.network.TugRoutePacketHandler
+import dev.murad.shipping.util.Route
 import dev.murad.shipping.util.RouteNode
-import dev.murad.shipping.util.TugRoute
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.ObjectSelectionList
@@ -14,7 +14,7 @@ import java.util.*
 class TugRouteClientHandler(
     private val screen: TugRouteScreen,
     minecraft: Minecraft?,
-    private val route: TugRoute,
+    private val route: Route,
     private val isOffHand: Boolean
 ) {
     private var widget: TugList? = null

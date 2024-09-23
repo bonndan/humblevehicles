@@ -1,8 +1,7 @@
 package dev.murad.shipping.setup
 
 import dev.murad.shipping.recipe.AbstractRouteCopyRecipe
-import dev.murad.shipping.util.LocoRoute
-import dev.murad.shipping.util.TugRoute
+import dev.murad.shipping.util.Route
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.crafting.CraftingBookCategory
 import net.minecraft.world.item.crafting.RecipeSerializer
@@ -22,7 +21,7 @@ object ModRecipeSerializers {
         object : AbstractRouteCopyRecipe(cat, ModItems.TUG_ROUTE.get()) {
 
             override fun stackHasNodes(stack: ItemStack): Boolean {
-                return !TugRoute.getRoute(stack).isEmpty()
+                return !Route.getRoute(stack).isEmpty()
             }
 
             override fun getSerializer(): RecipeSerializer<*> {
@@ -41,7 +40,7 @@ object ModRecipeSerializers {
         object : AbstractRouteCopyRecipe(cat, ModItems.LOCO_ROUTE.get()) {
 
             override fun stackHasNodes(stack: ItemStack): Boolean {
-                return !LocoRoute.getRoute(stack).isEmpty()
+                return !Route.getRoute(stack).isEmpty()
             }
 
             override fun getSerializer(): RecipeSerializer<*> {

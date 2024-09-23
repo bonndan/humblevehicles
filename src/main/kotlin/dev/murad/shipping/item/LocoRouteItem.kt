@@ -1,7 +1,7 @@
 package dev.murad.shipping.item
 
-import dev.murad.shipping.util.LocoRoute
-import dev.murad.shipping.util.LocoRouteNode
+import dev.murad.shipping.util.Route
+import dev.murad.shipping.util.RouteNode
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
@@ -50,7 +50,7 @@ class LocoRouteItem(properties: Properties) : RouteItem(properties) {
         return InteractionResult.PASS
     }
 
-    private fun removeAndDisplay(player: Player?, route: LocoRoute, pos: BlockPos): Boolean {
+    private fun removeAndDisplay(player: Player?, route: Route, pos: BlockPos): Boolean {
         val removed = route.removeIf { n -> n.isAt(pos) }
         if (removed && player != null) {
             player.displayClientMessage(
@@ -61,13 +61,13 @@ class LocoRouteItem(properties: Properties) : RouteItem(properties) {
         return removed
     }
 
-    private fun addAndDisplay(player: Player?, route: LocoRoute, pos: BlockPos, level: Level) {
+    private fun addAndDisplay(player: Player?, route: Route, pos: BlockPos, level: Level) {
         if (level.getBlockState(pos).block is BaseRailBlock) {
             // blockpos should be a railtype, either our custom rail or vanilla.
             // Though for pathfinding purposes, it is not guaranteed to be a rail, as the
             // world can change
 
-            if (route.add(LocoRouteNode(null, pos.x, pos.y, pos.z))) {
+            if (route.add(RouteNode(null, pos.x, pos.y, pos.z))) {
                 player?.displayClientMessage(
                     Component.translatable("item.humblevehicles.locomotive_route.added", pos.x, pos.y, pos.z),
                     false
@@ -88,9 +88,5 @@ class LocoRouteItem(properties: Properties) : RouteItem(properties) {
             Component.translatable("item.humblevehicles.locomotive_route.num_nodes", getRoute(pStack).size)
                 .setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
         )
-    }
-
-    override fun getRoute(itemStack: ItemStack): LocoRoute {
-        return LocoRoute.getRoute(itemStack)
     }
 }

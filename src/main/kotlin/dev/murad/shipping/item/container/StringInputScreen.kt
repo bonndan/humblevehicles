@@ -2,7 +2,6 @@ package dev.murad.shipping.item.container
 
 import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.util.RouteNode
-import dev.murad.shipping.util.TugRouteNode
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox

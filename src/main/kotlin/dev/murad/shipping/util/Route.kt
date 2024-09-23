@@ -6,12 +6,12 @@ import net.minecraft.nbt.ListTag
 import net.minecraft.world.item.ItemStack
 import java.util.*
 
-abstract class Route(
+class Route(
     private val name: String? = null,
     private val owner: String? = null,
     nodes: Set<RouteNode> = HashSet()
 ) : ArrayList<RouteNode>(nodes) {
-    constructor(nodes: Set<LocoRouteNode>) : this(null, null, nodes)
+    constructor(nodes: Set<RouteNode>) : this(null, null, nodes)
 
     override fun add(element: RouteNode): Boolean {
         if (contains(element)) {
@@ -63,6 +63,38 @@ abstract class Route(
         const val OWNER_TAG = "owner"
         const val NODES_TAG = "nodes"
         const val ROUTE_NBT = "route"
+
+        fun getRoute(itemStack: ItemStack): Route {
+
+            return ItemStackUtil.getCompoundTag(itemStack)
+                ?.let { compoundTag ->
+                    return if (compoundTag.contains(ROUTE_NBT, 10))
+                        fromNBT(compoundTag.getCompound(ROUTE_NBT))
+                    else Route()
+                } ?: Route()
+        }
+
+         fun fromNBT(tag: CompoundTag): Route {
+
+            var name: String? = null
+            var owner: String? = null
+            if (tag.contains(NAME_TAG)) {
+                name = tag.getString(NAME_TAG)
+            }
+
+            if (tag.contains(OWNER_TAG)) {
+                owner = tag.getString(OWNER_TAG)
+            }
+
+            // 10 == magic number of Compound Tag
+            val nodesNBT = tag.getList(NODES_TAG, 10)
+            val nodes = HashSet<RouteNode>()
+            for (i in nodesNBT.indices) {
+                nodes.add(RouteNode.fromNBT(nodesNBT.getCompound(i)))
+            }
+
+            return Route(name, owner, nodes)
+        }
     }
 
 }
