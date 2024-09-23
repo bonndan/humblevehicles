@@ -1,6 +1,6 @@
 package dev.murad.shipping.item
 
-import dev.murad.shipping.item.container.TugRouteContainer
+import dev.murad.shipping.item.container.RouteContainer
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
@@ -56,7 +56,7 @@ class TugRouteItem(properties: Properties) : RouteItem(properties) {
             }
 
             override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
-                return TugRouteContainer(i, getDataAccessor(player, hand), player)
+                return RouteContainer(i, getDataAccessor(player, hand), player)
             }
         }
     }

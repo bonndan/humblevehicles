@@ -1,6 +1,6 @@
 package dev.murad.shipping.item.container
 
-import dev.murad.shipping.entity.accessor.TugRouteScreenDataAccessor
+import dev.murad.shipping.entity.accessor.RouteScreenDataAccessor
 import dev.murad.shipping.setup.ModMenuTypes
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.player.Player
@@ -9,9 +9,9 @@ import net.minecraft.world.item.ItemStack
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
-class TugRouteContainer(
+class RouteContainer(
     windowId: Int,
-    data: TugRouteScreenDataAccessor,
+    data: RouteScreenDataAccessor,
     player: Player
 ) :
     AbstractContainerMenu(ModMenuTypes.TUG_ROUTE_CONTAINER.get(), windowId) {
@@ -37,7 +37,7 @@ class TugRouteContainer(
 
     companion object {
         private val LOGGER: Logger = LogManager.getLogger(
-            TugRouteContainer::class.java
+            RouteContainer::class.java
         )
     }
 }

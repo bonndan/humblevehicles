@@ -18,8 +18,12 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.item.ItemStack
 
-class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Component) :
-    AbstractContainerScreen<TugRouteContainer>(menu, inventory, title) {
+class RouteScreen(
+    menu: RouteContainer,
+    inventory: Inventory,
+    title: Component
+) :
+    AbstractContainerScreen<RouteContainer>(menu, inventory, title) {
 
     private val stack: ItemStack
 
@@ -27,7 +31,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
         this.imageWidth = 256
         this.imageHeight = 233
 
-        this.stack = this.menu!!.itemStack
+        this.stack = this.menu.itemStack
     }
 
     private fun getRight(): Int {
@@ -64,12 +68,18 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
     override fun init() {
         super.init()
 
-        val route = TugRouteClientHandler(this, this.minecraft, Route.getRoute(stack), menu.isOffHand)
+        val clientHandler = TugRouteClientHandler(
+            screen = this,
+            minecraft = this.minecraft,
+            route = Route.getRoute(stack),
+            itemStack = stack,
+            isOffHand = menu.isOffHand
+        )
 
         this.addRenderableWidget(
-            route.initializeWidget(
-                this@TugRouteScreen.width, this@TugRouteScreen.height,
-                topPos + 40, topPos + this@TugRouteScreen.imageHeight - 45, 20
+            clientHandler.initializeWidget(
+                this@RouteScreen.width, this@RouteScreen.height,
+                topPos + 40, topPos + this@RouteScreen.imageHeight - 45, 20
             )
         )
 
@@ -78,14 +88,14 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
                 getRight() - 92, getBottom() - 24, 20, 20,
                 Component.literal("..ꕯ").withStyle(ChatFormatting.BOLD),
                 { button: Button ->
-                    val selectedOpt = route.selected
+                    val selectedOpt = clientHandler.selected
                     if (selectedOpt.isPresent) {
                         val selected = selectedOpt.get()
                         minecraft!!.pushGuiLayer(
                             StringInputScreen(
                                 selected.second!!,
                                 selected.first!!
-                            ) { name: String? -> route.renameSelected(name) })
+                            ) { name: String? -> clientHandler.renameSelected(name) })
                     }
                 },
                 getTooltip(Component.translatable("screen.humblevehicles.tug_route.rename_button"))
@@ -96,7 +106,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
             buildButton(
                 getRight() - 70, getBottom() - 24, 20, 20,
                 Component.literal("▲"),
-                { button: Button? -> route.moveSelectedUp() },
+                { _ -> clientHandler.moveSelectedUp() },
                 getTooltip(Component.translatable("screen.humblevehicles.tug_route.up_button"))
             )
         )
@@ -105,7 +115,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
             buildButton(
                 getRight() - 47, getBottom() - 24, 20, 20,
                 Component.literal("▼"),
-                { button: Button? -> route.moveSelectedDown() },
+                { _ -> clientHandler.moveSelectedDown() },
                 getTooltip(Component.translatable("screen.humblevehicles.tug_route.down_button"))
             )
         )
@@ -114,7 +124,7 @@ class TugRouteScreen(menu: TugRouteContainer, inventory: Inventory, title: Compo
             buildButton(
                 getRight() - 24, getBottom() - 24, 20, 20,
                 Component.literal("✘"),
-                { button: Button? -> route.deleteSelected() },
+                { _ -> clientHandler.deleteSelected() },
                 getTooltip(Component.translatable("screen.humblevehicles.tug_route.delete_button"))
             )
         )

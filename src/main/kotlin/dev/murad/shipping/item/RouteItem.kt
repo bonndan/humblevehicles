@@ -1,6 +1,6 @@
 package dev.murad.shipping.item
 
-import dev.murad.shipping.entity.accessor.TugRouteScreenDataAccessor
+import dev.murad.shipping.entity.accessor.RouteScreenDataAccessor
 import dev.murad.shipping.network.SetRouteTagPacket
 import dev.murad.shipping.network.RoutePacketHandler
 import dev.murad.shipping.util.Route
@@ -17,8 +17,8 @@ import net.minecraft.world.item.TooltipFlag
 
 abstract class RouteItem(properties: Properties) : Item(properties) {
 
-    fun getDataAccessor(entity: Player, hand: InteractionHand): TugRouteScreenDataAccessor {
-        return TugRouteScreenDataAccessor.Builder(entity.id)
+    fun getDataAccessor(entity: Player, hand: InteractionHand): RouteScreenDataAccessor {
+        return RouteScreenDataAccessor.Builder(entity.id)
             .withOffHand(hand == InteractionHand.OFF_HAND)
             .build()
     }

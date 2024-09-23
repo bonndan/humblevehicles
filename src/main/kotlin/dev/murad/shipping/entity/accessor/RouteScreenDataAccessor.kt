@@ -2,7 +2,7 @@ package dev.murad.shipping.entity.accessor
 
 import net.minecraft.world.inventory.ContainerData
 
-class TugRouteScreenDataAccessor(private val data: ContainerData) : DataAccessor(data) {
+class RouteScreenDataAccessor(private val data: ContainerData) : DataAccessor(data) {
 
     val isOffHand: Boolean
         get() = data[1] == 1
@@ -20,8 +20,8 @@ class TugRouteScreenDataAccessor(private val data: ContainerData) : DataAccessor
             return this
         }
 
-        fun build(): TugRouteScreenDataAccessor {
-            return TugRouteScreenDataAccessor(this.arr)
+        fun build(): RouteScreenDataAccessor {
+            return RouteScreenDataAccessor(this.arr)
         }
     }
 }

@@ -2,7 +2,7 @@ package dev.murad.shipping.setup
 
 import dev.murad.shipping.entity.accessor.EnergyHeadVehicleDataAccessor
 import dev.murad.shipping.entity.accessor.SteamHeadVehicleDataAccessor
-import dev.murad.shipping.entity.accessor.TugRouteScreenDataAccessor
+import dev.murad.shipping.entity.accessor.RouteScreenDataAccessor
 import dev.murad.shipping.entity.container.EnergyHeadVehicleContainer
 import dev.murad.shipping.entity.container.FishingBargeContainer
 import dev.murad.shipping.entity.container.SteamHeadVehicleContainer
@@ -10,7 +10,7 @@ import dev.murad.shipping.entity.custom.train.locomotive.EnergyLocomotiveEntity
 import dev.murad.shipping.entity.custom.train.locomotive.SteamLocomotiveEntity
 import dev.murad.shipping.entity.custom.vessel.tug.EnergyTugEntity
 import dev.murad.shipping.entity.custom.vessel.tug.SteamTugEntity
-import dev.murad.shipping.item.container.TugRouteContainer
+import dev.murad.shipping.item.container.RouteContainer
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.world.entity.player.Inventory
@@ -85,12 +85,12 @@ object ModMenuTypes {
             })
 
 
-    val TUG_ROUTE_CONTAINER: Supplier<MenuType<TugRouteContainer>> =
+    val TUG_ROUTE_CONTAINER: Supplier<MenuType<RouteContainer>> =
         Registration.CONTAINERS.register("tug_route_container",
             Supplier {
                 IMenuTypeExtension.create { windowId: Int, inv: Inventory, data: RegistryFriendlyByteBuf ->
-                    TugRouteContainer(
-                        windowId, TugRouteScreenDataAccessor(
+                    RouteContainer(
+                        windowId, RouteScreenDataAccessor(
                             makeIntArray(data)
                         ), inv.player
                     )

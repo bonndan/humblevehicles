@@ -9,20 +9,22 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.ObjectSelectionList
 import net.minecraft.network.chat.Component
+import net.minecraft.world.item.ItemStack
 import java.util.*
 
 class TugRouteClientHandler(
-    private val screen: TugRouteScreen,
+    private val screen: RouteScreen,
     minecraft: Minecraft?,
     private val route: Route,
-    private val isOffHand: Boolean
+    private val isOffHand: Boolean,
+    private val itemStack: ItemStack
 ) {
-    private var widget: TugList? = null
+    private var widget: NodeList? = null
     private val minecraft = minecraft!!
 
 
-    fun initializeWidget(width: Int, height: Int, y0: Int, y1: Int, itemHeight: Int): TugList {
-        this.widget = TugList(minecraft, width, height, y0, itemHeight)
+    fun initializeWidget(width: Int, height: Int, y0: Int, y1: Int, itemHeight: Int): NodeList {
+        this.widget = NodeList(minecraft, width, height, y0, itemHeight)
         for (i in route.indices) {
             widget!!.add(route[i], i)
         }
@@ -73,7 +75,7 @@ class TugRouteClientHandler(
         val selected = widget!!.selected
         if (selected != null) {
             val index = selected.getIndex()
-            route[index]!!.name = name
+            route[index].name = name
             markDirty()
         }
     }
@@ -93,8 +95,8 @@ class TugRouteClientHandler(
         widget!!.render(graphics, mouseX, mouseY, partialTicks)
     }
 
-    inner class TugList(minecraft: Minecraft, width: Int, height: Int, y0: Int, itemHeight: Int) :
-        ObjectSelectionList<TugList.Entry>(minecraft, width, height, y0, itemHeight) {
+    inner class NodeList(minecraft: Minecraft, width: Int, height: Int, y0: Int, itemHeight: Int) :
+        ObjectSelectionList<NodeList.Entry>(minecraft, width, height, y0, itemHeight) {
 
 
         fun add(node: RouteNode, index: Int) {
@@ -126,7 +128,7 @@ class TugRouteClientHandler(
                 val s = node.getDisplayName(index) + ": " + node.getDisplayCoords()
 
                 graphics.blit(
-                    TugRouteScreen.GUI,
+                    RouteScreen.GUI,
                     rowLeft,
                     rowTop,
                     0,
@@ -154,7 +156,7 @@ class TugRouteClientHandler(
             }
 
             private fun select() {
-                this@TugList.selected = this
+                this@NodeList.selected = this
             }
 
             override fun getNarration(): Component {
@@ -165,11 +167,16 @@ class TugRouteClientHandler(
     }
 
     private fun markDirty() {
+
         var i = 0
         for (entry in widget!!.children()) {
             entry!!.setIndex(i++)
         }
 
+        //local
+        route.save(itemStack)
+
+        //remote
         val setRouteTagPacket = SetRouteTagPacket(route.hashCode(), isOffHand, route.toNBT())
         RoutePacketHandler.sendToServer(setRouteTagPacket)
     }

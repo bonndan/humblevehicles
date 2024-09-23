@@ -1,6 +1,6 @@
 package dev.murad.shipping.item
 
-import dev.murad.shipping.item.container.TugRouteContainer
+import dev.murad.shipping.item.container.RouteContainer
 import dev.murad.shipping.util.Route
 import dev.murad.shipping.util.RouteNode
 import net.minecraft.ChatFormatting
@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Style
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
-import net.minecraft.world.InteractionResultHolder
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
@@ -113,7 +112,7 @@ class LocoRouteItem(properties: Properties) : RouteItem(properties) {
             }
 
             override fun createMenu(i: Int, playerInventory: Inventory, player: Player): AbstractContainerMenu {
-                return TugRouteContainer(i, getDataAccessor(player, hand), player)
+                return RouteContainer(i, getDataAccessor(player, hand), player)
             }
         }
     }

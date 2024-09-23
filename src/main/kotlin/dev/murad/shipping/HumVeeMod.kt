@@ -3,7 +3,7 @@ package dev.murad.shipping
 import dev.murad.shipping.entity.container.EnergyHeadVehicleScreen
 import dev.murad.shipping.entity.container.FishingBargeScreen
 import dev.murad.shipping.entity.container.SteamHeadVehicleScreen
-import dev.murad.shipping.item.container.TugRouteScreen
+import dev.murad.shipping.item.container.RouteScreen
 import dev.murad.shipping.setup.ModItemModelProperties
 import dev.murad.shipping.setup.ModMenuTypes
 import dev.murad.shipping.setup.Registration
@@ -53,7 +53,7 @@ class HumVeeMod(modBus: IEventBus, container: ModContainer) {
         event.register(ModMenuTypes.ENERGY_TUG_CONTAINER.get(), ::EnergyHeadVehicleScreen)
         event.register(ModMenuTypes.ENERGY_LOCOMOTIVE_CONTAINER.get(), ::EnergyHeadVehicleScreen)
         event.register(ModMenuTypes.FISHING_BARGE_CONTAINER.get(), ::FishingBargeScreen)
-        event.register(ModMenuTypes.TUG_ROUTE_CONTAINER.get(), ::TugRouteScreen)
+        event.register(ModMenuTypes.TUG_ROUTE_CONTAINER.get(), ::RouteScreen)
     }
 
     companion object {
