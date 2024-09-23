@@ -1,7 +1,7 @@
 package dev.murad.shipping.setup
 
 import dev.murad.shipping.HumVeeMod
-import dev.murad.shipping.network.TugRoutePacketHandler
+import dev.murad.shipping.network.RoutePacketHandler
 import dev.murad.shipping.network.VehiclePacketHandler
 import dev.murad.shipping.network.client.VehicleTrackerPacketHandler
 import net.minecraft.core.Registry
@@ -9,7 +9,6 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.inventory.MenuType
-import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.RecipeSerializer
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntityType
@@ -50,7 +49,7 @@ object Registration {
         ModTileEntitiesTypes.register()
         ModRecipeSerializers.register()
         ModMenuTypes.register()
-        eventBus.register(TugRoutePacketHandler)
+        eventBus.register(RoutePacketHandler)
         eventBus.register(VehicleTrackerPacketHandler)
         eventBus.register(VehiclePacketHandler)
         ModSounds.register()

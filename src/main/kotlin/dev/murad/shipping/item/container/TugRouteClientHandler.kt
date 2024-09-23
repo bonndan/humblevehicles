@@ -2,7 +2,7 @@ package dev.murad.shipping.item.container
 
 import com.mojang.datafixers.util.Pair
 import dev.murad.shipping.network.SetRouteTagPacket
-import dev.murad.shipping.network.TugRoutePacketHandler
+import dev.murad.shipping.network.RoutePacketHandler
 import dev.murad.shipping.util.Route
 import dev.murad.shipping.util.RouteNode
 import net.minecraft.client.Minecraft
@@ -171,6 +171,6 @@ class TugRouteClientHandler(
         }
 
         val setRouteTagPacket = SetRouteTagPacket(route.hashCode(), isOffHand, route.toNBT())
-        TugRoutePacketHandler.sendToServer(setRouteTagPacket)
+        RoutePacketHandler.sendToServer(setRouteTagPacket)
     }
 }

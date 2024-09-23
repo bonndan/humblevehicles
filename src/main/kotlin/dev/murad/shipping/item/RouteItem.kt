@@ -2,7 +2,7 @@ package dev.murad.shipping.item
 
 import dev.murad.shipping.entity.accessor.TugRouteScreenDataAccessor
 import dev.murad.shipping.network.SetRouteTagPacket
-import dev.murad.shipping.network.TugRoutePacketHandler
+import dev.murad.shipping.network.RoutePacketHandler
 import dev.murad.shipping.util.Route
 import dev.murad.shipping.util.RouteNode
 import net.minecraft.ChatFormatting
@@ -58,6 +58,6 @@ abstract class RouteItem(properties: Properties) : Item(properties) {
 
     fun updateOnClient(route: Route, hand: InteractionHand, player: ServerPlayer) {
         val packet = SetRouteTagPacket(route.hashCode(), hand == InteractionHand.OFF_HAND, route.toNBT())
-        TugRoutePacketHandler.sendToClient(player, packet)
+        RoutePacketHandler.sendToClient(player, packet)
     }
 }

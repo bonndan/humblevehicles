@@ -1,11 +1,13 @@
 package dev.murad.shipping.item
 
+import dev.murad.shipping.network.RoutePacketHandler
 import dev.murad.shipping.util.Route
 import dev.murad.shipping.util.RouteNode
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
@@ -44,6 +46,7 @@ class LocoRouteItem(properties: Properties) : RouteItem(properties) {
 
             // save route
             route.save(stack)
+            updateOnClient(route, pContext.hand, player as ServerPlayer)
             return InteractionResult.SUCCESS
         }
 
