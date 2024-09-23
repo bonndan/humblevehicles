@@ -3,12 +3,16 @@ package dev.murad.shipping.entity.custom.vessel.tug
 import dev.murad.shipping.ShippingConfig
 import dev.murad.shipping.entity.accessor.SteamHeadVehicleDataAccessor
 import dev.murad.shipping.entity.container.SteamHeadVehicleContainer
+import dev.murad.shipping.entity.custom.SmokeGenerator
+import dev.murad.shipping.entity.custom.SmokeGenerator.makeSmoke
 import dev.murad.shipping.setup.ModEntityTypes
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.setup.ModSounds
 import dev.murad.shipping.util.FuelItemStackHandler
+import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
+import net.minecraft.util.RandomSource
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier
@@ -25,7 +29,8 @@ import kotlin.math.ceil
 
 class SteamTugEntity : AbstractTugEntity {
 
-    private val furnaceFuelMultiplier: ModConfigSpec.ConfigValue<Double>? = ShippingConfig.Server.STEAM_TUG_FUEL_MULTIPLIER
+    private val furnaceFuelMultiplier: ModConfigSpec.ConfigValue<Double>? =
+        ShippingConfig.Server.STEAM_TUG_FUEL_MULTIPLIER
 
     private val fuelItemHandler: FuelItemStackHandler = FuelItemStackHandler()
 
@@ -34,7 +39,13 @@ class SteamTugEntity : AbstractTugEntity {
 
     constructor(type: EntityType<out WaterAnimal>, world: Level) : super(type, world)
 
-    constructor(worldIn: Level, x: Double, y: Double, z: Double) : super(ModEntityTypes.STEAM_TUG.get(), worldIn, x, y, z)
+    constructor(worldIn: Level, x: Double, y: Double, z: Double) : super(
+        ModEntityTypes.STEAM_TUG.get(),
+        worldIn,
+        x,
+        y,
+        z
+    )
 
     override fun createContainerProvider(): MenuProvider {
         return object : MenuProvider {
@@ -87,6 +98,12 @@ class SteamTugEntity : AbstractTugEntity {
             this.burnTime = adjustedBurnTime
             return adjustedBurnTime > 0
         }
+    }
+
+    override fun tick() {
+
+        super.tick()
+        makeSmoke(level(), independentMotion, onPos, this)
     }
 
     override fun getDropItem(): Item? {

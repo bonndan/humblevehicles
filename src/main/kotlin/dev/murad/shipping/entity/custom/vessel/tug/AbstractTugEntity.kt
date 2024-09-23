@@ -73,7 +73,7 @@ abstract class AbstractTugEntity :
     private var engineOn: Boolean = true
 
     private var dockCheckCooldown: Int = 0
-    private var independentMotion: Boolean = false
+    protected var independentMotion: Boolean = false
     private var pathfindCooldown: Int = 0
     private val frontHitbox: VehicleFrontPart
 
@@ -254,18 +254,6 @@ abstract class AbstractTugEntity :
             }
     }
 
-    protected open fun makeSmoke() {
-        val world: Level = this.level()
-        if (world != null) {
-            val blockpos: BlockPos = getOnPos().above().above()
-            val random: RandomSource = world.random
-            if (random.nextFloat() < ShippingConfig.Client.TUG_SMOKE_MODIFIER.get()) {
-                for (i in 0 until random.nextInt(2) + 2) {
-                    makeParticles(world, blockpos, this)
-                }
-            }
-        }
-    }
 
     override fun createNavigation(p_175447_1_: Level): PathNavigation {
         return TugPathNavigator(this, p_175447_1_)
@@ -369,10 +357,6 @@ abstract class AbstractTugEntity :
 
     override fun tick() {
 
-        if (level().isClientSide && independentMotion) {
-            makeSmoke()
-        }
-
         if (!level().isClientSide) {
             enrollmentHandler.tick()
             enrollmentHandler.playerName.ifPresent { name: String -> entityData.set(OWNER, name) }
@@ -435,9 +419,6 @@ abstract class AbstractTugEntity :
                 0.0,
                 (Mth.cos(this.yRot * (Math.PI / 180.0).toFloat()) * force).toDouble()
             )
-    }
-    override fun canAddPassenger(entity: Entity): Boolean {
-        return this.passengers.isEmpty()
     }
 
     private fun followGuideRail() {
@@ -575,16 +556,6 @@ abstract class AbstractTugEntity :
         super.remove(r)
     }
 
-    // Have to implement IInventory to work with hoppers
-//    override fun removeItem(pIndex: Int, pCount: Int): ItemStack? {
-//        return
-//    }
-//
-//    override fun removeItemNoUpdate(pIndex: Int): ItemStack? {
-//        return null
-//    }
-
-
     override fun canPlaceItem(p_94041_1_: Int, p_94041_2_: ItemStack): Boolean {
         return true
     }
@@ -608,9 +579,6 @@ abstract class AbstractTugEntity :
             return !(p_70300_1_.distanceToSqr(this) > 64.0)
         }
     }
-
-//    override fun clearContent() {
-//    }
 
     override fun canTakeItemThroughFace(p_180461_1_: Int, p_180461_2_: ItemStack, p_180461_3_: Direction): Boolean {
         return false
@@ -683,7 +651,7 @@ abstract class AbstractTugEntity :
     }
 
     /*
-                            Stalling Capability
+                           Stalling Capability
                      */
     private val stalling: StallingCapability = object : StallingCapability {
         override fun isDocked(): Boolean {
@@ -741,37 +709,9 @@ abstract class AbstractTugEntity :
             AbstractTugEntity::class.java, EntityDataSerializers.STRING
         )
 
-
         fun setCustomAttributes(): AttributeSupplier.Builder {
             return VesselEntity.setCustomAttributes()
                 .add(Attributes.FOLLOW_RANGE, 200.0)
         }
-
-        fun makeParticles(level: Level, pos: BlockPos, entity: Entity) {
-            val random: RandomSource = level.getRandom()
-            val h: Supplier<Boolean> = Supplier { random.nextDouble() < 0.5 }
-
-            val dx: Double = (entity.getX() - entity.xOld) / 12.0
-            val dy: Double = (entity.getY() - entity.yOld) / 12.0
-            val dz: Double = (entity.getZ() - entity.zOld) / 12.0
-
-            val xDrift: Double = (if (h.get()) 1 else -1) * random.nextDouble() * 2
-            val zDrift: Double = (if (h.get()) 1 else -1) * random.nextDouble() * 2
-
-            val particleType: SimpleParticleType =
-                if (random.nextBoolean()) ParticleTypes.CAMPFIRE_SIGNAL_SMOKE else ParticleTypes.CAMPFIRE_COSY_SMOKE
-
-            level.addAlwaysVisibleParticle(
-                particleType,
-                true,
-                pos.getX()
-                    .toDouble() + 0.5 + random.nextDouble() / 3.0 * (if (random.nextBoolean()) 1 else -1).toDouble(),
-                pos.getY().toDouble() + random.nextDouble() + random.nextDouble(),
-                pos.getZ()
-                    .toDouble() + 0.5 + random.nextDouble() / 3.0 * (if (random.nextBoolean()) 1 else -1).toDouble(),
-                0.007 * xDrift + dx, 0.05 + dy, 0.007 * zDrift + dz
-            )
-        }
-
     }
 }

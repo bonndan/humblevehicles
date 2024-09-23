@@ -80,9 +80,6 @@ class EnergyTugEntity : AbstractTugEntity {
         return itemHandler
     }
 
-    override fun makeSmoke() {
-    }
-
     // Energy tug can be loaded at all times since there is no concern
     // with mix-ups like with fluids and items
     override fun allowDockInterface(): Boolean {

@@ -3,6 +3,8 @@ package dev.murad.shipping.entity.custom.train.locomotive
 import dev.murad.shipping.ShippingConfig
 import dev.murad.shipping.entity.accessor.SteamHeadVehicleDataAccessor
 import dev.murad.shipping.entity.container.SteamHeadVehicleContainer
+import dev.murad.shipping.entity.custom.SmokeGenerator
+import dev.murad.shipping.entity.custom.SmokeGenerator.makeSmoke
 import dev.murad.shipping.entity.custom.vessel.tug.AbstractTugEntity
 import dev.murad.shipping.setup.ModEntityTypes
 import dev.murad.shipping.setup.ModItems
@@ -111,13 +113,11 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
 
 
     override fun doMovementEffect() {
+
         val level = this.level()
-        val blockpos = this.onPos.above().above()
         val random = level.random
         if (random.nextFloat() < ShippingConfig.Client.LOCO_SMOKE_MODIFIER.get()) {
-            for (i in 0 until random.nextInt(2) + 2) {
-                AbstractTugEntity.makeParticles(level, blockpos, this)
-            }
+            makeSmoke(level(), true, onPos,this)
         }
     }
 
