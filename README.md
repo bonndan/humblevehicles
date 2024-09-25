@@ -8,7 +8,6 @@ This is a NeoForge port of [LittleLogistics](https://littlelogistics.murad.dev/)
 * have fun with rideable trains and ships in a vanilla setting
 * use as much vanilla stuff a possible
 
-
 ## Features
 
 - Trains with train cars
@@ -19,6 +18,8 @@ This is a NeoForge port of [LittleLogistics](https://littlelogistics.murad.dev/)
     - transport players, items, fluids
     - routing AI
     - fish automatically
+
+- [Recipes](./recipes/readme.md) in markdown
 
 ## Next Steps
 
