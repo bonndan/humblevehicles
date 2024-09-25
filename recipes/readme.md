@@ -1,8 +1,8 @@
 # Humble Vehicles Recipes
 
- __ all original Minecraft icons (c) 2020 Microsoft Corporation __
+ __all original Minecraft icons (c) 2020 Microsoft Corporation__
 
- __ other icons (c) Little Logistics __
+ __other icons (c) Little Logistics__
 
 
 ## Tug Dock
@@ -12,7 +12,7 @@ Requires: humblevehicles:spring
 Type: crafting
 
 Ingredients: 
-* minecraft:barrier
+* c:stones
 * humblevehicles:spring
 * minecraft:iron_ingot
 
@@ -21,8 +21,8 @@ Pattern:
 
 | | | |
 | --- | --- | --- |
-| ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) |
-| ![humblevehicles:spring](./humblevehicles:spring.png) | ![minecraft:barrier](./barrier.png) | ![humblevehicles:spring](./humblevehicles:spring.png) |
+| ![c:stones](./stones.png) | ![c:stones](./stones.png) | ![c:stones](./stones.png) |
+| ![humblevehicles:spring](./spring.png) | ![c:stones](./stones.png) | ![humblevehicles:spring](./spring.png) |
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
@@ -33,7 +33,7 @@ Requires: humblevehicles:spring
 Type: crafting
 
 Ingredients: 
-* minecraft:barrier
+* c:stones
 * humblevehicles:spring
 * minecraft:iron_ingot
 
@@ -42,8 +42,8 @@ Pattern:
 
 | | | |
 | --- | --- | --- |
-| ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) |
-| ![minecraft:barrier](./barrier.png) | ![humblevehicles:spring](./humblevehicles:spring.png) | ![minecraft:barrier](./barrier.png) |
+| ![c:stones](./stones.png) | ![c:stones](./stones.png) | ![c:stones](./stones.png) |
+| ![c:stones](./stones.png) | ![humblevehicles:spring](./spring.png) | ![c:stones](./stones.png) |
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
@@ -54,7 +54,7 @@ Requires: humblevehicles:spring
 Type: crafting
 
 Ingredients: 
-* minecraft:barrier
+* c:stones
 * humblevehicles:spring
 * minecraft:redstone_torch
 
@@ -63,9 +63,9 @@ Pattern:
 
 | | | |
 | --- | --- | --- |
-| ![minecraft:barrier](./barrier.png) | ![humblevehicles:spring](./humblevehicles:spring.png) | ![minecraft:barrier](./barrier.png) |
-| ![minecraft:barrier](./barrier.png) | ![minecraft:redstone_torch](./redstone_torch.png) | ![minecraft:barrier](./barrier.png) |
-| ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) |
+| ![c:stones](./stones.png) | ![humblevehicles:spring](./spring.png) | ![c:stones](./stones.png) |
+| ![c:stones](./stones.png) | ![minecraft:redstone_torch](./redstone_torch.png) | ![c:stones](./stones.png) |
+| ![c:stones](./stones.png) | ![c:stones](./stones.png) | ![c:stones](./stones.png) |
 
 
 ## Vessel Corner Guide Rail
@@ -76,7 +76,7 @@ Type: crafting
 
 Ingredients: 
 * humblevehicles:spring
-* minecraft:barrier
+* c:stones
 * minecraft:powered_rail
 
 
@@ -84,9 +84,9 @@ Pattern:
 
 | | | |
 | --- | --- | --- |
-| ![humblevehicles:spring](./humblevehicles:spring.png) | ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) |
-| ![minecraft:powered_rail](./powered_rail.png) | ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) |
-| ![humblevehicles:spring](./humblevehicles:spring.png) | ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) |
+| ![humblevehicles:spring](./spring.png) | ![c:stones](./stones.png) | ![c:stones](./stones.png) |
+| ![minecraft:powered_rail](./powered_rail.png) | ![c:stones](./stones.png) | ![c:stones](./stones.png) |
+| ![humblevehicles:spring](./spring.png) | ![c:stones](./stones.png) | ![c:stones](./stones.png) |
 
 
 ## Switch Rail
@@ -97,7 +97,6 @@ Type: crafting
 
 Ingredients: 
 * minecraft:rail
-* 
 
 
 Pattern: 
@@ -117,7 +116,6 @@ Type: crafting
 
 Ingredients: 
 * minecraft:rail
-* 
 
 
 Pattern: 
@@ -135,7 +133,6 @@ Requires: minecraft:rail
 Type: crafting
 
 Ingredients: 
-* 
 * minecraft:rail
 
 
@@ -163,7 +160,7 @@ Pattern:
 
 | |
 | --- |
-| ![humblevehicles:spring](./humblevehicles:spring.png) |
+| ![humblevehicles:spring](./spring.png) |
 | ![minecraft:rail](./rail.png) |
 | ![minecraft:rail](./rail.png) |
 
@@ -175,7 +172,6 @@ Requires: minecraft:rail
 Type: crafting
 
 Ingredients: 
-* 
 * minecraft:rail
 * humblevehicles:spring
 
@@ -185,7 +181,7 @@ Pattern:
 | | | |
 | --- | --- | --- |
 | ![](./.png) | ![minecraft:rail](./rail.png) | ![](./.png) |
-| ![humblevehicles:spring](./humblevehicles:spring.png) | ![minecraft:rail](./rail.png) | ![humblevehicles:spring](./humblevehicles:spring.png) |
+| ![humblevehicles:spring](./spring.png) | ![minecraft:rail](./rail.png) | ![humblevehicles:spring](./spring.png) |
 | ![](./.png) | ![minecraft:rail](./rail.png) | ![](./.png) |
 
 
@@ -198,16 +194,16 @@ Type: crafting
 Ingredients: 
 * humblevehicles:spring
 * minecraft:powered_rail
-* minecraft:barrier
+* c:stones
 
 
 Pattern: 
 
 | | | |
 | --- | --- | --- |
-| ![humblevehicles:spring](./humblevehicles:spring.png) | ![minecraft:powered_rail](./powered_rail.png) | ![humblevehicles:spring](./humblevehicles:spring.png) |
-| ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) |
-| ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) |
+| ![humblevehicles:spring](./spring.png) | ![minecraft:powered_rail](./powered_rail.png) | ![humblevehicles:spring](./spring.png) |
+| ![c:stones](./stones.png) | ![c:stones](./stones.png) | ![c:stones](./stones.png) |
+| ![c:stones](./stones.png) | ![c:stones](./stones.png) | ![c:stones](./stones.png) |
 
 
 ## Fluid Hopper
@@ -219,7 +215,6 @@ Type: crafting
 Ingredients: 
 * minecraft:glass
 * minecraft:hopper
-* 
 
 
 Pattern: 
@@ -237,7 +232,6 @@ Requires: minecraft:redstone
 Type: crafting
 
 Ingredients: 
-* 
 * minecraft:gold_ingot
 * minecraft:iron_ingot
 * minecraft:redstone_block
@@ -259,7 +253,7 @@ Requires: minecraft:string
 Type: crafting
 
 Ingredients: 
-* minecraft:barrier
+* c:strings
 * minecraft:iron_nugget
 
 
@@ -267,8 +261,8 @@ Pattern:
 
 | | | |
 | --- | --- | --- |
-| ![minecraft:barrier](./barrier.png) | ![minecraft:iron_nugget](./iron_nugget.png) | ![minecraft:barrier](./barrier.png) |
-| ![minecraft:iron_nugget](./iron_nugget.png) | ![minecraft:barrier](./barrier.png) | ![minecraft:iron_nugget](./iron_nugget.png) |
+| ![c:strings](./strings.png) | ![minecraft:iron_nugget](./iron_nugget.png) | ![c:strings](./strings.png) |
+| ![minecraft:iron_nugget](./iron_nugget.png) | ![c:strings](./strings.png) | ![minecraft:iron_nugget](./iron_nugget.png) |
 
 
 ## Tug Route
@@ -278,7 +272,6 @@ Requires: minecraft:redstone
 Type: crafting
 
 Ingredients: 
-* 
 * minecraft:redstone
 * minecraft:iron_nugget
 * humblevehicles:transmitter_component
@@ -289,7 +282,7 @@ Pattern:
 | | | |
 | --- | --- | --- |
 | ![](./.png) | ![minecraft:redstone](./redstone.png) | ![](./.png) |
-| ![minecraft:iron_nugget](./iron_nugget.png) | ![humblevehicles:transmitter_component](./humblevehicles:transmitter_component.png) | ![minecraft:iron_nugget](./iron_nugget.png) |
+| ![minecraft:iron_nugget](./iron_nugget.png) | ![humblevehicles:transmitter_component](./transmitter_component.png) | ![minecraft:iron_nugget](./iron_nugget.png) |
 | ![](./.png) | ![minecraft:redstone](./redstone.png) | ![](./.png) |
 
 
@@ -300,7 +293,6 @@ Requires: minecraft:redstone
 Type: crafting
 
 Ingredients: 
-* 
 * minecraft:iron_nugget
 * minecraft:redstone
 * humblevehicles:transmitter_component
@@ -311,7 +303,7 @@ Pattern:
 | | | |
 | --- | --- | --- |
 | ![](./.png) | ![minecraft:iron_nugget](./iron_nugget.png) | ![](./.png) |
-| ![minecraft:redstone](./redstone.png) | ![humblevehicles:transmitter_component](./humblevehicles:transmitter_component.png) | ![minecraft:redstone](./redstone.png) |
+| ![minecraft:redstone](./redstone.png) | ![humblevehicles:transmitter_component](./transmitter_component.png) | ![minecraft:redstone](./redstone.png) |
 | ![](./.png) | ![minecraft:iron_nugget](./iron_nugget.png) | ![](./.png) |
 
 
@@ -322,7 +314,6 @@ Requires: minecraft:piston
 Type: crafting
 
 Ingredients: 
-* 
 * minecraft:iron_ingot
 * minecraft:piston
 * minecraft:furnace
@@ -344,7 +335,6 @@ Requires: minecraft:piston
 Type: crafting
 
 Ingredients: 
-* 
 * minecraft:iron_ingot
 * minecraft:piston
 * humblevehicles:vessel_charger
@@ -355,7 +345,7 @@ Pattern:
 | | | |
 | --- | --- | --- |
 | ![](./.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![](./.png) |
-| ![minecraft:piston](./piston.png) | ![humblevehicles:vessel_charger](./humblevehicles:vessel_charger.png) | ![minecraft:piston](./piston.png) |
+| ![minecraft:piston](./piston.png) | ![humblevehicles:vessel_charger](./vessel_charger.png) | ![minecraft:piston](./piston.png) |
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
@@ -426,7 +416,8 @@ Requires: minecraft:iron_ingot
 Type: crafting
 
 Ingredients: 
-* minecraft:barrier
+* minecraft:signs
+* minecraft:wooden_stairs
 * minecraft:iron_ingot
 
 
@@ -434,7 +425,7 @@ Pattern:
 
 | | | |
 | --- | --- | --- |
-| ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) |
+| ![minecraft:signs](./signs.png) | ![minecraft:wooden_stairs](./wooden_stairs.png) | ![minecraft:signs](./signs.png) |
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
@@ -465,7 +456,6 @@ Type: crafting
 
 Ingredients: 
 * minecraft:glass
-* 
 * minecraft:iron_ingot
 
 
@@ -487,7 +477,6 @@ Type: crafting
 Ingredients: 
 * minecraft:gold_ingot
 * minecraft:hopper
-* 
 * minecraft:redstone_block
 
 
@@ -506,16 +495,15 @@ Requires: minecraft:iron_ingot
 Type: crafting
 
 Ingredients: 
-* minecraft:barrier
+* minecraft:planks
 * minecraft:iron_ingot
-* 
 
 
 Pattern: 
 
 | | | |
 | --- | --- | --- |
-| ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) | ![minecraft:barrier](./barrier.png) |
+| ![minecraft:planks](./planks.png) | ![minecraft:planks](./planks.png) | ![minecraft:planks](./planks.png) |
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![](./.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
@@ -535,7 +523,7 @@ Pattern:
 | |
 | --- |
 | ![minecraft:chest](./chest.png) |
-| ![humblevehicles:seater_car](./humblevehicles:seater_car.png) |
+| ![humblevehicles:seater_car](./seater_car.png) |
 
 
 ## Barrel Train Car
@@ -554,7 +542,7 @@ Pattern:
 | |
 | --- |
 | ![minecraft:barrel](./barrel.png) |
-| ![humblevehicles:seater_car](./humblevehicles:seater_car.png) |
+| ![humblevehicles:seater_car](./seater_car.png) |
 
 
 ## Fluid Tank Train Car
@@ -565,7 +553,6 @@ Type: crafting
 
 Ingredients: 
 * minecraft:glass
-* 
 * humblevehicles:seater_car
 
 
@@ -575,7 +562,7 @@ Pattern:
 | --- | --- | --- |
 | ![minecraft:glass](./glass.png) | ![](./.png) | ![minecraft:glass](./glass.png) |
 | ![](./.png) | ![minecraft:glass](./glass.png) | ![](./.png) |
-| ![](./.png) | ![humblevehicles:seater_car](./humblevehicles:seater_car.png) | ![](./.png) |
+| ![](./.png) | ![humblevehicles:seater_car](./seater_car.png) | ![](./.png) |
 
 
 ## Energy Locomotive
@@ -585,7 +572,6 @@ Requires: humblevehicles:seater_car
 Type: crafting
 
 Ingredients: 
-* 
 * minecraft:iron_ingot
 * minecraft:piston
 * humblevehicles:vessel_charger
@@ -597,8 +583,8 @@ Pattern:
 | | | |
 | --- | --- | --- |
 | ![](./.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![](./.png) |
-| ![minecraft:piston](./piston.png) | ![humblevehicles:vessel_charger](./humblevehicles:vessel_charger.png) | ![minecraft:piston](./piston.png) |
-| ![minecraft:iron_ingot](./iron_ingot.png) | ![humblevehicles:seater_car](./humblevehicles:seater_car.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
+| ![minecraft:piston](./piston.png) | ![humblevehicles:vessel_charger](./vessel_charger.png) | ![minecraft:piston](./piston.png) |
+| ![minecraft:iron_ingot](./iron_ingot.png) | ![humblevehicles:seater_car](./seater_car.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
 ## Steam Locomotive
@@ -608,7 +594,6 @@ Requires: humblevehicles:seater_car
 Type: crafting
 
 Ingredients: 
-* 
 * minecraft:iron_ingot
 * minecraft:piston
 * minecraft:furnace
@@ -621,7 +606,7 @@ Pattern:
 | --- | --- | --- |
 | ![](./.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![](./.png) |
 | ![minecraft:piston](./piston.png) | ![minecraft:furnace](./furnace.png) | ![minecraft:piston](./piston.png) |
-| ![minecraft:iron_ingot](./iron_ingot.png) | ![humblevehicles:seater_car](./humblevehicles:seater_car.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
+| ![minecraft:iron_ingot](./iron_ingot.png) | ![humblevehicles:seater_car](./seater_car.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
 ## Wireless Receiver Component
@@ -673,7 +658,6 @@ Requires: humblevehicles:spring
 Type: crafting
 
 Ingredients: 
-* 
 * humblevehicles:spring
 * minecraft:iron_ingot
 * minecraft:red_dye
@@ -683,7 +667,7 @@ Pattern:
 
 | | | |
 | --- | --- | --- |
-| ![](./.png) | ![](./.png) | ![humblevehicles:spring](./humblevehicles:spring.png) |
+| ![](./.png) | ![](./.png) | ![humblevehicles:spring](./spring.png) |
 | ![](./.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:red_dye](./red_dye.png) |
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![](./.png) | ![](./.png) |
 

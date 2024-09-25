@@ -1,30 +1,29 @@
 package dev.murad.shipping.data
 
-import dev.murad.shipping.setup.ModItems
 import net.minecraft.world.item.crafting.Ingredient
+import net.minecraft.world.item.crafting.Ingredient.TagValue
 import net.minecraft.world.item.crafting.ShapedRecipePattern
 
 class RecipeMarkdown {
 
     private val stringBuilder = StringBuilder()
+    private val icons = Icons()
 
     fun write(values: Collection<RecipeGraph.Node>) {
 
         stringBuilder.append("# Humble Vehicles Recipes\n\n")
-        stringBuilder.append(" __ all original Minecraft icons (c) 2020 Microsoft Corporation __\n\n")
-        stringBuilder.append(" __ other icons (c) Little Logistics __\n\n")
+        stringBuilder.append(" __all original Minecraft icons (c) 2020 Microsoft Corporation__\n\n")
+        stringBuilder.append(" __other icons (c) Little Logistics__\n\n")
         values.forEach { recipe -> appendRecipe(recipe) }
     }
 
     private fun appendRecipe(recipe: RecipeGraph.Node) {
 
-        ModItems.CHEST_CAR
-
         val translated = Translations.getTranslationForId(recipe.recipeId.path)
         val ingredients = extractIngredients(recipe)
 
         ingredients.forEach {
-            Icons.copyIcon(it)
+            icons.copyIcon(it)
         }
 
         stringBuilder.append("\n## ${translated}\n")
@@ -44,6 +43,7 @@ class RecipeMarkdown {
     private fun extractIngredients(recipe: RecipeGraph.Node): Set<String> {
         return recipe.recipe.ingredients
             .map { ingredientAsString(it) }
+            .filter { it.isNotBlank() }
             .toSet()
     }
 
@@ -56,7 +56,7 @@ class RecipeMarkdown {
         for (row in 0 until pattern.height()) {
             stringBuilder.append("|")
             for (column in 0 until pattern.width()) {
-                val ingredient = pattern.ingredients().get(index)
+                val ingredient = pattern.ingredients()[index]
                 index++
                 stringBuilder.append(" " + ingredientAsIcon(ingredient) + " ")
                 stringBuilder.append("|")
@@ -68,8 +68,13 @@ class RecipeMarkdown {
     }
 
     private fun ingredientAsIcon(ingredient: Ingredient): String {
+
         val name = ingredientAsString(ingredient)
-        val iconFile = name.replace("minecraft:", "") + ".png"
+        val iconFile = name
+            .replace(MINECRAFT_PREFIX, "")
+            .replace(MOD_PREFIX, "")
+            .replace(TAG_PREFIX, "") + ".png"
+
         return "![$name](./$iconFile)"
     }
 
@@ -94,7 +99,12 @@ class RecipeMarkdown {
 
     private fun ingredientAsString(ingredient: Ingredient): String {
         return ingredient.values
-            .map { value -> value.items?.first()?.item.toString() }
+            .map { value ->
+                when (value) {
+                    is TagValue -> value.tag.location.toString()
+                    else -> value.items.first()?.item.toString()
+                }
+            }
             .filter { it.isNotBlank() }
             .joinToString(" and")
     }
