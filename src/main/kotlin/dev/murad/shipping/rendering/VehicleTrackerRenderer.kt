@@ -5,17 +5,29 @@ import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import dev.murad.shipping.rendering.RenderUtil.computeFixedDistance
 import dev.murad.shipping.network.client.VehicleTrackerPacketHandler
-import dev.murad.shipping.setup.EntityItemMap.get
+import dev.murad.shipping.setup.ModEntityTypes
+import dev.murad.shipping.setup.ModItems
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent
 
 class VehicleTrackerRenderer {
+
+    private val entityItemMap: MutableMap<String, Item> = mutableMapOf()
+
+    init {
+        entityItemMap[ModEntityTypes.ENERGY_LOCOMOTIVE.get().toString()] = ModItems.ENERGY_LOCOMOTIVE.get()
+        entityItemMap[ModEntityTypes.STEAM_LOCOMOTIVE.get().toString()] = ModItems.STEAM_LOCOMOTIVE.get()
+        entityItemMap[ModEntityTypes.ENERGY_TUG.get().toString()] = ModItems.ENERGY_TUG.get()
+        entityItemMap[ModEntityTypes.STEAM_TUG.get().toString()] = ModItems.STEAM_TUG.get()
+    }
 
     fun render(event: RenderLevelStageEvent, player: Player) {
         val renderTypeBuffer: MultiBufferSource.BufferSource = MultiBufferSource.immediate(ByteBufferBuilder(1536))
@@ -42,7 +54,7 @@ class VehicleTrackerRenderer {
                 matrixStack.mulPose(Axis.YP.rotationDegrees(-camera.yRot))
                 matrixStack.mulPose(Axis.XP.rotationDegrees(camera.xRot))
                 Minecraft.getInstance().itemRenderer.renderStatic(
-                    ItemStack(get(position.type)),
+                    ItemStack(entityItemMap.getOrDefault(position.type, Items.MINECART)),
                     ItemDisplayContext.GROUND,
                     150,
                     OverlayTexture.NO_OVERLAY,
@@ -76,8 +88,10 @@ class VehicleTrackerRenderer {
                     Font.DisplayMode.NORMAL,
                     0, 15728880
                 )
-                if (entity != null && entity.hasCustomName()) {
-                    val name = entity.customName
+
+                val name = entity?.customName
+                if (entity != null && name!= null) {
+
                     matrixStack.translate(0f, -20f, 0f)
                     fontRenderer.drawInBatch(
                         name,

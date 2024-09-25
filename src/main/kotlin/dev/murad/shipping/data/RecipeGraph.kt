@@ -27,7 +27,7 @@ class RecipeGraph(private val modRecipeProvider: ModRecipeProvider) : RecipeOutp
         recipeMarkdown.write(recipes.values)
 
         Files.writeString(
-            Path("../../recipes.md"),
+            Path("../../recipes/readme.md"),
             recipeMarkdown.toMarkdown(),
             StandardCharsets.UTF_8,
             StandardOpenOption.CREATE,

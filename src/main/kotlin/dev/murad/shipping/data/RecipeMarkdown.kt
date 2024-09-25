@@ -11,6 +11,8 @@ class RecipeMarkdown {
     fun write(values: Collection<RecipeGraph.Node>) {
 
         stringBuilder.append("# Humble Vehicles Recipes\n\n")
+        stringBuilder.append(" __ all original Minecraft icons (c) 2020 Microsoft Corporation __\n\n")
+        stringBuilder.append(" __ other icons (c) Little Logistics __\n\n")
         values.forEach { recipe -> appendRecipe(recipe) }
     }
 
@@ -18,10 +20,17 @@ class RecipeMarkdown {
 
         ModItems.CHEST_CAR
 
-        stringBuilder.append("\n## ${recipe.recipeId.path}\n")
+        val translated = Translations.getTranslationForId(recipe.recipeId.path)
+        val ingredients = extractIngredients(recipe)
+
+        ingredients.forEach {
+            Icons.copyIcon(it)
+        }
+
+        stringBuilder.append("\n## ${translated}\n")
         stringBuilder.append("\nRequires: ${extractRequirements(recipe)}\n")
         stringBuilder.append("\nType: ${recipe.recipe.type}\n")
-        stringBuilder.append("\nIngredients: ${extractIngredients(recipe)}\n")
+        stringBuilder.append("\nIngredients: \n${ingredients.joinToString("") { "* $it\n" }}\n")
 
         recipe.pattern?.let { stringBuilder.append("\nPattern: ${extractPattern(it)}\n") }
     }
@@ -32,11 +41,10 @@ class RecipeMarkdown {
             .map { it.value }
             .joinToString(" and ")
 
-    private fun extractIngredients(recipe: RecipeGraph.Node): String {
+    private fun extractIngredients(recipe: RecipeGraph.Node): Set<String> {
         return recipe.recipe.ingredients
             .map { ingredientAsString(it) }
             .toSet()
-            .joinToString(" and ")
     }
 
     private fun extractPattern(pattern: ShapedRecipePattern): String {
@@ -50,13 +58,19 @@ class RecipeMarkdown {
             for (column in 0 until pattern.width()) {
                 val ingredient = pattern.ingredients().get(index)
                 index++
-                stringBuilder.append(" " + ingredientAsString(ingredient) + " ")
+                stringBuilder.append(" " + ingredientAsIcon(ingredient) + " ")
                 stringBuilder.append("|")
             }
             stringBuilder.append("\n")
         }
 
         return stringBuilder.toString()
+    }
+
+    private fun ingredientAsIcon(ingredient: Ingredient): String {
+        val name = ingredientAsString(ingredient)
+        val iconFile = name.replace("minecraft:", "") + ".png"
+        return "![$name](./$iconFile)"
     }
 
     private fun createTableHead(stringBuilder: StringBuilder, pattern: ShapedRecipePattern) {

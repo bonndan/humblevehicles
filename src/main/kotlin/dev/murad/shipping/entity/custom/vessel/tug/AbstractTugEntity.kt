@@ -1,6 +1,5 @@
 package dev.murad.shipping.entity.custom.vessel.tug
 
-import dev.murad.shipping.ShippingConfig
 import dev.murad.shipping.block.dock.TugDockTileEntity
 import dev.murad.shipping.block.guiderail.TugGuideRailBlock.Companion.getArrowsDirection
 import dev.murad.shipping.capability.StallingCapability
@@ -17,8 +16,6 @@ import net.minecraft.client.player.Input
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
-import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.core.particles.SimpleParticleType
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.syncher.EntityDataAccessor
@@ -26,9 +23,7 @@ import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
-import net.minecraft.util.RandomSource
 import net.minecraft.world.*
-import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.MoverType
@@ -50,7 +45,6 @@ import net.neoforged.neoforge.items.ItemStackHandler
 import java.util.*
 import java.util.function.Function
 import java.util.function.Predicate
-import java.util.function.Supplier
 import java.util.stream.IntStream
 import kotlin.math.abs
 import kotlin.math.floor
