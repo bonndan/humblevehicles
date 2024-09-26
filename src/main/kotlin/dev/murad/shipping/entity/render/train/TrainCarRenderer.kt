@@ -69,9 +69,9 @@ class TrainCarRenderer<T : AbstractTrainCarEntity>(
         while (t.getFollower().isPresent()) {
             val nextT = t.getFollower().get()
             val renderer =
-                Minecraft.getInstance().getEntityRenderDispatcher().getRenderer<AbstractTrainCarEntity?>(nextT)
+                Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(nextT)
             if (renderer is RenderWithAttachmentPoints<*>) {
-                val attachmentRenderer = renderer as RenderWithAttachmentPoints<AbstractTrainCarEntity?>
+                val attachmentRenderer = renderer as RenderWithAttachmentPoints<AbstractTrainCarEntity>
 
                 // translate to next train location
                 val nextTPos = nextT.getPosition(pPartialTicks)
@@ -116,11 +116,11 @@ class TrainCarRenderer<T : AbstractTrainCarEntity>(
         matrixStack.pushPose()
         val vec = from.vectorTo(to)
         val dist = vec.length()
-        val segments = ceil(dist * 4) as Int
+        val segments = ceil(dist * 4).toInt()
 
         // TODO: fix pitch
-        matrixStack.mulPose(Axis.YP.rotation(-atan2(vec.z, vec.x) as Float))
-        matrixStack.mulPose(Axis.ZP.rotation((asin(vec.y / dist)) as Float))
+        matrixStack.mulPose(Axis.YP.rotation((-atan2(vec.z, vec.x)).toFloat()))
+        matrixStack.mulPose(Axis.ZP.rotation((asin(vec.y / dist)).toFloat()))
         matrixStack.pushPose()
         val ivertexbuilderChain = buffer.getBuffer(chainModel.renderType(TrainCarRenderer.Companion.CHAIN_TEXTURE))
         for (i in 1 until segments) {
@@ -218,7 +218,6 @@ class TrainCarRenderer<T : AbstractTrainCarEntity>(
         this.entityModel.setupAnim(car, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)
         val vertexconsumer = buffer.getBuffer(this.entityModel.renderType(this.getTextureLocation(car)))
         this.entityModel.renderToBuffer(pose, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY)
-        renderAdditional(car, yaw, partialTicks, pose, buffer, packedLight)
         pose.popPose()
 
         if (car.hasCustomName()) {
@@ -228,22 +227,12 @@ class TrainCarRenderer<T : AbstractTrainCarEntity>(
         return attach
     }
 
-    protected fun renderAdditional(
-        pEntity: T?,
-        pEntityYaw: Float,
-        pPartialTicks: Float,
-        pMatrixStack: PoseStack?,
-        pBuffer: MultiBufferSource?,
-        pPackedLight: Int
-    ) {
-    }
 
     override fun getTextureLocation(entity: T?): ResourceLocation? {
         return texture
     }
 
     companion object {
-        private val CHAIN_TEXTURE: ResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/entity/chain.png")
+        private val CHAIN_TEXTURE = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/entity/chain.png")
     }
 }

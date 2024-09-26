@@ -1,11 +1,9 @@
 package dev.murad.shipping.entity.custom.vessel.barge
 
-import dev.murad.shipping.entity.custom.TrainInventoryProvider
 import dev.murad.shipping.setup.ModEntityTypes
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.util.InventoryUtils.moveItemStackIntoHandler
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.core.particles.SimpleParticleType
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.EntityType
@@ -14,9 +12,9 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.AABB
-import java.util.function.Predicate
 
 class VacuumBargeEntity : AbstractBargeEntity {
+
     // There's no point in saving this... probably
     private var itemCheckDelay = 0
 
@@ -31,7 +29,7 @@ class VacuumBargeEntity : AbstractBargeEntity {
 
     // Only called on the server side
     override fun doInteract(player: Player?) {
-        val size = connectedInventories.size
+        val size = getConnectedInventories().size
 
         player?.displayClientMessage(
             when (size) {
@@ -41,11 +39,7 @@ class VacuumBargeEntity : AbstractBargeEntity {
         )
     }
 
-    public override fun remove(r: RemovalReason) {
-        super.remove(r)
-    }
-
-    public override fun tick() {
+    override fun tick() {
         super.tick()
 
         if (this.level().isClientSide) {
@@ -60,29 +54,20 @@ class VacuumBargeEntity : AbstractBargeEntity {
         val level = (level() as ServerLevel)
 
         // Render fire particles
-        level.sendParticles<SimpleParticleType?>(
-            ParticleTypes.FLAME,
-            getX(), getY() + 0.85, getZ(),
-            6,
-            0.1, 0.1, 0.1, 0.0
-        )
+        level.sendParticles(ParticleTypes.FLAME, getX(), getY() + 0.85, getZ(), 6, 0.1, 0.1, 0.1, 0.0)
 
         // perform item check
         val searchBox = AABB(getX(), getY(), getZ(), getX(), getY(), getZ())
-            .inflate(
-                VacuumBargeEntity.Companion.PICK_RADIUS,
-                VacuumBargeEntity.Companion.PICK_HEIGHT / 2.0,
-                VacuumBargeEntity.Companion.PICK_RADIUS
-            )
+            .inflate(PICK_RADIUS, PICK_HEIGHT / 2.0, PICK_RADIUS)
 
         val items = this.level()
-            .getEntitiesOfClass<ItemEntity>(
+            .getEntitiesOfClass(
                 ItemEntity::class.java,
-                searchBox,
-                Predicate { e: ItemEntity -> e.distanceToSqr(this) < (VacuumBargeEntity.Companion.PICK_RADIUS * VacuumBargeEntity.Companion.PICK_RADIUS) })
+                searchBox
+            ) { e: ItemEntity -> e.distanceToSqr(this) < (PICK_RADIUS * PICK_RADIUS) }
 
         if (!items.isEmpty()) {
-            val inventoryProviders = connectedInventories
+            val inventoryProviders = getConnectedInventories()
             for (item in items) {
                 val initial = item.getItem()
                 var leftOver = initial.copy()
@@ -91,7 +76,7 @@ class VacuumBargeEntity : AbstractBargeEntity {
                         break
                     }
 
-                    val itemHandler = provider!!.getTrainInventoryHandler()
+                    val itemHandler = provider.getTrainInventoryHandler()
                     if (itemHandler.isPresent()) {
                         leftOver = moveItemStackIntoHandler(itemHandler.get(), leftOver)
                     }
@@ -100,7 +85,7 @@ class VacuumBargeEntity : AbstractBargeEntity {
 
                 if (initial != leftOver) {
                     // spawn particles
-                    level.sendParticles<SimpleParticleType?>(
+                    level.sendParticles(
                         ParticleTypes.PORTAL,
                         item.getX(), item.getY(), item.getZ(), 15,
                         0.2, 0.2, 0.2, 0.0
@@ -108,10 +93,10 @@ class VacuumBargeEntity : AbstractBargeEntity {
                 }
             }
         }
-        this.itemCheckDelay = VacuumBargeEntity.Companion.ITEM_CHECK_DELAY
+        this.itemCheckDelay = ITEM_CHECK_DELAY
     }
 
-    override fun getDropItem(): Item? {
+    override fun getDropItem(): Item {
         return ModItems.VACUUM_BARGE.get()
     }
 

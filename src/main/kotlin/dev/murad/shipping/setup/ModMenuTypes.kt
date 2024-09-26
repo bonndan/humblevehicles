@@ -77,7 +77,7 @@ object ModMenuTypes {
                     FishingBargeContainer(
                         windowId,
                         inv.player.level(),
-                        data?.readInt(),
+                        data.readInt(),
                         inv,
                         inv.player
                     )

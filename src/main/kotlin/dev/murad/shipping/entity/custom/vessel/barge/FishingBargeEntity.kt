@@ -9,7 +9,6 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
@@ -21,7 +20,6 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables
 import net.minecraft.world.level.storage.loot.LootParams
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams
-import net.minecraft.world.phys.Vec3
 import java.util.Arrays
 import java.util.HashSet
 import java.util.LinkedList
@@ -31,12 +29,13 @@ import kotlin.math.floor
 import kotlin.math.min
 
 class FishingBargeEntity : AbstractBargeEntity {
+
     private var ticksDeployable = 0
     private var fishCooldown = 0
     private val overFishedCoords: MutableSet<Pair<Int, Int>> = HashSet<Pair<Int, Int>>()
-    private val overFishedQueue: Queue<Pair<Int, Int>> = LinkedList<Pair<Int, Int>>()
+    private val overFishedQueue: Queue<Pair<Int, Int>> = LinkedList()
 
-    constructor(type: EntityType<out FishingBargeEntity?>, world: Level) : super(type, world)
+    constructor(type: EntityType<out FishingBargeEntity>, world: Level) : super(type, world)
 
     constructor(worldIn: Level, x: Double, y: Double, z: Double) : super(
         ModEntityTypes.FISHING_BARGE.get(),
@@ -49,7 +48,7 @@ class FishingBargeEntity : AbstractBargeEntity {
 
     // Only called on the server side
     override fun doInteract(player: Player?) {
-        val size = connectedInventories.size
+        val size = getConnectedInventories().size
 
         player?.displayClientMessage(
             when (size) {
@@ -57,10 +56,6 @@ class FishingBargeEntity : AbstractBargeEntity {
                 else -> Component.translatable("global.humblevehicles.connected_inventory", size)
             }, false
         )
-    }
-
-    override fun remove(r: RemovalReason) {
-        super.remove(r)
     }
 
     override fun tick() {
@@ -97,6 +92,7 @@ class FishingBargeEntity : AbstractBargeEntity {
 
     // Only called on server side
     private fun tickFish() {
+
         val overFishPenalty = if (isOverFished()) 0.05 else 1.0
         val shallowPenalty = computeDepthPenalty()
         val chance = 0.25 * overFishPenalty * shallowPenalty
@@ -105,11 +101,11 @@ class FishingBargeEntity : AbstractBargeEntity {
         val r = Math.random()
         if (r < chance) {
             val params = LootParams.Builder(this.level() as ServerLevel)
-                .withParameter<Vec3?>(LootContextParams.ORIGIN, this.position())
-                .withParameter<Entity?>(LootContextParams.THIS_ENTITY, this)
-                .withParameter<ItemStack?>(LootContextParams.TOOL, ItemStack(Items.FISHING_ROD))
-                .withParameter<Entity?>(LootContextParams.ATTACKING_ENTITY, this)
-                .withParameter<Entity?>(LootContextParams.THIS_ENTITY, this)
+                .withParameter(LootContextParams.ORIGIN, this.position())
+                .withParameter(LootContextParams.THIS_ENTITY, this)
+                .withParameter(LootContextParams.TOOL, ItemStack(Items.FISHING_ROD))
+                .withParameter(LootContextParams.ATTACKING_ENTITY, this)
+                .withParameter(LootContextParams.THIS_ENTITY, this)
                 .create(LootContextParamSets.FISHING)
 
             val loottable = this.level()
@@ -117,13 +113,11 @@ class FishingBargeEntity : AbstractBargeEntity {
                 .reloadableRegistries()
                 .getLootTable(if (r < treasure_chance) BuiltInLootTables.FISHING_TREASURE else BuiltInLootTables.FISHING_FISH)
 
-            val list: MutableList<ItemStack?> = loottable.getRandomItems(params)
+            val randomItems = loottable.getRandomItems(params)
 
-            val inventoryProviders = connectedInventories
-
-            for (stack in list) {
+            for (stack in randomItems) {
                 var leftOver: ItemStack = stack!!
-                for (provider in inventoryProviders) {
+                for (provider in getConnectedInventories()) {
                     if (leftOver.isEmpty) {
                         break
                     }
@@ -144,15 +138,15 @@ class FishingBargeEntity : AbstractBargeEntity {
 
     private fun overFishedString(): String {
         return overFishedQueue.stream()
-            .map<String> { t: Pair<Int, Int>? -> t!!.getFirst().toString() + ":" + t.getSecond() }
+            .map { t -> t!!.first.toString() + ":" + t.second }
             .reduce("") { acc, curr -> "$acc,$curr" }
     }
 
     private fun populateOverfish(string: String) {
-        Arrays.stream<String?>(string.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
+        Arrays.stream(string.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
             .filter { s -> !s.isEmpty() }
-            .map<Array<String>> { s -> s!!.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray() }
-            .map { arr -> Pair<Int, Int>(arr!![0].toInt(), arr[1]!!.toInt()) }
+            .map { s -> s!!.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray() }
+            .map { arr -> Pair(arr!![0].toInt(), arr[1]!!.toInt()) }
             .forEach { e: Pair<Int, Int> -> overFishedQueue.add(e) }
         overFishedCoords.addAll(overFishedQueue)
     }
@@ -163,8 +157,8 @@ class FishingBargeEntity : AbstractBargeEntity {
     }
 
     private fun addOverFish() {
-        val x = floor(this.x) as Int
-        val z = floor(this.z) as Int
+        val x = floor(this.x).toInt()
+        val z = floor(this.z).toInt()
         overFishedCoords.add(Pair<Int, Int>(x, z))
         overFishedQueue.add(Pair<Int, Int>(x, z))
         if (overFishedQueue.size > 30) {
@@ -178,8 +172,8 @@ class FishingBargeEntity : AbstractBargeEntity {
     }
 
     private fun isOverFished(): Boolean {
-        val x = floor(this.x) as Int
-        val z = floor(this.z) as Int
+        val x = floor(this.x).toInt()
+        val z = floor(this.z).toInt()
         return overFishedCoords.contains(Pair<Int, Int>(x, z))
     }
 
@@ -192,16 +186,17 @@ class FishingBargeEntity : AbstractBargeEntity {
     }
 
     private fun getNonStashedStatus(): Status {
+
         if (ticksDeployable < 40) {
             return Status.TRANSITION
-        } else {
-            return if (this.applyWithDominant<Boolean>(Function { obj -> obj!!.hasWaterOnSides() })
-                    .reduce(true) { a: Boolean, b: Boolean -> java.lang.Boolean.logicalAnd(a, b) }
-            )
-                Status.DEPLOYED
-            else
-                Status.TRANSITION
         }
+
+        return if (this.applyWithDominant { obj -> obj!!.hasWaterOnSides() }
+                .reduce(true) { a: Boolean, b: Boolean -> java.lang.Boolean.logicalAnd(a, b) }
+        )
+            Status.DEPLOYED
+        else
+            Status.TRANSITION
     }
 
     enum class Status {

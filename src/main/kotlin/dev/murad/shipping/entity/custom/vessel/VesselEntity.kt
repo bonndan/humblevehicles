@@ -735,40 +735,40 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
         return getAttribute(NeoForgeMod.SWIM_SPEED.delegate)!!.value
     }
 
-    val connectedInventories: List<TrainInventoryProvider>
-        /**
-         * Grabs a list of connected vessels that provides inventory to this vessel
-         * For Example:
-         * Tug F F F C C C -- All F barges are linked to all C barges
-         * Tug F C F C F C -- Each F barge is linked to 1 C barge
-         */
-        get() {
-            val result: MutableList<TrainInventoryProvider> = ArrayList()
+    /**
+     * Grabs a list of connected vessels that provides inventory to this vessel
+     * For Example:
+     * Tug F F F C C C -- All F barges are linked to all C barges
+     * Tug F C F C F C -- Each F barge is linked to 1 C barge
+     */
+    protected fun getConnectedInventories() : List<TrainInventoryProvider>{
 
-            var vessel: Optional<VesselEntity> = getFollower()
-            while (vessel.isPresent) {
-                // TODO generalize this to all inventory providers
-                if (vessel.get() is TrainInventoryProvider) {
-                    break
-                }
+        val result = mutableListOf<TrainInventoryProvider>()
 
-                vessel = vessel.get().getFollower()
+        var vessel: Optional<VesselEntity> = getFollower()
+        while (vessel.isPresent) {
+            // TODO generalize this to all inventory providers
+            if (vessel.get() is TrainInventoryProvider) {
+                break
             }
 
-            // vessel is either empty or is a chest barge
-            while (vessel.isPresent) {
-                if (vessel.get() is TrainInventoryProvider) {
-                    result.add(vessel as TrainInventoryProvider)
-                } else {
-                    break
-                }
-
-                vessel = vessel.get().getFollower()
-            }
-
-            return result
+            vessel = vessel.get().getFollower()
         }
 
+        // vessel is either empty or is a chest barge
+        while (vessel.isPresent) {
+            val get = vessel.get()
+            if (get is TrainInventoryProvider) {
+                result.add(get as TrainInventoryProvider)
+            } else {
+                break
+            }
+
+            vessel = vessel.get().getFollower()
+        }
+
+        return result
+    }
 
     companion object {
 

@@ -53,7 +53,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     private var engineOn: Boolean = false
 
     protected val enrollmentHandler: ChunkManagerEnrollmentHandler
-    private val doflip = false
     private var independentMotion = false
     var isDocked: Boolean = false
         private set
@@ -104,14 +103,14 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         super.remove(r)
     }
 
-    override fun interact(pPlayer: Player, pHand: InteractionHand): InteractionResult {
+    override fun interact(player: Player, hand: InteractionHand): InteractionResult {
 
-        val ret = super.interact(pPlayer, pHand)
+        val ret = super.interact(player, hand)
         if (ret.consumesAction()) {
             return ret
         }
 
-        if (pHand != InteractionHand.MAIN_HAND) {
+        if (hand != InteractionHand.MAIN_HAND) {
             return InteractionResult.PASS
         }
 
@@ -121,16 +120,16 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
         // right click works for riding player, otherwise would dismount
         if (this.isVehicle) {
-            return showInventoryMenu(pPlayer)
+            return showInventoryMenu(player)
         }
 
         //shift: open menu
-        if (pPlayer.isSecondaryUseActive) {
-            return showInventoryMenu(pPlayer)
+        if (player.isSecondaryUseActive) {
+            return showInventoryMenu(player)
         }
 
         //default: start riding
-        return if (pPlayer.startRiding(this)) InteractionResult.CONSUME else InteractionResult.PASS
+        return if (player.startRiding(this)) InteractionResult.CONSUME else InteractionResult.PASS
 
     }
 
@@ -403,9 +402,9 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     private fun tickDockCheck() {
         Optional.ofNullable(getCapability(StallingCapability.STALLING_CAPABILITY))
             .ifPresent { cap: StallingCapability ->
-                val x = floor(this.x) as Int
-                val y = floor(this.y) as Int
-                val z = floor(this.z) as Int
+                val x = floor(this.x).toInt()
+                val y = floor(this.y).toInt()
+                val z = floor(this.z).toInt()
 
                 val docked = cap.isDocked()
 

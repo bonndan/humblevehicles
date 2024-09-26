@@ -43,8 +43,6 @@ import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.entity.PartEntity
 import net.neoforged.neoforge.items.ItemStackHandler
 import java.util.*
-import java.util.function.Function
-import java.util.function.Predicate
 import java.util.stream.IntStream
 import kotlin.math.abs
 import kotlin.math.floor
@@ -199,9 +197,9 @@ abstract class AbstractTugEntity :
     private fun tickCheckDock() {
         Optional.ofNullable<StallingCapability>(getCapability(StallingCapability.STALLING_CAPABILITY))
             .ifPresent { cap: StallingCapability ->
-                val x: Int = floor(this.getX()) as Int
-                val y: Int = floor(this.getY()) as Int
-                val z: Int = floor(this.getZ()) as Int
+                val x: Int = floor(this.x).toInt()
+                val y: Int = floor(this.y).toInt()
+                val z: Int = floor(this.z).toInt()
 
                 val docked: Boolean = cap.isDocked()
 
@@ -217,17 +215,11 @@ abstract class AbstractTugEntity :
                     .stream()
                     .map { curr: Direction ->
                         Optional.ofNullable(
-                            level().getBlockEntity(
-                                BlockPos(
-                                    x + curr.getStepX(),
-                                    y,
-                                    z + curr.getStepZ()
-                                )
-                            )
+                            level().getBlockEntity(BlockPos(x + curr.stepX, y, z + curr.stepZ))
                         )
-                            .filter(Predicate { entity: BlockEntity? -> entity is TugDockTileEntity })
-                            .map(Function { entity: BlockEntity -> entity as TugDockTileEntity })
-                            .map(Function { dock: TugDockTileEntity -> dock.hold(this, curr) })
+                            .filter { entity: BlockEntity? -> entity is TugDockTileEntity }
+                            .map { entity: BlockEntity -> entity as TugDockTileEntity }
+                            .map { dock: TugDockTileEntity -> dock.hold(this, curr) }
                             .orElse(false)
                     }
                     .reduce(false) { acc: Boolean, curr: Boolean -> acc || curr }
@@ -481,8 +473,8 @@ abstract class AbstractTugEntity :
         }
     }
 
-    fun shouldFreezeTrain(): Boolean {
-        return !enrollmentHandler.mayMove() || (stalling.isStalled() && !isDocked) || getLinkingHandler()?.train!!.asList()
+    private fun shouldFreezeTrain(): Boolean {
+        return !enrollmentHandler.mayMove() || (stalling.isStalled() && !isDocked) || getLinkingHandler().train!!.asList()
             .stream().anyMatch(VesselEntity::isFrozen)
     }
 
@@ -689,7 +681,7 @@ abstract class AbstractTugEntity :
 
     init {
         this.blocksBuilding = true
-        getLinkingHandler()!!.train = Train(this)
+        getLinkingHandler().train = Train(this)
         this.path = Route()
         frontHitbox = VehicleFrontPart(this)
         enrollmentHandler = ChunkManagerEnrollmentHandler(this)

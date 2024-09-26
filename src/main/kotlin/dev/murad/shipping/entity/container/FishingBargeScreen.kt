@@ -8,11 +8,10 @@ import net.minecraft.world.entity.player.Inventory
 
 class FishingBargeScreen(menu: FishingBargeContainer, inventory: Inventory, title: Component) :
     AbstractContainerScreen<FishingBargeContainer?>(menu, inventory, title) {
+
     private val containerRows = 3
 
     init {
-        // not sure what this ever did
-//        this.passEvents = false;
         this.imageHeight = 114 + this.containerRows * 18
         this.inventoryLabelY = this.imageHeight - 94
     }
@@ -35,7 +34,6 @@ class FishingBargeScreen(menu: FishingBargeContainer, inventory: Inventory, titl
     }
 
     companion object {
-        private val CONTAINER_BACKGROUND: ResourceLocation =
-            ResourceLocation.parse("textures/gui/container/generic_54.png")
+        private val CONTAINER_BACKGROUND = ResourceLocation.parse("textures/gui/container/generic_54.png")
     }
 }

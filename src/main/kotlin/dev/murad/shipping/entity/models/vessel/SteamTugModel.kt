@@ -16,11 +16,8 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 
 class SteamTugModel<T>(root: ModelPart) : EntityModel<T>() where T : Entity, T : Colorable {
-    private val bb_main: ModelPart
 
-    init {
-        this.bb_main = root.getChild("bb_main")
-    }
+    private val bb_main: ModelPart = root.getChild("bb_main")
 
     override fun setupAnim(
         entity: T?,
@@ -44,8 +41,10 @@ class SteamTugModel<T>(root: ModelPart) : EntityModel<T>() where T : Entity, T :
 
     companion object {
         // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-        val LAYER_LOCATION: ModelLayerLocation =
-            ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "steam_tug_model"), "main")
+        val LAYER_LOCATION = ModelLayerLocation(
+            ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "steam_tug_model"),
+            "main"
+        )
 
         fun createBodyLayer(): LayerDefinition {
             val meshdefinition = MeshDefinition()
