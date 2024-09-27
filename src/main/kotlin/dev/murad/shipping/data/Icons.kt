@@ -58,10 +58,11 @@ class Icons(
 
     private fun copyMinecraftIcon(
         name: String,
-        filename: String = name.replace(MINECRAFT_PREFIX, "")
+        filename: String = replaceSpecialIcons(name).replace(MINECRAFT_PREFIX, "")
     ) {
 
-        val dest = File("$targetBasePath$filename.png")
+        val destFileName = name.replace(MINECRAFT_PREFIX, "")
+        val dest = File("$targetBasePath$destFileName.png")
         try {
             readFromJar(filename)?.let {
                 Files.write(it, dest)
@@ -71,6 +72,15 @@ class Icons(
             println(e.message)
         }
 
+    }
+
+    private fun replaceSpecialIcons(filename: String): String {
+        return when (filename) {
+            MINECRAFT_PREFIX + "planks" -> return MINECRAFT_PREFIX + "oak_planks"
+            MINECRAFT_PREFIX + "wooden_planks" -> return MINECRAFT_PREFIX + "oak_planks"
+            MINECRAFT_PREFIX + "stone_slab" -> return MINECRAFT_PREFIX + "smooth_stone_slab_side"
+            else -> filename
+        }
     }
 
     private fun readFromJar(filename: String): ByteArray? {
