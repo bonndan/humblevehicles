@@ -1,5 +1,8 @@
 # Humble Vehicles Mod for Minecraft NeoForge
 
+
+![logo](./humvee.png)
+
 This is a NeoForge port of [LittleLogistics](https://littlelogistics.murad.dev/).
 
 ## Project goals
