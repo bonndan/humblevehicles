@@ -26,7 +26,7 @@ class RecipeMarkdown {
             icons.copyIcon(it)
         }
 
-        stringBuilder.append("\n## ${translated}\n")
+        stringBuilder.append("\n## [${translated}](#${stripPrefixes(recipe.recipeId.toString())})\n")
         stringBuilder.append("\nRequires: ${extractRequirements(recipe)}\n")
         stringBuilder.append("\nType: ${recipe.recipe.type}\n")
         stringBuilder.append("\nIngredients: \n${ingredients.joinToString("") { "* $it\n" }}\n")
@@ -50,12 +50,12 @@ class RecipeMarkdown {
     private fun asLink(ingredient: String): String {
 
         if (ingredient.startsWith(MINECRAFT_PREFIX)) {
-            val name = ingredient.replace(MINECRAFT_PREFIX, "")
+            val name = stripPrefixes(ingredient)
             return "[$name](https://minecraft.wiki/w/$name)"
         }
 
         if (ingredient.startsWith(MOD_PREFIX)) {
-            val name = ingredient.replace(MOD_PREFIX, "")
+            val name = stripPrefixes(ingredient)
             return "[$name](#$name)"
         }
 
@@ -85,13 +85,15 @@ class RecipeMarkdown {
     private fun ingredientAsIcon(ingredient: Ingredient): String {
 
         val name = ingredientAsString(ingredient, link = false)
-        val iconFile = name
-            .replace(MINECRAFT_PREFIX, "")
-            .replace(MOD_PREFIX, "")
-            .replace(TAG_PREFIX, "") + ".png"
+        val iconFile = stripPrefixes(name) + ".png"
 
         return "![$name](./$iconFile)"
     }
+
+    private fun stripPrefixes(name: String) = name
+        .replace(MINECRAFT_PREFIX, "")
+        .replace(MOD_PREFIX, "")
+        .replace(TAG_PREFIX, "")
 
     private fun createTableHead(stringBuilder: StringBuilder, pattern: ShapedRecipePattern) {
         stringBuilder.append("\n\n")

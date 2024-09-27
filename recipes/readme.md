@@ -5,7 +5,7 @@
  __other icons (c) Little Logistics__
 
 
-## Tug Dock
+## [Tug Dock](#tug_dock)
 
 Requires: [spring](#spring)
 
@@ -26,7 +26,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Barge Dock
+## [Barge Dock](#barge_dock)
 
 Requires: [spring](#spring)
 
@@ -47,7 +47,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Vehicle Detector
+## [Vehicle Detector](#vessel_detector)
 
 Requires: [spring](#spring)
 
@@ -68,7 +68,7 @@ Pattern:
 | ![c:stones](./stones.png) | ![c:stones](./stones.png) | ![c:stones](./stones.png) |
 
 
-## Vessel Corner Guide Rail
+## [Vessel Corner Guide Rail](#guide_rail_corner)
 
 Requires: [powered_rail](https://minecraft.wiki/w/powered_rail)
 
@@ -89,7 +89,7 @@ Pattern:
 | ![humblevehicles:spring](./spring.png) | ![c:stones](./stones.png) | ![c:stones](./stones.png) |
 
 
-## Switch Rail
+## [Switch Rail](#switch_rail)
 
 Requires: [rail](https://minecraft.wiki/w/rail)
 
@@ -108,7 +108,7 @@ Pattern:
 | ![minecraft:rail](./rail.png) | ![](./.png) |
 
 
-## T-Junction Rail
+## [T-Junction Rail](#tee_junction_rail)
 
 Requires: [rail](https://minecraft.wiki/w/rail)
 
@@ -126,7 +126,7 @@ Pattern:
 | ![](./.png) | ![minecraft:rail](./rail.png) | ![](./.png) |
 
 
-## Junction Rail
+## [Junction Rail](#junction_rail)
 
 Requires: [rail](https://minecraft.wiki/w/rail)
 
@@ -145,7 +145,7 @@ Pattern:
 | ![](./.png) | ![minecraft:rail](./rail.png) | ![](./.png) |
 
 
-## Locomotive Docking Rail
+## [Locomotive Docking Rail](#locomotive_dock_rail)
 
 Requires: [rail](https://minecraft.wiki/w/rail)
 
@@ -165,7 +165,7 @@ Pattern:
 | ![minecraft:rail](./rail.png) |
 
 
-## Train Car Docking Rail
+## [Train Car Docking Rail](#car_dock_rail)
 
 Requires: [rail](https://minecraft.wiki/w/rail)
 
@@ -185,7 +185,7 @@ Pattern:
 | ![](./.png) | ![minecraft:rail](./rail.png) | ![](./.png) |
 
 
-## Tug Guide Rail
+## [Tug Guide Rail](#guide_rail_tug)
 
 Requires: [powered_rail](https://minecraft.wiki/w/powered_rail)
 
@@ -206,7 +206,7 @@ Pattern:
 | ![c:stones](./stones.png) | ![c:stones](./stones.png) | ![c:stones](./stones.png) |
 
 
-## Fluid Hopper
+## [Fluid Hopper](#fluid_hopper)
 
 Requires: [hopper](https://minecraft.wiki/w/hopper)
 
@@ -225,7 +225,7 @@ Pattern:
 | ![](./.png) | ![minecraft:glass](./glass.png) | ![](./.png) |
 
 
-## Vehicle Charger
+## [Vehicle Charger](#vessel_charger)
 
 Requires: [redstone](https://minecraft.wiki/w/redstone)
 
@@ -246,7 +246,7 @@ Pattern:
 | ![minecraft:redstone_block](./redstone_block.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:redstone_block](./redstone_block.png) |
 
 
-## Vehicle Chain
+## [Vehicle Chain](#spring)
 
 Requires: [string](https://minecraft.wiki/w/string)
 
@@ -265,7 +265,7 @@ Pattern:
 | ![minecraft:iron_nugget](./iron_nugget.png) | ![c:strings](./strings.png) | ![minecraft:iron_nugget](./iron_nugget.png) |
 
 
-## Tug Route
+## [Tug Route](#tug_route)
 
 Requires: [redstone](https://minecraft.wiki/w/redstone)
 
@@ -286,7 +286,7 @@ Pattern:
 | ![](./.png) | ![minecraft:redstone](./redstone.png) | ![](./.png) |
 
 
-## Locomotive Route
+## [Locomotive Route](#locomotive_route)
 
 Requires: [redstone](https://minecraft.wiki/w/redstone)
 
@@ -307,7 +307,7 @@ Pattern:
 | ![](./.png) | ![minecraft:iron_nugget](./iron_nugget.png) | ![](./.png) |
 
 
-## Steam Tug
+## [Steam Tug](#tug)
 
 Requires: [piston](https://minecraft.wiki/w/piston)
 
@@ -328,7 +328,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Energy Tug
+## [Energy Tug](#energy_tug)
 
 Requires: [piston](https://minecraft.wiki/w/piston)
 
@@ -349,7 +349,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Chest Barge
+## [Chest Barge](#barge)
 
 Requires: [chest](https://minecraft.wiki/w/chest)
 
@@ -369,7 +369,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Barrel Barge
+## [Barrel Barge](#barrel_barge)
 
 Requires: [barrel](https://minecraft.wiki/w/barrel)
 
@@ -389,7 +389,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Item Collection Barge
+## [Item Collection Barge](#vacuum_barge)
 
 Requires: [hopper](https://minecraft.wiki/w/hopper)
 
@@ -409,7 +409,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Seater Barge
+## [Seater Barge](#seater_barge)
 
 Requires: [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
@@ -429,7 +429,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Auto-Fishing Barge
+## [Auto-Fishing Barge](#fishing_barge)
 
 Requires: [fishing_rod](https://minecraft.wiki/w/fishing_rod)
 
@@ -448,7 +448,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Fluid Tank Barge
+## [Fluid Tank Barge](#fluid_barge)
 
 Requires: [glass](https://minecraft.wiki/w/glass)
 
@@ -468,7 +468,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Rapid Hopper
+## [Rapid Hopper](#rapid_hopper)
 
 Requires: [hopper](https://minecraft.wiki/w/hopper)
 
@@ -488,7 +488,7 @@ Pattern:
 | ![](./.png) | ![minecraft:redstone_block](./redstone_block.png) | ![](./.png) |
 
 
-## Train Car
+## [Train Car](#seater_car)
 
 Requires: [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
@@ -507,7 +507,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![](./.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Chest Train Car
+## [Chest Train Car](#chest_car)
 
 Requires: [seater_car](#seater_car)
 
@@ -526,7 +526,7 @@ Pattern:
 | ![humblevehicles:seater_car](./seater_car.png) |
 
 
-## Barrel Train Car
+## [Barrel Train Car](#barrel_car)
 
 Requires: [seater_car](#seater_car)
 
@@ -545,7 +545,7 @@ Pattern:
 | ![humblevehicles:seater_car](./seater_car.png) |
 
 
-## Fluid Tank Train Car
+## [Fluid Tank Train Car](#fluid_car)
 
 Requires: [seater_car](#seater_car)
 
@@ -565,7 +565,7 @@ Pattern:
 | ![](./.png) | ![humblevehicles:seater_car](./seater_car.png) | ![](./.png) |
 
 
-## Energy Locomotive
+## [Energy Locomotive](#energy_locomotive)
 
 Requires: [seater_car](#seater_car)
 
@@ -587,7 +587,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![humblevehicles:seater_car](./seater_car.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Steam Locomotive
+## [Steam Locomotive](#steam_locomotive)
 
 Requires: [seater_car](#seater_car)
 
@@ -609,7 +609,7 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![humblevehicles:seater_car](./seater_car.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-## Wireless Receiver Component
+## [Wireless Receiver Component](#receiver_component)
 
 Requires: [ender_eye](https://minecraft.wiki/w/ender_eye)
 
@@ -630,7 +630,7 @@ Pattern:
 | ![minecraft:stone_slab](./stone_slab.png) |
 
 
-## Wireless Transmitter Component
+## [Wireless Transmitter Component](#transmitter_component)
 
 Requires: [ender_eye](https://minecraft.wiki/w/ender_eye)
 
@@ -651,7 +651,7 @@ Pattern:
 | ![minecraft:stone_slab](./stone_slab.png) |
 
 
-## Conductor's Wrench
+## [Conductor's Wrench](#conductors_wrench)
 
 Requires: [spring](#spring)
 
