@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.LivingEntityRenderer
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.DyeColor
+import java.awt.Color
 
 open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
     context: EntityRendererProvider.Context,
@@ -80,7 +81,7 @@ open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
         )
     }
 
-    protected fun renderTrimModel(
+    private fun renderTrimModel(
         vesselEntity: T?,
         matrixStack: PoseStack,
         buffer: MultiBufferSource,
@@ -93,7 +94,8 @@ open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
         trimModel.renderToBuffer(
             matrixStack,
             buffer.getBuffer(trimModel.renderType(trimTextureLocation)),
-            packedLight, overlay,
+            packedLight,
+            overlay,
             color
         )
     }
@@ -153,7 +155,7 @@ open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
             location: ModelLayerLocation,
             texture: ResourceLocation
         ): Builder<T> {
-            this.baseModelPack = ModelPack<T>(supplier, location, texture)
+            this.baseModelPack = ModelPack(supplier, location, texture)
             return this
         }
 
@@ -172,17 +174,13 @@ open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
         }
 
 
-        fun trimModel(
-            supplier: ModelSupplier<T>,
-            location: ModelLayerLocation,
-            texture: ResourceLocation
-        ): Builder<T> {
+        fun trimModel(supplier: ModelSupplier<T>, location: ModelLayerLocation, texture: ResourceLocation): Builder<T> {
             this.trimModelPack = ModelPack(supplier, location, texture)
             return this
         }
 
         open fun build(): MultipartVesselRenderer<T> {
-            return MultipartVesselRenderer<T>(context, baseModelPack, insertModelPack, trimModelPack)
+            return MultipartVesselRenderer(context, baseModelPack, insertModelPack, trimModelPack)
         }
     }
 }

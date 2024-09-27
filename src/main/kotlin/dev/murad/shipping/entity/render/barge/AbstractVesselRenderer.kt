@@ -17,10 +17,10 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.ColorRGBA
 import net.minecraft.util.FastColor
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.item.DyeColor
 import net.minecraft.world.level.LightLayer
 import org.joml.Matrix4f
 import kotlin.math.ceil
@@ -30,7 +30,7 @@ import kotlin.math.sin
 abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererProvider.Context) :
     EntityRenderer<T>(context) {
 
-    protected val white = FastColor.ARGB32.color(1, 1, 1, 1)
+    protected val white = DyeColor.WHITE.textureDiffuseColor
     private val chainModel: ChainModel = ChainModel(context.bakeLayer(ChainModel.LAYER_LOCATION))
 
     override fun render(
@@ -111,7 +111,7 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         super.render(bargeEntity, p_225623_2_, p_225623_3_, matrixStack, buffer, p_225623_6_)
         if (entity != null) {
             matrixStack.pushPose()
-            this.renderLeash<Entity>(bargeEntity, p_225623_3_, matrixStack, buffer, entity)
+            this.renderLeash(bargeEntity, p_225623_3_, matrixStack, buffer, entity)
             matrixStack.popPose()
         }
         matrixStack.popPose()

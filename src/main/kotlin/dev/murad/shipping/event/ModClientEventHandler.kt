@@ -41,7 +41,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent
  */
 @EventBusSubscriber(modid = HumVeeMod.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
 object ModClientEventHandler {
-    
+
     @SubscribeEvent
     fun onRenderTypeSetup(event: FMLClientSetupEvent) {
         event.enqueueWork {
@@ -107,7 +107,7 @@ object ModClientEventHandler {
                     HumVeeMod.entityTexture("barge/base.png")
                 )
                 .insertModel(
-                    { root  -> RingsInsertBargeModel(root) }, RingsInsertBargeModel.LAYER_LOCATION,
+                    { root -> RingsInsertBargeModel(root) }, RingsInsertBargeModel.LAYER_LOCATION,
                     HumVeeMod.entityTexture("barge/chunk_loader_insert.png")
                 )
                 .trimModel(
@@ -219,9 +219,7 @@ object ModClientEventHandler {
                 .derotate()
         }
 
-        event.registerEntityRenderer(
-            ModEntityTypes.STEAM_TUG.get()
-        ) { ctx: EntityRendererProvider.Context ->
+        event.registerEntityRenderer(ModEntityTypes.STEAM_TUG.get()) { ctx: EntityRendererProvider.Context ->
             MultipartVesselRenderer.Builder<VesselEntity>(ctx)
                 .baseModel(
                     { root -> SteamTugModel(root) }, SteamTugModel.LAYER_LOCATION,

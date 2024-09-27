@@ -20,11 +20,7 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables
 import net.minecraft.world.level.storage.loot.LootParams
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams
-import java.util.Arrays
-import java.util.HashSet
-import java.util.LinkedList
-import java.util.Queue
-import java.util.function.Function
+import java.util.*
 import kotlin.math.floor
 import kotlin.math.min
 
@@ -181,7 +177,7 @@ class FishingBargeEntity : AbstractBargeEntity {
         return ModItems.FISHING_BARGE.get()
     }
 
-    fun getStatus(): Status? {
+    fun getStatus(): Status {
         return if (hasWaterOnSides()) getNonStashedStatus() else Status.STASHED
     }
 
