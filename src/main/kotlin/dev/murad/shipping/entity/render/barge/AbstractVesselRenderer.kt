@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.ColorRGBA
+import net.minecraft.util.FastColor
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.LightLayer
@@ -28,11 +30,8 @@ import kotlin.math.sin
 abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererProvider.Context) :
     EntityRenderer<T>(context) {
 
-    private val chainModel: ChainModel
-
-    init {
-        chainModel = ChainModel(context.bakeLayer(ChainModel.Companion.LAYER_LOCATION))
-    }
+    protected val white = FastColor.ARGB32.color(1, 1, 1, 1)
+    private val chainModel: ChainModel = ChainModel(context.bakeLayer(ChainModel.LAYER_LOCATION))
 
     override fun render(
         vesselEntity: T,
@@ -40,7 +39,7 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         partialTick: Float,
         matrixStack: PoseStack,
         buffer: MultiBufferSource?,
-        p_225623_6_: Int
+        packetLight: Int
     ) {
         matrixStack.pushPose()
         matrixStack.translate(0.0, getModelYoffset(), 0.0)
@@ -48,11 +47,11 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         matrixStack.mulPose(Axis.YP.rotationDegrees(180.0f - yaw))
         matrixStack.scale(-1.0f, -1.0f, 1.0f)
         matrixStack.mulPose(Axis.YP.rotationDegrees(getModelYrot()))
-        renderModel(vesselEntity, matrixStack, buffer!!, p_225623_6_)
-        getAndRenderChain(vesselEntity, matrixStack, buffer, p_225623_6_)
+        renderModel(vesselEntity, matrixStack, buffer!!, packetLight)
+        getAndRenderChain(vesselEntity, matrixStack, buffer, packetLight)
         matrixStack.popPose()
 
-        getAndRenderLeash(vesselEntity, yaw, partialTick, matrixStack, buffer, p_225623_6_)
+        getAndRenderLeash(vesselEntity, yaw, partialTick, matrixStack, buffer, packetLight)
     }
 
     protected open fun renderModel(
@@ -61,12 +60,10 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
-        val ivertexbuilder =
-            buffer.getBuffer(getModel(vesselEntity).renderType(this.getTextureLocation(vesselEntity)))
+        val ivertexbuilder = buffer.getBuffer(getModel(vesselEntity).renderType(this.getTextureLocation(vesselEntity)))
         val overlay = LivingEntityRenderer.getOverlayCoords(vesselEntity, 0f)
 
-        //getModel(vesselEntity).renderToBuffer(matrixStack, buffer, packedLight, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
-        getModel(vesselEntity)!!.renderToBuffer(matrixStack, ivertexbuilder, packedLight, overlay, 1)
+        getModel(vesselEntity).renderToBuffer(matrixStack, ivertexbuilder, packedLight, overlay, white)
     }
 
     protected fun getModelYoffset(): Double {
@@ -83,20 +80,22 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         buffer: MultiBufferSource,
         p_225623_6_: Int
     ) {
-        if (bargeEntity!!.getLeader().isPresent()) {
-            val dist = bargeEntity.getLeader().get().distanceTo(bargeEntity).toDouble()
-            val ivertexbuilderChain =
-                buffer.getBuffer(chainModel.renderType(CHAIN_TEXTURE))
-            val segments = ceil(dist * 4).toInt()
+        if (!bargeEntity!!.getLeader().isPresent) {
+            return
+        }
+
+        val dist = bargeEntity.getLeader().get().distanceTo(bargeEntity).toDouble()
+        val ivertexbuilderChain =
+            buffer.getBuffer(chainModel.renderType(CHAIN_TEXTURE))
+        val segments = ceil(dist * 4).toInt()
+        matrixStack.pushPose()
+        for (i in 0 until segments) {
             matrixStack.pushPose()
-            for (i in 0 until segments) {
-                matrixStack.pushPose()
-                matrixStack.translate(i / 4.0, 0.0, 0.0)
-                chainModel.renderToBuffer(matrixStack, ivertexbuilderChain, p_225623_6_, OverlayTexture.NO_OVERLAY)
-                matrixStack.popPose()
-            }
+            matrixStack.translate(i / 4.0, 0.0, 0.0)
+            chainModel.renderToBuffer(matrixStack, ivertexbuilderChain, p_225623_6_, OverlayTexture.NO_OVERLAY)
             matrixStack.popPose()
         }
+        matrixStack.popPose()
     }
 
     private fun getAndRenderLeash(
@@ -173,21 +172,20 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         val blockpos = BlockPos.containing(pEntityLiving.getEyePosition(pPartialTicks))
         val blockpos1 = BlockPos.containing(pLeashHolder.getEyePosition(pPartialTicks))
         val i = this.getBlockLightLevel(pEntityLiving, blockpos)
-        val j = i
-        val k = pEntityLiving.level().getBrightness(LightLayer.SKY, blockpos)
-        val l = pEntityLiving.level().getBrightness(LightLayer.SKY, blockpos1)
+        val skyBrightness1 = pEntityLiving.level().getBrightness(LightLayer.SKY, blockpos)
+        val skyBrightness2 = pEntityLiving.level().getBrightness(LightLayer.SKY, blockpos1)
 
         for (i1 in 0..24) {
-            AbstractVesselRenderer.Companion.addVertexPair(
+            addVertexPair(
                 vertexconsumer,
                 matrix4f,
                 f,
                 f1,
                 f2,
                 i,
-                j,
-                k,
-                l,
+                i,
+                skyBrightness1,
+                skyBrightness2,
                 0.025f,
                 0.025f,
                 f5,
@@ -198,16 +196,16 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         }
 
         for (j1 in 24 downTo 0) {
-            AbstractVesselRenderer.Companion.addVertexPair(
+            addVertexPair(
                 vertexconsumer,
                 matrix4f,
                 f,
                 f1,
                 f2,
                 i,
-                j,
-                k,
-                l,
+                i,
+                skyBrightness1,
+                skyBrightness2,
                 0.025f,
                 0.0f,
                 f5,
@@ -243,7 +241,7 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
             val f = p_174321_.toFloat() / 24.0f
             val i = Mth.lerp(f, p_174313_.toFloat(), p_174314_.toFloat()).toInt()
             val j = Mth.lerp(f, p_174315_.toFloat(), p_174316_.toFloat()).toInt()
-            val k = LightTexture.pack(i, j)
+            val pPackedLight = LightTexture.pack(i, j)
             val f1 = if (p_174321_ % 2 == (if (p_174322_) 1 else 0)) 0.7f else 1.0f
             val f2 = 0.5f * f1
             val f3 = 0.4f * f1
@@ -252,14 +250,13 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
             val f6 = if (p_174311_ > 0.0f) p_174311_ * f * f else p_174311_ - p_174311_ * (1.0f - f) * (1.0f - f)
             val f7 = p_174312_ * f
 
-            // TODO uv2 field taken from FluidRenderUtil instead of k
             p_174308_.addVertex(p_174309_, f5 - p_174319_, f6 + p_174318_, f7 + p_174320_)
                 .setColor(f2, f3, f4, 1.0f)
-                .setUv2(0, 240)
+                .setLight(pPackedLight)
 
             p_174308_.addVertex(p_174309_, f5 + p_174319_, f6 + p_174317_ - p_174318_, f7 - p_174320_)
                 .setColor(f2, f3, f4, 1.0f)
-                .setUv2(0, 240)
+                .setLight(pPackedLight)
         }
     }
 }

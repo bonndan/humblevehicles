@@ -54,7 +54,7 @@ class FishingBargeRenderer<T : FishingBargeEntity> protected constructor(
             FishingBargeEntity.Status.TRANSITION -> transitionInsertTextureLocation
         }
 
-        model.renderToBuffer(matrixStack, buffer.getBuffer(model.renderType(texture)), packedLight, overlay, 1)
+        model.renderToBuffer(matrixStack, buffer.getBuffer(model.renderType(texture)), packedLight, overlay, white)
     }
 
     class Builder<T : FishingBargeEntity>(context: EntityRendererProvider.Context) :
@@ -82,7 +82,7 @@ class FishingBargeRenderer<T : FishingBargeEntity> protected constructor(
         }
 
         override fun build(): FishingBargeRenderer<T> {
-            return FishingBargeRenderer<T>(
+            return FishingBargeRenderer(
                 context,
                 baseModelPack,
                 insertModelPack,

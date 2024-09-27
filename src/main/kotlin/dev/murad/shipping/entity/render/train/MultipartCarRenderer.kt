@@ -327,26 +327,17 @@ open class MultipartCarRenderer<T : AbstractTrainCarEntity> protected constructo
         }
 
         fun emptyInsert(): Builder<T> {
-            insertModel(
-                ModelSupplier { root -> EmptyModel(root) },
-                EmptyModel.Companion.LAYER_LOCATION,
-                entityTexture("emptytexture.png")
-            )
+            insertModel({ root -> EmptyModel(root) }, EmptyModel.LAYER_LOCATION, entityTexture("emptytexture.png"))
             return this
         }
 
-
-        fun trimModel(
-            supplier: ModelSupplier<T>,
-            location: ModelLayerLocation,
-            texture: ResourceLocation
-        ): Builder<T> {
-            this.trimModelPack = ModelPack<T>(supplier, location, texture)
+        fun trimModel(supplier: ModelSupplier<T>, location: ModelLayerLocation, texture: ResourceLocation): Builder<T> {
+            this.trimModelPack = ModelPack(supplier, location, texture)
             return this
         }
 
         open fun build(): MultipartCarRenderer<T> {
-            return MultipartCarRenderer<T>(context, baseModelPack, insertModelPack, trimModelPack)
+            return MultipartCarRenderer(context, baseModelPack, insertModelPack, trimModelPack)
         }
     }
 

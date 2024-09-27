@@ -8,7 +8,6 @@ import dev.murad.shipping.entity.render.ModelPack
 import dev.murad.shipping.entity.render.ModelSupplier
 import net.minecraft.client.model.EntityModel
 import net.minecraft.client.model.geom.ModelLayerLocation
-import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.LivingEntityRenderer
@@ -21,11 +20,13 @@ open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
     insertModelPack: ModelPack<T>,
     trimModelPack: ModelPack<T>
 ) : AbstractVesselRenderer<T>(context) {
+
     // TODO: de-uglify
     private var rotation = 90f
 
     private val baseModel: EntityModel<T> = baseModelPack.supplier.supply(context.bakeLayer(baseModelPack.location))
-    private val insertModel: EntityModel<T> = insertModelPack.supplier.supply(context.bakeLayer(insertModelPack.location))
+    private val insertModel: EntityModel<T> =
+        insertModelPack.supplier.supply(context.bakeLayer(insertModelPack.location))
     private val trimModel: EntityModel<T> = trimModelPack.supplier.supply(context.bakeLayer(trimModelPack.location))
 
     private val baseTextureLocation: ResourceLocation = baseModelPack.texture
@@ -50,23 +51,20 @@ open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
 
     override fun renderModel(vesselEntity: T, matrixStack: PoseStack, buffer: MultiBufferSource, packedLight: Int) {
         val overlay = LivingEntityRenderer.getOverlayCoords(vesselEntity, 0f)
-        renderBaseModel(vesselEntity, matrixStack, buffer, packedLight, overlay)
+        renderBaseModel(matrixStack, buffer, packedLight, overlay)
         renderInsertModel(vesselEntity, matrixStack, buffer, packedLight, overlay)
         renderTrimModel(vesselEntity, matrixStack, buffer, packedLight, overlay)
     }
 
     protected fun renderBaseModel(
-        vesselEntity: T?,
         matrixStack: PoseStack,
         buffer: MultiBufferSource,
         packedLight: Int,
         overlay: Int
     ) {
+
         baseModel.renderToBuffer(
-            matrixStack,
-            buffer.getBuffer(baseModel.renderType(baseTextureLocation)),
-            packedLight, overlay,
-            1
+            matrixStack, buffer.getBuffer(baseModel.renderType(baseTextureLocation)), packedLight, overlay, white
         )
     }
 
@@ -78,10 +76,7 @@ open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
         overlay: Int
     ) {
         insertModel.renderToBuffer(
-            matrixStack,
-            buffer.getBuffer(insertModel.renderType(insertTextureLocation)),
-            packedLight, overlay,
-            1
+            matrixStack, buffer.getBuffer(insertModel.renderType(insertTextureLocation)), packedLight, overlay, white
         )
     }
 
@@ -172,11 +167,7 @@ open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
         }
 
         fun emptyInsert(): Builder<T> {
-            insertModel(
-                ModelSupplier { root -> EmptyModel(root) },
-                EmptyModel.Companion.LAYER_LOCATION,
-                entityTexture("emptytexture.png")
-            )
+            insertModel({ root -> EmptyModel(root) }, EmptyModel.LAYER_LOCATION, entityTexture("emptytexture.png"))
             return this
         }
 
@@ -186,7 +177,7 @@ open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
             location: ModelLayerLocation,
             texture: ResourceLocation
         ): Builder<T> {
-            this.trimModelPack = ModelPack<T>(supplier, location, texture)
+            this.trimModelPack = ModelPack(supplier, location, texture)
             return this
         }
 
