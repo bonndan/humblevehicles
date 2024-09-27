@@ -121,16 +121,17 @@ class Icons(
         return null
     }
 
+    /**
+     * Tries to find an item icon, then a block texture.
+     */
     private fun findModIcon(filename: String): File? {
 
-        var source = File("$modBasePath/block/$filename.png")
-
+        var source = File("$modBasePath/item/$filename.png")
         if (source.exists()) {
             return source
         }
 
-        source = File("$modBasePath/item/$filename.png")
-
+        source = File("$modBasePath/block/$filename.png")
         if (source.exists()) {
             return source
         }

@@ -37,7 +37,7 @@ class RecipeMarkdown {
     private fun extractRequirements(recipe: RecipeGraph.Node) =
         recipe.requirements
             .filter { it.value != recipe.recipeId }
-            .map { it.value }
+            .map { asLink(it.value.toString()) }
             .joinToString(" and ")
 
     private fun extractIngredients(recipe: RecipeGraph.Node): Set<String> {
@@ -45,6 +45,21 @@ class RecipeMarkdown {
             .map { ingredientAsString(it) }
             .filter { it.isNotBlank() }
             .toSet()
+    }
+
+    private fun asLink(ingredient: String): String {
+
+        if (ingredient.startsWith(MINECRAFT_PREFIX)) {
+            val name = ingredient.replace(MINECRAFT_PREFIX, "")
+            return "[$name](https://minecraft.wiki/w/$name)"
+        }
+
+        if (ingredient.startsWith(MOD_PREFIX)) {
+            val name = ingredient.replace(MOD_PREFIX, "")
+            return "[$name](#$name)"
+        }
+
+        return ingredient
     }
 
     private fun extractPattern(pattern: ShapedRecipePattern): String {
@@ -69,7 +84,7 @@ class RecipeMarkdown {
 
     private fun ingredientAsIcon(ingredient: Ingredient): String {
 
-        val name = ingredientAsString(ingredient)
+        val name = ingredientAsString(ingredient, link = false)
         val iconFile = name
             .replace(MINECRAFT_PREFIX, "")
             .replace(MOD_PREFIX, "")
@@ -97,7 +112,7 @@ class RecipeMarkdown {
         }
     }
 
-    private fun ingredientAsString(ingredient: Ingredient): String {
+    private fun ingredientAsString(ingredient: Ingredient, link: Boolean = true): String {
         return ingredient.values
             .map { value ->
                 when (value) {
@@ -106,7 +121,7 @@ class RecipeMarkdown {
                 }
             }
             .filter { it.isNotBlank() }
-            .joinToString(" and")
+            .joinToString(" and ") { if (link) asLink(it) else it }
     }
 
     fun toMarkdown(): CharSequence {

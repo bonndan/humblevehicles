@@ -7,14 +7,14 @@
 
 ## Tug Dock
 
-Requires: humblevehicles:spring
+Requires: [spring](#spring)
 
 Type: crafting
 
 Ingredients: 
 * c:stones
-* humblevehicles:spring
-* minecraft:iron_ingot
+* [spring](#spring)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 
 Pattern: 
@@ -28,14 +28,14 @@ Pattern:
 
 ## Barge Dock
 
-Requires: humblevehicles:spring
+Requires: [spring](#spring)
 
 Type: crafting
 
 Ingredients: 
 * c:stones
-* humblevehicles:spring
-* minecraft:iron_ingot
+* [spring](#spring)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 
 Pattern: 
@@ -49,14 +49,14 @@ Pattern:
 
 ## Vehicle Detector
 
-Requires: humblevehicles:spring
+Requires: [spring](#spring)
 
 Type: crafting
 
 Ingredients: 
 * c:stones
-* humblevehicles:spring
-* minecraft:redstone_torch
+* [spring](#spring)
+* [redstone_torch](https://minecraft.wiki/w/redstone_torch)
 
 
 Pattern: 
@@ -70,14 +70,14 @@ Pattern:
 
 ## Vessel Corner Guide Rail
 
-Requires: minecraft:powered_rail
+Requires: [powered_rail](https://minecraft.wiki/w/powered_rail)
 
 Type: crafting
 
 Ingredients: 
-* humblevehicles:spring
+* [spring](#spring)
 * c:stones
-* minecraft:powered_rail
+* [powered_rail](https://minecraft.wiki/w/powered_rail)
 
 
 Pattern: 
@@ -91,12 +91,12 @@ Pattern:
 
 ## Switch Rail
 
-Requires: minecraft:rail
+Requires: [rail](https://minecraft.wiki/w/rail)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:rail
+* [rail](https://minecraft.wiki/w/rail)
 
 
 Pattern: 
@@ -110,12 +110,12 @@ Pattern:
 
 ## T-Junction Rail
 
-Requires: minecraft:rail
+Requires: [rail](https://minecraft.wiki/w/rail)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:rail
+* [rail](https://minecraft.wiki/w/rail)
 
 
 Pattern: 
@@ -128,12 +128,12 @@ Pattern:
 
 ## Junction Rail
 
-Requires: minecraft:rail
+Requires: [rail](https://minecraft.wiki/w/rail)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:rail
+* [rail](https://minecraft.wiki/w/rail)
 
 
 Pattern: 
@@ -147,13 +147,13 @@ Pattern:
 
 ## Locomotive Docking Rail
 
-Requires: minecraft:rail
+Requires: [rail](https://minecraft.wiki/w/rail)
 
 Type: crafting
 
 Ingredients: 
-* humblevehicles:spring
-* minecraft:rail
+* [spring](#spring)
+* [rail](https://minecraft.wiki/w/rail)
 
 
 Pattern: 
@@ -167,13 +167,13 @@ Pattern:
 
 ## Train Car Docking Rail
 
-Requires: minecraft:rail
+Requires: [rail](https://minecraft.wiki/w/rail)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:rail
-* humblevehicles:spring
+* [rail](https://minecraft.wiki/w/rail)
+* [spring](#spring)
 
 
 Pattern: 
@@ -187,13 +187,13 @@ Pattern:
 
 ## Tug Guide Rail
 
-Requires: minecraft:powered_rail
+Requires: [powered_rail](https://minecraft.wiki/w/powered_rail)
 
 Type: crafting
 
 Ingredients: 
-* humblevehicles:spring
-* minecraft:powered_rail
+* [spring](#spring)
+* [powered_rail](https://minecraft.wiki/w/powered_rail)
 * c:stones
 
 
@@ -208,13 +208,13 @@ Pattern:
 
 ## Fluid Hopper
 
-Requires: minecraft:hopper
+Requires: [hopper](https://minecraft.wiki/w/hopper)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:glass
-* minecraft:hopper
+* [glass](https://minecraft.wiki/w/glass)
+* [hopper](https://minecraft.wiki/w/hopper)
 
 
 Pattern: 
@@ -227,14 +227,14 @@ Pattern:
 
 ## Vehicle Charger
 
-Requires: minecraft:redstone
+Requires: [redstone](https://minecraft.wiki/w/redstone)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:gold_ingot
-* minecraft:iron_ingot
-* minecraft:redstone_block
+* [gold_ingot](https://minecraft.wiki/w/gold_ingot)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
+* [redstone_block](https://minecraft.wiki/w/redstone_block)
 
 
 Pattern: 
@@ -248,13 +248,13 @@ Pattern:
 
 ## Vehicle Chain
 
-Requires: minecraft:string
+Requires: [string](https://minecraft.wiki/w/string)
 
 Type: crafting
 
 Ingredients: 
 * c:strings
-* minecraft:iron_nugget
+* [iron_nugget](https://minecraft.wiki/w/iron_nugget)
 
 
 Pattern: 
@@ -267,14 +267,14 @@ Pattern:
 
 ## Tug Route
 
-Requires: minecraft:redstone
+Requires: [redstone](https://minecraft.wiki/w/redstone)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:redstone
-* minecraft:iron_nugget
-* humblevehicles:transmitter_component
+* [redstone](https://minecraft.wiki/w/redstone)
+* [iron_nugget](https://minecraft.wiki/w/iron_nugget)
+* [transmitter_component](#transmitter_component)
 
 
 Pattern: 
@@ -288,14 +288,14 @@ Pattern:
 
 ## Locomotive Route
 
-Requires: minecraft:redstone
+Requires: [redstone](https://minecraft.wiki/w/redstone)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:iron_nugget
-* minecraft:redstone
-* humblevehicles:transmitter_component
+* [iron_nugget](https://minecraft.wiki/w/iron_nugget)
+* [redstone](https://minecraft.wiki/w/redstone)
+* [transmitter_component](#transmitter_component)
 
 
 Pattern: 
@@ -309,14 +309,14 @@ Pattern:
 
 ## Steam Tug
 
-Requires: minecraft:piston
+Requires: [piston](https://minecraft.wiki/w/piston)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:iron_ingot
-* minecraft:piston
-* minecraft:furnace
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
+* [piston](https://minecraft.wiki/w/piston)
+* [furnace](https://minecraft.wiki/w/furnace)
 
 
 Pattern: 
@@ -330,14 +330,14 @@ Pattern:
 
 ## Energy Tug
 
-Requires: minecraft:piston
+Requires: [piston](https://minecraft.wiki/w/piston)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:iron_ingot
-* minecraft:piston
-* humblevehicles:vessel_charger
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
+* [piston](https://minecraft.wiki/w/piston)
+* [vessel_charger](#vessel_charger)
 
 
 Pattern: 
@@ -351,14 +351,14 @@ Pattern:
 
 ## Chest Barge
 
-Requires: minecraft:chest
+Requires: [chest](https://minecraft.wiki/w/chest)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:stick
-* minecraft:chest
-* minecraft:iron_ingot
+* [stick](https://minecraft.wiki/w/stick)
+* [chest](https://minecraft.wiki/w/chest)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 
 Pattern: 
@@ -371,14 +371,14 @@ Pattern:
 
 ## Barrel Barge
 
-Requires: minecraft:barrel
+Requires: [barrel](https://minecraft.wiki/w/barrel)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:stick
-* minecraft:barrel
-* minecraft:iron_ingot
+* [stick](https://minecraft.wiki/w/stick)
+* [barrel](https://minecraft.wiki/w/barrel)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 
 Pattern: 
@@ -391,14 +391,14 @@ Pattern:
 
 ## Item Collection Barge
 
-Requires: minecraft:hopper
+Requires: [hopper](https://minecraft.wiki/w/hopper)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:ender_eye
-* minecraft:hopper
-* minecraft:iron_ingot
+* [ender_eye](https://minecraft.wiki/w/ender_eye)
+* [hopper](https://minecraft.wiki/w/hopper)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 
 Pattern: 
@@ -411,14 +411,14 @@ Pattern:
 
 ## Seater Barge
 
-Requires: minecraft:iron_ingot
+Requires: [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:signs
-* minecraft:wooden_stairs
-* minecraft:iron_ingot
+* [signs](https://minecraft.wiki/w/signs)
+* [wooden_stairs](https://minecraft.wiki/w/wooden_stairs)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 
 Pattern: 
@@ -431,13 +431,13 @@ Pattern:
 
 ## Auto-Fishing Barge
 
-Requires: minecraft:fishing_rod
+Requires: [fishing_rod](https://minecraft.wiki/w/fishing_rod)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:fishing_rod
-* minecraft:iron_ingot
+* [fishing_rod](https://minecraft.wiki/w/fishing_rod)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 
 Pattern: 
@@ -450,13 +450,13 @@ Pattern:
 
 ## Fluid Tank Barge
 
-Requires: minecraft:glass
+Requires: [glass](https://minecraft.wiki/w/glass)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:glass
-* minecraft:iron_ingot
+* [glass](https://minecraft.wiki/w/glass)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 
 Pattern: 
@@ -470,14 +470,14 @@ Pattern:
 
 ## Rapid Hopper
 
-Requires: minecraft:hopper
+Requires: [hopper](https://minecraft.wiki/w/hopper)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:gold_ingot
-* minecraft:hopper
-* minecraft:redstone_block
+* [gold_ingot](https://minecraft.wiki/w/gold_ingot)
+* [hopper](https://minecraft.wiki/w/hopper)
+* [redstone_block](https://minecraft.wiki/w/redstone_block)
 
 
 Pattern: 
@@ -490,13 +490,13 @@ Pattern:
 
 ## Train Car
 
-Requires: minecraft:iron_ingot
+Requires: [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:planks
-* minecraft:iron_ingot
+* [planks](https://minecraft.wiki/w/planks)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 
 Pattern: 
@@ -509,13 +509,13 @@ Pattern:
 
 ## Chest Train Car
 
-Requires: humblevehicles:seater_car
+Requires: [seater_car](#seater_car)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:chest
-* humblevehicles:seater_car
+* [chest](https://minecraft.wiki/w/chest)
+* [seater_car](#seater_car)
 
 
 Pattern: 
@@ -528,13 +528,13 @@ Pattern:
 
 ## Barrel Train Car
 
-Requires: humblevehicles:seater_car
+Requires: [seater_car](#seater_car)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:barrel
-* humblevehicles:seater_car
+* [barrel](https://minecraft.wiki/w/barrel)
+* [seater_car](#seater_car)
 
 
 Pattern: 
@@ -547,13 +547,13 @@ Pattern:
 
 ## Fluid Tank Train Car
 
-Requires: humblevehicles:seater_car
+Requires: [seater_car](#seater_car)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:glass
-* humblevehicles:seater_car
+* [glass](https://minecraft.wiki/w/glass)
+* [seater_car](#seater_car)
 
 
 Pattern: 
@@ -567,15 +567,15 @@ Pattern:
 
 ## Energy Locomotive
 
-Requires: humblevehicles:seater_car
+Requires: [seater_car](#seater_car)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:iron_ingot
-* minecraft:piston
-* humblevehicles:vessel_charger
-* humblevehicles:seater_car
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
+* [piston](https://minecraft.wiki/w/piston)
+* [vessel_charger](#vessel_charger)
+* [seater_car](#seater_car)
 
 
 Pattern: 
@@ -589,15 +589,15 @@ Pattern:
 
 ## Steam Locomotive
 
-Requires: humblevehicles:seater_car
+Requires: [seater_car](#seater_car)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:iron_ingot
-* minecraft:piston
-* minecraft:furnace
-* humblevehicles:seater_car
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
+* [piston](https://minecraft.wiki/w/piston)
+* [furnace](https://minecraft.wiki/w/furnace)
+* [seater_car](#seater_car)
 
 
 Pattern: 
@@ -611,14 +611,14 @@ Pattern:
 
 ## Wireless Receiver Component
 
-Requires: minecraft:ender_eye
+Requires: [ender_eye](https://minecraft.wiki/w/ender_eye)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:ender_eye
-* minecraft:redstone
-* minecraft:stone_slab
+* [ender_eye](https://minecraft.wiki/w/ender_eye)
+* [redstone](https://minecraft.wiki/w/redstone)
+* [stone_slab](https://minecraft.wiki/w/stone_slab)
 
 
 Pattern: 
@@ -632,14 +632,14 @@ Pattern:
 
 ## Wireless Transmitter Component
 
-Requires: minecraft:ender_eye
+Requires: [ender_eye](https://minecraft.wiki/w/ender_eye)
 
 Type: crafting
 
 Ingredients: 
-* minecraft:ender_pearl
-* minecraft:glowstone_dust
-* minecraft:stone_slab
+* [ender_pearl](https://minecraft.wiki/w/ender_pearl)
+* [glowstone_dust](https://minecraft.wiki/w/glowstone_dust)
+* [stone_slab](https://minecraft.wiki/w/stone_slab)
 
 
 Pattern: 
@@ -653,14 +653,14 @@ Pattern:
 
 ## Conductor's Wrench
 
-Requires: humblevehicles:spring
+Requires: [spring](#spring)
 
 Type: crafting
 
 Ingredients: 
-* humblevehicles:spring
-* minecraft:iron_ingot
-* minecraft:red_dye
+* [spring](#spring)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
+* [red_dye](https://minecraft.wiki/w/red_dye)
 
 
 Pattern: 
