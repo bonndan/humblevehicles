@@ -26,7 +26,8 @@ class RecipeMarkdown {
             icons.copyIcon(it)
         }
 
-        stringBuilder.append("\n## [${translated}](#${stripPrefixes(recipe.recipeId.toString())})\n")
+        stringBuilder.append("\n<a id=\"${stripPrefixes(recipe.recipeId.toString())}\"></a>\n")
+        stringBuilder.append("\n## ${translated}\n")
         stringBuilder.append("\nRequires: ${extractRequirements(recipe)}\n")
         stringBuilder.append("\nType: ${recipe.recipe.type}\n")
         stringBuilder.append("\nIngredients: \n${ingredients.joinToString("") { "* $it\n" }}\n")
