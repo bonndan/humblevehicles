@@ -35,11 +35,9 @@ class HumVeeMod(modBus: IEventBus, container: ModContainer) {
             )
         }
 
-
         container.registerConfig(ModConfig.Type.COMMON, ShippingConfig.Common.SPEC, "humblevehicles-common.toml")
         container.registerConfig(ModConfig.Type.CLIENT, ShippingConfig.Client.SPEC, "humblevehicles-client.toml")
         container.registerConfig(ModConfig.Type.SERVER, ShippingConfig.Server.SPEC, "humblevehicles-server.toml")
-
     }
 
     private fun doClientStuff(event: FMLClientSetupEvent) {
@@ -51,7 +49,8 @@ class HumVeeMod(modBus: IEventBus, container: ModContainer) {
         event.register(ModMenuTypes.TUG_CONTAINER.get(), ::SteamHeadVehicleScreen)
         event.register(ModMenuTypes.STEAM_LOCOMOTIVE_CONTAINER.get(), ::SteamHeadVehicleScreen)
         event.register(ModMenuTypes.ENERGY_TUG_CONTAINER.get(), ::EnergyHeadVehicleScreen)
-        event.register(ModMenuTypes.ENERGY_LOCOMOTIVE_CONTAINER.get(), ::EnergyHeadVehicleScreen)
+        event.register(ModMenuTypes.ENERGY_HEAD_CONTAINER.get(), ::EnergyHeadVehicleScreen)
+        event.register(ModMenuTypes.SUBMARINE_CONTAINER.get(), ::EnergyHeadVehicleScreen)
         event.register(ModMenuTypes.FISHING_BARGE_CONTAINER.get(), ::FishingBargeScreen)
         event.register(ModMenuTypes.TUG_ROUTE_CONTAINER.get(), ::RouteScreen)
     }

@@ -24,7 +24,7 @@ import java.util.stream.IntStream
 
 class ChestBargeEntity : AbstractBargeEntity, Container, MenuProvider, WorldlyContainer, TrainInventoryProvider {
 
-    protected val itemHandler: ItemStackHandler = ItemStackHandler(27)
+    private val itemHandler: ItemStackHandler = ItemStackHandler(27)
 
     constructor(type: EntityType<out ChestBargeEntity>, world: Level) : super(type, world)
 
@@ -43,12 +43,12 @@ class ChestBargeEntity : AbstractBargeEntity, Container, MenuProvider, WorldlyCo
         super.remove(r)
     }
 
-
     override fun getDropItem(): Item? {
-        if (this.getType() == ModEntityTypes.BARREL_BARGE.get()) {
-            return ModItems.BARREL_BARGE.get()
+
+        return if (this.type == ModEntityTypes.BARREL_BARGE.get()) {
+            ModItems.BARREL_BARGE.get()
         } else {
-            return ModItems.CHEST_BARGE.get()
+            ModItems.CHEST_BARGE.get()
         }
     }
 

@@ -4,7 +4,8 @@ import net.minecraft.world.inventory.ContainerData
 import java.util.function.BooleanSupplier
 import java.util.function.IntSupplier
 
-open class HeadVehicleDataAccessor(private val data: ContainerData) : DataAccessor(data) {
+class HeadVehicleDataAccessor(private val data: ContainerData) : DataAccessor(data) {
+
     val isLit: Boolean
         get() = data[1] == 1
 
@@ -23,9 +24,13 @@ open class HeadVehicleDataAccessor(private val data: ContainerData) : DataAccess
         return data[5] == 1
     }
 
-    abstract class Builder {
+    fun getBurnProgress(): Int {
+        return data[15]
+    }
 
-        protected val arr: SupplierIntArray = SupplierIntArray(20)
+    class Builder {
+
+        private val arr: SupplierIntArray = SupplierIntArray(20)
 
         fun withId(id: Int): Builder {
             arr[0] = id
@@ -37,9 +42,8 @@ open class HeadVehicleDataAccessor(private val data: ContainerData) : DataAccess
             return this
         }
 
-
-        fun withOn(lit: BooleanSupplier): Builder {
-            arr.setSupplier(2) { if (lit.asBoolean) 1 else -1 }
+        fun withOn(on: BooleanSupplier): Builder {
+            arr.setSupplier(2) { if (on.asBoolean) 1 else -1 }
             return this
         }
 
@@ -58,7 +62,12 @@ open class HeadVehicleDataAccessor(private val data: ContainerData) : DataAccess
             return this
         }
 
-        open fun build(): HeadVehicleDataAccessor {
+        fun withBurnProgressPct(burnProgress: IntSupplier): Builder {
+            arr.setSupplier(15, burnProgress)
+            return this
+        }
+
+        fun build(): HeadVehicleDataAccessor {
             return HeadVehicleDataAccessor(this.arr)
         }
     }

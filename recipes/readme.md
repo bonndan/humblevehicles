@@ -737,3 +737,27 @@ Pattern:
 | ![](./.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:red_dye](./red_dye.png) |
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![](./.png) | ![](./.png) |
 
+
+<a id="submarine"></a>
+
+## submarine
+
+Requires: [piston](https://minecraft.wiki/w/piston)
+
+Type: crafting
+
+Ingredients: 
+* [glass](https://minecraft.wiki/w/glass)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
+* [piston](https://minecraft.wiki/w/piston)
+* [vessel_charger](#vessel_charger)
+
+
+Pattern: 
+
+| | | |
+| --- | --- | --- |
+| ![minecraft:glass](./glass.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:glass](./glass.png) |
+| ![minecraft:piston](./piston.png) | ![humblevehicles:vessel_charger](./vessel_charger.png) | ![minecraft:piston](./piston.png) |
+| ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
+

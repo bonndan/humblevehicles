@@ -20,7 +20,7 @@ class SteamTugModel<T>(root: ModelPart) : EntityModel<T>() where T : Entity, T :
     private val bb_main: ModelPart = root.getChild("bb_main")
 
     override fun setupAnim(
-        entity: T?,
+        entity: T,
         limbSwing: Float,
         limbSwingAmount: Float,
         ageInTicks: Float,
@@ -30,8 +30,8 @@ class SteamTugModel<T>(root: ModelPart) : EntityModel<T>() where T : Entity, T :
     }
 
     override fun renderToBuffer(
-        pPoseStack: PoseStack?,
-        pBuffer: VertexConsumer?,
+        pPoseStack: PoseStack,
+        pBuffer: VertexConsumer,
         pPackedLight: Int,
         pPackedOverlay: Int,
         pColor: Int

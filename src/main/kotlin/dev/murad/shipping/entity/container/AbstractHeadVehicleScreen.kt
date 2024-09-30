@@ -6,12 +6,13 @@ import dev.murad.shipping.entity.custom.HeadVehicle
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.Tooltip
+import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Inventory
 
-abstract class AbstractHeadVehicleScreen<U, T : AbstractHeadVehicleContainer<*, U>>(
+abstract class AbstractHeadVehicleScreen<U, T : AbstractHeadVehicleContainer<U>>(
     menu: T,
     inventory: Inventory,
     component: Component
@@ -28,13 +29,13 @@ abstract class AbstractHeadVehicleScreen<U, T : AbstractHeadVehicleContainer<*, 
 
     override fun init() {
         super.init()
-        on = Button.Builder(Component.literal("->")) { menu.setEngine(true) }
+        on = Button.Builder(Component.literal("->")) { menu.setEngineState(true) }
             .pos(this.guiLeft + 130, this.guiTop + 25)
             .size(20, 20)
             .tooltip(tooltipOf("screen.humblevehicles.locomotive.on"))
             .build()
 
-        off = Button.Builder(Component.literal("x")) { menu.setEngine(false) }
+        off = Button.Builder(Component.literal("x")) { menu.setEngineState(false) }
             .pos(this.guiLeft + 96, this.guiTop + 25)
             .size(20, 20)
             .tooltip(tooltipOf("screen.humblevehicles.locomotive.off"))
@@ -87,7 +88,8 @@ abstract class AbstractHeadVehicleScreen<U, T : AbstractHeadVehicleContainer<*, 
     }
 
     override fun renderBg(graphics: GuiGraphics, pPartialTick: Float, pMouseX: Int, pMouseY: Int) {
-        //TODO not available in 1.21 RenderSystem.setShader(GameRenderer::getPositionTexShader)
+
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F)
         RenderSystem.setShaderTexture(0, REGISTRATION)
         val i = this.guiLeft + 175

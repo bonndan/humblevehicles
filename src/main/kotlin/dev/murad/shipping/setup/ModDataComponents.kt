@@ -77,7 +77,6 @@ object ModDataComponents {
             .networkSynchronized(StreamCodec.unit(Unit.INSTANCE))
     }
 
-    @JvmRecord
     data class EnergyProperties(val energy: Int) {
         companion object {
             val CODEC: Codec<EnergyStorage> = object : Codec<EnergyStorage> {

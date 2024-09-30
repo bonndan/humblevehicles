@@ -20,16 +20,21 @@ class FluidTankBargeRenderer<T : FluidTankBargeEntity> protected constructor(
         yaw: Float,
         partialTick: Float,
         matrixStack: PoseStack,
-        buffer: MultiBufferSource?,
+        buffer: MultiBufferSource,
         packedLight: Int
     ) {
         super.render(entity, yaw, partialTick, matrixStack, buffer, packedLight)
-        renderFluid(entity, yaw, partialTick, matrixStack, buffer!!, 0, packedLight)
+        renderFluid(entity, yaw, partialTick, matrixStack, buffer, 0, packedLight)
     }
 
     fun renderFluid(
-        entity: FluidTankBargeEntity, yaw: Float, partialTicks: Float, matrixStackIn: PoseStack,
-        bufferIn: MultiBufferSource, combinedLightIn: Int, combinedOverlayIn: Int
+        entity: FluidTankBargeEntity,
+        yaw: Float,
+        partialTicks: Float,
+        matrixStackIn: PoseStack,
+        bufferIn: MultiBufferSource,
+        combinedLightIn: Int,
+        combinedOverlayIn: Int
     ) {
         val fluid = entity.getFluidStack()
         if (fluid == null) return

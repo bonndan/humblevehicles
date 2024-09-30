@@ -31,7 +31,8 @@ class ReadWriteEnergyStorage(private val maxCapacity: Int, private val maxReceiv
         proxyStorage = EnergyStorage(
             maxCapacity,
             maxReceive,
-            maxExtract, clampInclusive(energy, 0, maxCapacity)
+            maxExtract,
+            clampInclusive(energy, 0, maxCapacity)
         )
     }
 

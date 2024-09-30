@@ -20,18 +20,19 @@ class EnergyTugModel<T>(root: ModelPart) : EntityModel<T>() where T : Entity, T 
     private val bb_main: ModelPart = root.getChild("bb_main")
 
     override fun setupAnim(
-        entity: T?,
+        entity: T,
         limbSwing: Float,
         limbSwingAmount: Float,
         ageInTicks: Float,
         netHeadYaw: Float,
         headPitch: Float
     ) {
+        //deprecated
     }
 
     override fun renderToBuffer(
-        pPoseStack: PoseStack?,
-        pBuffer: VertexConsumer?,
+        pPoseStack: PoseStack,
+        pBuffer: VertexConsumer,
         pPackedLight: Int,
         pPackedOverlay: Int,
         pColor: Int
@@ -49,8 +50,9 @@ class EnergyTugModel<T>(root: ModelPart) : EntityModel<T>() where T : Entity, T 
         fun createBodyLayer(): LayerDefinition {
             val meshdefinition = MeshDefinition()
 
-            meshdefinition.getRoot().addOrReplaceChild(
-                "bb_main", CubeListBuilder.create().texOffs(0, 30).addBox(-7.0f, -9.0f, -19.0f, 14.0f, 6.0f, 24.0f)
+            meshdefinition.root.addOrReplaceChild(
+                "bb_main", CubeListBuilder.create()
+                    .texOffs(0, 30).addBox(-7.0f, -9.0f, -19.0f, 14.0f, 6.0f, 24.0f)
                     .texOffs(58, 53).addBox(-9.0f, -11.0f, -19.0f, 2.0f, 5.0f, 18.0f)
                     .texOffs(52, 17).addBox(-7.0f, -11.0f, -21.0f, 14.0f, 5.0f, 2.0f)
                     .texOffs(52, 30).addBox(7.0f, -11.0f, -19.0f, 2.0f, 5.0f, 18.0f)
@@ -59,7 +61,8 @@ class EnergyTugModel<T>(root: ModelPart) : EntityModel<T>() where T : Entity, T 
                     .texOffs(0, 0).addBox(-3.0f, -20.0f, -14.0f, 6.0f, 6.0f, 6.0f)
                     .texOffs(40, 60).addBox(-4.0f, -21.0f, -15.0f, 8.0f, 1.0f, 8.0f)
                     .texOffs(0, 0).addBox(-7.0f, -9.0f, -19.0f, 14.0f, 6.0f, 24.0f, CubeDeformation(0.25f))
-                    .texOffs(52, 42).addBox(-0.5f, -27.0f, -11.0f, 1.0f, 6.0f, 0.0f), PartPose.offset(0.0f, 6.0f, 0.0f)
+                    .texOffs(52, 42).addBox(-0.5f, -27.0f, -11.0f, 1.0f, 6.0f, 0.0f),
+                PartPose.offset(0.0f, 6.0f, 0.0f)
             )
 
             return LayerDefinition.create(meshdefinition, 128, 128)

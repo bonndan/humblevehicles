@@ -338,5 +338,17 @@ class ModRecipeProvider(packOutput: PackOutput, pRegistries: CompletableFuture<H
             .pattern("-  ")
             .unlockedBy("has_item", has(ModItems.SPRING.get()))
             .save(consumer)
+
+        //SUBMARINE
+        ShapedRecipeBuilder.shaped(RecipeCategory.TRANSPORTATION, ModItems.SUBMARINE.get())
+            .define('^', Items.GLASS)
+            .define('_', Items.PISTON)
+            .define('#', ModBlocks.VESSEL_CHARGER.get())
+            .define('$', Items.IRON_INGOT)
+            .pattern("^$^")
+            .pattern("_#_")
+            .pattern("$$$")
+            .unlockedBy("has_item", has(Items.PISTON))
+            .save(consumer)
     }
 }

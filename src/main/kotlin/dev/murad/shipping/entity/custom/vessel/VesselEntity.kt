@@ -2,13 +2,14 @@ package dev.murad.shipping.entity.custom.vessel
 
 import dev.murad.shipping.ShippingConfig
 import dev.murad.shipping.entity.Colorable
+import dev.murad.shipping.entity.custom.StatusDetector
+import dev.murad.shipping.entity.custom.StatusDetector.hasWaterOnSides
 import dev.murad.shipping.entity.custom.TrainInventoryProvider
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.util.LinkableEntity
 import dev.murad.shipping.util.LinkingHandler
 import dev.murad.shipping.util.SpringPhysicsUtil
 import net.minecraft.core.BlockPos
-import net.minecraft.core.BlockPos.MutableBlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
@@ -35,25 +36,16 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.GameRules
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.WaterlilyBlock
 import net.minecraft.world.level.material.Fluid
-import net.minecraft.world.level.material.Fluids
-import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
-import net.minecraft.world.phys.shapes.BooleanOp
-import net.minecraft.world.phys.shapes.Shapes
 import net.neoforged.neoforge.common.NeoForgeMod
 import java.util.*
 import java.util.stream.Stream
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
 abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
     WaterAnimal(type, world), LinkableEntity<VesselEntity>, Colorable {
-
-    var isFrozen: Boolean = false
-    protected var deltaRotation = 0f
 
     private val linkingHandler: LinkingHandler<VesselEntity> = LinkingHandler(
         this,
@@ -64,31 +56,36 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
 
     /**
      * The linking handler can be null if used in constructors.
+     * TODO leave the getter here before init right under the property
      */
     protected fun getLinkingHandler(): LinkingHandler<VesselEntity> {
         return linkingHandler
     }
 
+    var isFrozen: Boolean = false
+    private var oldStatus: Boat.Status? = null
     private var stuckCounter = 0
     private var waterLevel = 0.0
-    private var landFriction = 0f
-    private var status: Boat.Status? = null
-    private var oldStatus: Boat.Status? = null
-    private var lastYd = 0.0
+    private var groundFriction = 0f
+
+    protected var status: Boat.Status? = null
+    protected var deltaRotation = 0f
+    protected var floatBehaviour: FloatBehaviour = BoatFloatBehaviour
 
     init {
         resetAttributes(ShippingConfig.Server.TUG_BASE_SPEED!!.get())
     }
+
+
+
+
 
     override fun isPickable(): Boolean {
         return true
     }
 
     override fun hasWaterOnSides(): Boolean {
-        return level().getFluidState(this.onPos.relative(this.direction.clockWise)).`is`(Fluids.WATER) &&
-                level().getFluidState(this.onPos.relative(this.direction.counterClockWise)).`is`(Fluids.WATER) &&
-                level().getBlockState(this.onPos.above().relative(this.direction.clockWise)).block == Blocks.AIR &&
-                level().getBlockState(this.onPos.above().relative(this.direction.counterClockWise)).block == Blocks.AIR
+        return hasWaterOnSides(level(), onPos, direction)
     }
 
     override fun getBlockPos(): BlockPos {
@@ -102,51 +99,22 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
         if (!level().isClientSide) {
             doChainMath()
         }
-        if (this.isAlive) {
-            if (this.tickCount % 10 == 0) {
-                this.heal(1f)
-            }
+
+        if (this.isAlive && this.tickCount % 10 == 0) {
+            this.heal(1f)
         }
+
+        this.oldStatus = this.status
+        this.status = this.updateStatus()
+        this.floatBoat()
 
         if (!level().isClientSide) {
-            this.oldStatus = this.status
-            this.status = this.getStatus()
-
-            this.floatBoat()//Boat.floatBoat runs on both sides
-            this.unDrown()
-        } else {
-            floatBoatClientSide()
+            this.deltaMovement = deltaMovement.add(
+                Vec3(0.0, floatBehaviour.calculateUndrownForce(level(), status, onPos), 0.0)
+            )
         }
     }
 
-    private fun floatBoatClientSide() {
-
-        this.deltaRotation = this.deltaRotation * calculateInverseFriction()
-    }
-
-    private fun calculateInverseFriction(): Float {
-
-        var invFriction = 0.05f
-
-        if (this.status == Boat.Status.IN_WATER) {
-            invFriction = 0.9f
-        } else if (this.status == Boat.Status.UNDER_FLOWING_WATER) {
-            invFriction = 0.9f
-        } else if (this.status == Boat.Status.UNDER_WATER) {
-            invFriction = 0.45f
-        } else if (this.status == Boat.Status.IN_AIR) {
-            invFriction = 0.9f
-        } else if (this.status == Boat.Status.ON_LAND) {
-            invFriction = this.landFriction
-        }
-        return invFriction
-    }
-
-    private fun unDrown() {
-        if (level().getBlockState(onPos.above()).block == Blocks.WATER) {
-            this.deltaMovement = deltaMovement.add(Vec3(0.0, 0.1, 0.0))
-        }
-    }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
         linkingHandler.readAdditionalSaveData(compound)
@@ -176,7 +144,7 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
 
     override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
         super.onSyncedDataUpdated(key)
-        getLinkingHandler()?.onSyncedDataUpdated(key)
+        getLinkingHandler()?.onSyncedDataUpdated(key) //keep the "?"
     }
 
     override fun getColor(): Int? {
@@ -302,224 +270,68 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
 
     private fun floatBoat() {
 
-        val d0 = -0.04
-        var d1 = if (this.isNoGravity) 0.0 else -0.04
-        var d2 = 0.0
         // MOB STUFF
-        val invFriction = calculateInverseFriction()
-        if (this.oldStatus == Boat.Status.IN_AIR && this.status != Boat.Status.IN_AIR && this.status != Boat.Status.ON_LAND) {
+        if (wasInAir()) {
             this.waterLevel = this.getY(1.0)
-            this.setPos(this.x, (this.waterLevelAbove - this.bbHeight).toDouble() + 0.101, this.z)
+            this.setPos(
+                this.x,
+                (StatusDetector.calculateWaterLevelAbove(level(), this.boundingBox) - this.bbHeight).toDouble() + 0.101,
+                this.z
+            )
             this.deltaMovement = deltaMovement.multiply(1.0, 0.0, 1.0)
-            this.lastYd = 0.0
             this.status = Boat.Status.IN_WATER
             return
         }
 
-        if (this.status == Boat.Status.IN_WATER) {
-            d2 = (this.waterLevel - this.y) / this.bbHeight.toDouble()
-        } else if (this.status == Boat.Status.UNDER_FLOWING_WATER) {
-            d1 = -7.0E-4
-        } else if (this.status == Boat.Status.UNDER_WATER) {
-            d2 = 0.01
-        } else if (this.status == Boat.Status.IN_AIR) {
-        } else if (this.status == Boat.Status.ON_LAND) {
-            if (this.controllingPassenger is Player) {
-                this.landFriction /= 2.0f
-            }
-        }
+
+        val friction =
+            if (this.status == Boat.Status.ON_LAND) groundFriction
+            else floatBehaviour.calculateFriction(status)
 
         val vector3d = this.deltaMovement
+        val downForce = floatBehaviour.calculateDownForce(this.isNoGravity, this.status)
         this.setDeltaMovement(
-            vector3d.x * invFriction.toDouble(),
-            vector3d.y + d1,
-            vector3d.z * invFriction.toDouble()
+            vector3d.x * friction.toDouble(),
+            vector3d.y + downForce,
+            vector3d.z * friction.toDouble()
         )
         //this.deltaRotation = this.deltaRotation * invFriction
-        if (d2 > 0.0) {
-            val vector3d1 = this.deltaMovement
-            this.setDeltaMovement(vector3d1.x, (vector3d1.y + d2 * 0.10153846016296973) * 0.75, vector3d1.z)
+
+        val upForce = floatBehaviour.calculateBuoyancy(this.status, this.waterLevel, this.y, this.bbHeight.toDouble())
+        if (upForce > 0.0) {
+            val deltaMoveCopy = this.deltaMovement
+            this.setDeltaMovement(deltaMoveCopy.x, (deltaMoveCopy.y + upForce) * 0.75, deltaMoveCopy.z)
         }
     }
 
-    private fun getStatus(): Boat.Status {
-        val `Boat$status` = this.isUnderwater
-        if (`Boat$status` != null) {
+    private fun wasInAir() =
+        this.oldStatus == Boat.Status.IN_AIR && this.status != Boat.Status.IN_AIR && this.status != Boat.Status.ON_LAND
+
+    private fun updateStatus(): Boat.Status {
+
+        val isUnderwaterStatus = StatusDetector.isUnderwater(boundingBox, level())
+        if (isUnderwaterStatus != null) {
             this.waterLevel = this.boundingBox.maxY
-            return `Boat$status`
-        } else if (this.checkInWater()) {
+            return isUnderwaterStatus
+        }
+
+        val checkInWater = StatusDetector.checkInWater(boundingBox, level())
+        this.waterLevel = checkInWater.waterLevel
+        if (checkInWater.flag) {
             return Boat.Status.IN_WATER
+        }
+
+        var groundFriction = floatBehaviour.calculateGroundFriction(this.boundingBox, level(), this)
+        if (groundFriction > 0.0f) {
+            if (this.controllingPassenger is Player) {
+                groundFriction /= 2.0f
+            }
+            this.groundFriction = groundFriction
+            return Boat.Status.ON_LAND
         } else {
-            val f = this.groundFriction
-            if (f > 0.0f) {
-                this.landFriction = f
-                return Boat.Status.ON_LAND
-            } else {
-                return Boat.Status.IN_AIR
-            }
+            return Boat.Status.IN_AIR
         }
     }
-
-    val waterLevelAbove: Float
-        get() {
-            val aabb = this.boundingBox
-            val i = Mth.floor(aabb.minX)
-            val j = Mth.ceil(aabb.maxX)
-            val k = Mth.floor(aabb.maxY)
-            val l = Mth.ceil(aabb.maxY - this.lastYd)
-            val i1 = Mth.floor(aabb.minZ)
-            val j1 = Mth.ceil(aabb.maxZ)
-            val `blockpos$mutableblockpos` = MutableBlockPos()
-
-            label39@ for (k1 in k until l) {
-                var f = 0.0f
-
-                for (l1 in i until j) {
-                    for (i2 in i1 until j1) {
-                        `blockpos$mutableblockpos`[l1, k1] = i2
-                        val fluidstate =
-                            level().getFluidState(`blockpos$mutableblockpos`)
-                        if (fluidstate.`is`(FluidTags.WATER)) {
-                            f = max(
-                                f.toDouble(),
-                                fluidstate.getHeight(this.level(), `blockpos$mutableblockpos`).toDouble()
-                            ).toFloat()
-                        }
-
-                        if (f >= 1.0f) {
-                            continue@label39
-                        }
-                    }
-                }
-
-                if (f < 1.0f) {
-                    return `blockpos$mutableblockpos`.y.toFloat() + f
-                }
-            }
-
-            return (l + 1).toFloat()
-        }
-
-    val groundFriction: Float
-        /**
-         * Decides how much the boat should be gliding on the land (based on any slippery blocks)
-         */
-        get() {
-            val aabb = this.boundingBox
-            val aabb1 = AABB(aabb.minX, aabb.minY - 0.001, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ)
-            val i = Mth.floor(aabb1.minX) - 1
-            val j = Mth.ceil(aabb1.maxX) + 1
-            val k = Mth.floor(aabb1.minY) - 1
-            val l = Mth.ceil(aabb1.maxY) + 1
-            val i1 = Mth.floor(aabb1.minZ) - 1
-            val j1 = Mth.ceil(aabb1.maxZ) + 1
-            val voxelshape = Shapes.create(aabb1)
-            var f = 0.0f
-            var k1 = 0
-            val `blockpos$mutableblockpos` = MutableBlockPos()
-
-            for (l1 in i until j) {
-                for (i2 in i1 until j1) {
-                    val j2 = (if (l1 != i && l1 != j - 1) 0 else 1) + (if (i2 != i1 && i2 != j1 - 1) 0 else 1)
-                    if (j2 != 2) {
-                        for (k2 in k until l) {
-                            if (j2 <= 0 || k2 != k && k2 != l - 1) {
-                                `blockpos$mutableblockpos`[l1, k2] = i2
-                                val blockstate =
-                                    level().getBlockState(`blockpos$mutableblockpos`)
-                                if (blockstate.block !is WaterlilyBlock && Shapes.joinIsNotEmpty(
-                                        blockstate.getCollisionShape(
-                                            this.level(),
-                                            `blockpos$mutableblockpos`
-                                        ).move(l1.toDouble(), k2.toDouble(), i2.toDouble()), voxelshape, BooleanOp.AND
-                                    )
-                                ) {
-                                    f += blockstate.getFriction(
-                                        this.level(),
-                                        `blockpos$mutableblockpos`,
-                                        this
-                                    )
-                                    ++k1
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return f / k1.toFloat()
-        }
-
-
-    private fun checkInWater(): Boolean {
-        val aabb = this.boundingBox
-        val i = Mth.floor(aabb.minX)
-        val j = Mth.ceil(aabb.maxX)
-        val k = Mth.floor(aabb.minY)
-        val l = Mth.ceil(aabb.minY + 0.001)
-        val i1 = Mth.floor(aabb.minZ)
-        val j1 = Mth.ceil(aabb.maxZ)
-        var flag = false
-        this.waterLevel = -Double.MAX_VALUE
-        val `blockpos$mutableblockpos` = MutableBlockPos()
-
-        for (k1 in i until j) {
-            for (l1 in k until l) {
-                for (i2 in i1 until j1) {
-                    `blockpos$mutableblockpos`[k1, l1] = i2
-                    val fluidstate = level().getFluidState(`blockpos$mutableblockpos`)
-                    if (fluidstate.`is`(FluidTags.WATER)) {
-                        val f = l1.toFloat() + fluidstate.getHeight(this.level(), `blockpos$mutableblockpos`)
-                        this.waterLevel = max(f.toDouble(), this.waterLevel)
-                        flag = flag or (aabb.minY < f.toDouble())
-                    }
-                }
-            }
-        }
-
-        return flag
-    }
-
-    private val isUnderwater: Boat.Status?
-        /**
-         * Decides whether the boat is currently underwater.
-         */
-        get() {
-            val aabb = this.boundingBox
-            val d0 = aabb.maxY + 0.001
-            val i = Mth.floor(aabb.minX)
-            val j = Mth.ceil(aabb.maxX)
-            val k = Mth.floor(aabb.maxY)
-            val l = Mth.ceil(d0)
-            val i1 = Mth.floor(aabb.minZ)
-            val j1 = Mth.ceil(aabb.maxZ)
-            var flag = false
-            val `blockpos$mutableblockpos` = MutableBlockPos()
-
-            for (k1 in i until j) {
-                for (l1 in k until l) {
-                    for (i2 in i1 until j1) {
-                        `blockpos$mutableblockpos`[k1, l1] = i2
-                        val fluidstate =
-                            level().getFluidState(`blockpos$mutableblockpos`)
-                        if (fluidstate.`is`(FluidTags.WATER) && d0 < (`blockpos$mutableblockpos`.y
-                                .toFloat() + fluidstate.getHeight(
-                                this.level(),
-                                `blockpos$mutableblockpos`
-                            )).toDouble()
-                        ) {
-                            if (!fluidstate.isSource) {
-                                return Boat.Status.UNDER_FLOWING_WATER
-                            }
-
-                            flag = true
-                        }
-                    }
-                }
-            }
-
-            return if (flag) Boat.Status.UNDER_WATER else null
-        }
 
     override fun jumpInLiquid(pFluidTag: TagKey<Fluid>) {
         if (getNavigation().canFloat()) {
@@ -741,7 +553,7 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
      * Tug F F F C C C -- All F barges are linked to all C barges
      * Tug F C F C F C -- Each F barge is linked to 1 C barge
      */
-    protected fun getConnectedInventories() : List<TrainInventoryProvider>{
+    protected fun getConnectedInventories(): List<TrainInventoryProvider> {
 
         val result = mutableListOf<TrainInventoryProvider>()
 

@@ -7,6 +7,7 @@ import dev.murad.shipping.entity.custom.train.wagon.FluidTankCarEntity
 import dev.murad.shipping.entity.custom.vessel.VesselEntity
 import dev.murad.shipping.entity.custom.vessel.barge.FishingBargeEntity
 import dev.murad.shipping.entity.custom.vessel.barge.FluidTankBargeEntity
+import dev.murad.shipping.entity.models.SubmarineModel
 import dev.murad.shipping.entity.models.insert.*
 import dev.murad.shipping.entity.models.train.*
 import dev.murad.shipping.entity.models.vessel.EmptyModel
@@ -25,10 +26,10 @@ import dev.murad.shipping.setup.ModBlocks.buildCreativeTab
 import dev.murad.shipping.setup.ModEntityTypes
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.setup.ModTileEntitiesTypes
-import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.client.renderer.ItemBlockRenderTypes
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
+import net.minecraft.client.renderer.entity.ItemEntityRenderer
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
@@ -54,6 +55,7 @@ object ModClientEventHandler {
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.AUTOMATIC_TEE_JUNCTION_RAIL.get(), RenderType.cutoutMipped())
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.CAR_DOCK_RAIL.get(), RenderType.cutoutMipped())
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.LOCOMOTIVE_DOCK_RAIL.get(), RenderType.cutoutMipped())
+
         }
     }
 
@@ -354,12 +356,30 @@ object ModClientEventHandler {
         event.registerBlockEntityRenderer(ModTileEntitiesTypes.FLUID_HOPPER.get()) { context ->
             FluidHopperTileEntityRenderer(context)
         }
+
+        //SUBMARINE
+        event.registerEntityRenderer(ModEntityTypes.SUBMARINE.get()) { ctx: EntityRendererProvider.Context ->
+            MultipartVesselRenderer.Builder<VesselEntity>(ctx)
+                .baseModel(
+                    { root -> SubmarineModel(root) },
+                    SubmarineModel.LAYER_LOCATION,
+                    HumVeeMod.entityTexture("submarine.png")
+                )
+                .emptyInsert()
+                .trimModel(
+                    { root -> SubmarineModel(root) },
+                    SubmarineModel.LAYER_LOCATION,
+                    HumVeeMod.entityTexture("submarine.png")
+                )
+                .build()
+                .derotate()
+        }
     }
 
     @SubscribeEvent
     fun onRegisterEntityRenderers(event: EntityRenderersEvent.RegisterLayerDefinitions) {
-        // COMMON
 
+        // COMMON
         event.registerLayerDefinition(ChainExtendedModel.LAYER_LOCATION) { ChainExtendedModel.createBodyLayer() }
         event.registerLayerDefinition(ChainModel.LAYER_LOCATION) { ChainModel.createBodyLayer() }
 
@@ -430,6 +450,9 @@ object ModClientEventHandler {
 
         // LEGACY
         event.registerLayerDefinition(ChunkLoaderCarModel.LAYER_LOCATION) { ChunkLoaderCarModel.createBodyLayer() }
+
+        //SUBMARINE
+        event.registerLayerDefinition(SubmarineModel.LAYER_LOCATION) { SubmarineModel.createBodyLayer() }
     }
 
     /**

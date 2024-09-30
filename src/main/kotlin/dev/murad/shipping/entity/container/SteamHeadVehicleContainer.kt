@@ -1,6 +1,6 @@
 package dev.murad.shipping.entity.container
 
-import dev.murad.shipping.entity.accessor.SteamHeadVehicleDataAccessor
+import dev.murad.shipping.entity.accessor.HeadVehicleDataAccessor
 import dev.murad.shipping.entity.custom.HeadVehicle
 import dev.murad.shipping.setup.ModMenuTypes
 import dev.murad.shipping.util.ItemHandlerVanillaContainerWrapper
@@ -13,10 +13,10 @@ import net.neoforged.neoforge.items.SlotItemHandler
 class SteamHeadVehicleContainer<T>(
     windowId: Int,
     world: Level,
-    data: SteamHeadVehicleDataAccessor,
+    data: HeadVehicleDataAccessor,
     playerInventory: Inventory,
     player: Player?
-) : AbstractHeadVehicleContainer<SteamHeadVehicleDataAccessor, T>(
+) : AbstractHeadVehicleContainer< T>(
     ModMenuTypes.STEAM_LOCOMOTIVE_CONTAINER.get(),
     windowId,
     world,
@@ -33,9 +33,5 @@ class SteamHeadVehicleContainer<T>(
             }
         }
         this.addDataSlots(data.getRawData())
-    }
-
-    fun getBurnProgress(): Int {
-        return data.getBurnProgress()
     }
 }

@@ -5,6 +5,7 @@ import dev.murad.shipping.block.rail.MultiShapeRail
 import dev.murad.shipping.block.rail.blockentity.LocomotiveDockTileEntity
 import dev.murad.shipping.capability.StallingCapability
 import dev.murad.shipping.entity.accessor.HeadVehicleDataAccessor
+import dev.murad.shipping.entity.custom.Engine
 import dev.murad.shipping.entity.custom.HeadVehicle
 import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity
 import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart
@@ -50,9 +51,9 @@ import kotlin.math.floor
 abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntityHead<AbstractTrainCarEntity>,
     ItemHandlerVanillaContainerWrapper, HeadVehicle {
 
-    private var engineOn: Boolean = false
-
     protected val enrollmentHandler: ChunkManagerEnrollmentHandler
+    protected lateinit var engine: Engine
+
     private var independentMotion = false
     var isDocked: Boolean = false
         private set
@@ -156,17 +157,26 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
     protected abstract fun createContainerProvider(): MenuProvider
 
-    abstract fun getDataAccessor(): HeadVehicleDataAccessor
+    fun getDataAccessor(): HeadVehicleDataAccessor =
+        HeadVehicleDataAccessor.Builder()
+            .withBurnProgressPct { engine.getBurnProgressPct() }
+            .withId(this.id)
+            .withOn { engine.isOn() }
+            .withRouteSize { navigator.routeSize }
+            .withVisitedSize { navigator.visitedSize }
+            .withLit { engine.isLit() }
+            .withCanMove { enrollmentHandler.mayMove() }
+            .build()
 
-    protected abstract fun tickFuel(): Boolean
+    private fun tickFuel(): Boolean {
+        return engine.tickFuel() > 0
+    }
 
     override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
         super.onSyncedDataUpdated(key)
 
-        if (level().isClientSide) {
-            if (INDEPENDENT_MOTION == key) {
-                independentMotion = entityData.get(INDEPENDENT_MOTION)
-            }
+        if (level().isClientSide && INDEPENDENT_MOTION == key) {
+            independentMotion = entityData.get(INDEPENDENT_MOTION)
         }
     }
 
@@ -269,7 +279,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
                 collisionCheckCooldown--
             }
         }
-        if (!isDocked && engineOn && remainingStallTime <= 0 && !forceStallCheck && !shouldFreezeTrain() && tickFuel()) {
+        if (!isDocked && engine.isOn() && remainingStallTime <= 0 && !forceStallCheck && !shouldFreezeTrain() && tickFuel()) {
             tickSpeedLimit()
             entityData.set(INDEPENDENT_MOTION, true)
             accelerate()
@@ -588,9 +598,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
         super.readAdditionalSaveData(compound)
-        if (compound.contains("eo")) {
-            engineOn = compound.getBoolean("eo")
-        }
+        engine.readAdditionalSaveData(compound, registryAccess())
         routeItemHandler.deserializeNBT(this.registryAccess(), compound.getCompound(LOCO_ROUTE_INV_TAG))
         navigator.loadFromNbt(compound.getCompound(NAVIGATOR_TAG))
         enrollmentHandler.load(compound)
@@ -599,11 +607,16 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
     override fun addAdditionalSaveData(compound: CompoundTag) {
         super.addAdditionalSaveData(compound)
-        compound.putBoolean("eo", engineOn)
+        engine.addAdditionalSaveData(compound, registryAccess())
         compound.put(LOCO_ROUTE_INV_TAG, routeItemHandler.serializeNBT(this.registryAccess()))
         compound.put(NAVIGATOR_TAG, navigator.saveToNbt())
         enrollmentHandler.save(compound)
     }
+
+    override fun getRawHandler(): ItemStackHandler {
+        return engine
+    }
+
 
     // duplicate due to linking issues
     override fun isValid(pPlayer: Player): Boolean {
@@ -622,12 +635,10 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         }
     }
 
-    fun isEngineOn(): Boolean {
-        return engineOn
-    }
+
 
     override fun setEngineOn(state: Boolean) {
-        this.engineOn = state
+        this.engine.setEngineOn(state)
     }
 
     override fun getRouteItemHandler(): ItemStackHandler {

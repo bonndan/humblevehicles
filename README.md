@@ -7,6 +7,7 @@ This is a NeoForge port of [LittleLogistics](https://littlelogistics.murad.dev/)
 
 ## Project goals
 
+* port to 1.21, see https://gist.github.com/ChampionAsh5357/d895a7b1a34341e19c80870720f9880f
 * learn Minecraft modding (+learn more Kotlin)
 * have fun with rideable trains and ships in a vanilla setting
 * use as much vanilla stuff a possible
@@ -24,14 +25,23 @@ This is a NeoForge port of [LittleLogistics](https://littlelogistics.murad.dev/)
 
 - [Recipes](./recipes/readme.md) in markdown
 
-## Next Steps
 
-- [ ] get the port running in minecraft server and client without NPEs, all items, blocks etc. appearing (bugs allowed). See https://gist.github.com/ChampionAsh5357/d895a7b1a34341e19c80870720f9880f
+## License
 
-
-### License
-
-#### Source Code / java files
+### Source Code / java files
 
 LGPLv3
 https://www.gnu.org/licenses/lgpl-3.0.en.html
+
+
+## Development
+
+#### Adding an entity
+
+* create a recipe in ModRecipeProvider
+* create an Entity Model (e.g. SubmarineEntity)
+* register the entity in ModEntityTypes
+* register the model for rendering in ModClientEventHandler
+* register events in ModEventBusEvents
+* register a creative mode tab in ModItems
+* add an entry in ModItemModelProvider

@@ -5,6 +5,7 @@ plugins {
     id 'maven-publish'
     id 'net.neoforged.gradle.userdev' version '7.0.145'
     id "org.jetbrains.kotlin.jvm" version("2.0.10")
+    id 'jvm-test-suite'
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -130,6 +131,13 @@ dependencies {
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+
+    // https://github.com/gradle/gradle/issues/28809
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.11.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.3'
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -176,6 +184,14 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+testing {
+    suites {
+        test {
+            useJUnitJupiter()
+        }
+    }
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.

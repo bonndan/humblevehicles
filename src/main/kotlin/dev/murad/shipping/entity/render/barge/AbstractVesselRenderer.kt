@@ -38,7 +38,7 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         yaw: Float,
         partialTick: Float,
         matrixStack: PoseStack,
-        buffer: MultiBufferSource?,
+        buffer: MultiBufferSource,
         packetLight: Int
     ) {
         matrixStack.pushPose()
@@ -47,7 +47,7 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         matrixStack.mulPose(Axis.YP.rotationDegrees(180.0f - yaw))
         matrixStack.scale(-1.0f, -1.0f, 1.0f)
         matrixStack.mulPose(Axis.YP.rotationDegrees(getModelYrot()))
-        renderModel(vesselEntity, matrixStack, buffer!!, packetLight)
+        renderModel(vesselEntity, matrixStack, buffer, packetLight)
         getAndRenderChain(vesselEntity, matrixStack, buffer, packetLight)
         matrixStack.popPose()
 

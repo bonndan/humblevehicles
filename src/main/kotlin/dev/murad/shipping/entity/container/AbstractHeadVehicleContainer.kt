@@ -14,11 +14,11 @@ import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.level.Level
 import net.neoforged.neoforge.items.SlotItemHandler
 
-abstract class AbstractHeadVehicleContainer<T : HeadVehicleDataAccessor, U>(
+abstract class AbstractHeadVehicleContainer<U>(
     containerType: MenuType<*>,
     windowId: Int,
     world: Level,
-    protected var data: T,
+    protected var data: HeadVehicleDataAccessor,
     playerInventory: Inventory,
     player: Player?
 ) :
@@ -56,8 +56,13 @@ abstract class AbstractHeadVehicleContainer<T : HeadVehicleDataAccessor, U>(
         return data.visitedSize()
     }
 
-    fun setEngine(state: Boolean) {
+    fun setEngineState(state: Boolean) {
+
         VehiclePacketHandler.send(SetEnginePacket(entity!!.id, state))
+    }
+
+    fun getBurnProgress(): Int {
+        return data.getBurnProgress()
     }
 
     fun enroll() {

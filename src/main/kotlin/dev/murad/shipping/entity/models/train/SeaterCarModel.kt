@@ -13,7 +13,8 @@ import net.minecraft.client.model.geom.builders.LayerDefinition
 import net.minecraft.client.model.geom.builders.MeshDefinition
 import net.minecraft.resources.ResourceLocation
 
-class SeaterCarModel(root: ModelPart) : EntityModel<SeaterCarEntity?>() {
+class SeaterCarModel(root: ModelPart) : EntityModel<SeaterCarEntity>() {
+
     private val bb_main: ModelPart
 
     init {
@@ -21,7 +22,7 @@ class SeaterCarModel(root: ModelPart) : EntityModel<SeaterCarEntity?>() {
     }
 
     override fun setupAnim(
-        entity: SeaterCarEntity?,
+        entity: SeaterCarEntity,
         limbSwing: Float,
         limbSwingAmount: Float,
         ageInTicks: Float,
@@ -31,8 +32,8 @@ class SeaterCarModel(root: ModelPart) : EntityModel<SeaterCarEntity?>() {
     }
 
     override fun renderToBuffer(
-        pPoseStack: PoseStack?,
-        pBuffer: VertexConsumer?,
+        pPoseStack: PoseStack,
+        pBuffer: VertexConsumer,
         pPackedLight: Int,
         pPackedOverlay: Int,
         pColor: Int

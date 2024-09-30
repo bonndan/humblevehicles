@@ -2,6 +2,7 @@ package dev.murad.shipping.entity.custom.vessel.barge
 
 import com.mojang.datafixers.util.Pair
 import dev.murad.shipping.ShippingConfig
+import dev.murad.shipping.entity.custom.StatusDetector.hasWaterOnSides
 import dev.murad.shipping.setup.ModEntityTypes
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.util.InventoryUtils.moveItemStackIntoHandler
@@ -56,7 +57,13 @@ class FishingBargeEntity : AbstractBargeEntity {
 
     override fun tick() {
         super.tick()
-        tickWaterOnSidesCheck()
+
+        if (hasWaterOnSides(level(), onPos, direction)) {
+            ticksDeployable++
+        } else {
+            ticksDeployable = 0
+        }
+
         if (!this.level().isClientSide && this.getStatus() == Status.DEPLOYED) {
             if (fishCooldown < 0) {
                 tickFish()
@@ -64,14 +71,6 @@ class FishingBargeEntity : AbstractBargeEntity {
             } else {
                 fishCooldown--
             }
-        }
-    }
-
-    private fun tickWaterOnSidesCheck() {
-        if (hasWaterOnSides()) {
-            ticksDeployable++
-        } else {
-            ticksDeployable = 0
         }
     }
 

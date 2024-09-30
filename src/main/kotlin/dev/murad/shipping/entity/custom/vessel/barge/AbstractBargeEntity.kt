@@ -57,10 +57,6 @@ abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, wo
 
     protected abstract fun doInteract(player: Player?)
 
-    override fun hasWaterOnSides(): Boolean {
-        return super.hasWaterOnSides()
-    }
-
     override fun setDominated(entity: VesselEntity) {
         getLinkingHandler()?.follower = Optional.of(entity)
     }

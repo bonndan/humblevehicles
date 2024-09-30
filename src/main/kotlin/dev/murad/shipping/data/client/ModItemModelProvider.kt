@@ -12,7 +12,9 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper
 class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileHelper) :
     ItemModelProvider(output, HumVeeMod.MOD_ID, existingFileHelper) {
     override fun registerModels() {
+
         val itemGenerated: ModelFile = getExistingFile(mcLoc("item/generated"))
+
         withExistingParent("tug_dock", modLoc("block/tug_dock"))
         withExistingParent("barge_dock", modLoc("block/barge_dock"))
         withExistingParent("guide_rail_corner", modLoc("block/guide_rail_corner"))
@@ -30,6 +32,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         builder(itemGenerated, "seater_barge")
         builder(itemGenerated, "tug")
         builder(itemGenerated, "energy_tug")
+        builder(itemGenerated, "submarine")
         builder(itemGenerated, "steam_locomotive")
         builder(itemGenerated, "energy_locomotive")
         builder(itemGenerated, "chest_car")

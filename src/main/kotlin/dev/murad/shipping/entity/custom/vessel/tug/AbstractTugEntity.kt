@@ -3,8 +3,10 @@ package dev.murad.shipping.entity.custom.vessel.tug
 import dev.murad.shipping.block.dock.TugDockTileEntity
 import dev.murad.shipping.block.guiderail.TugGuideRailBlock.Companion.getArrowsDirection
 import dev.murad.shipping.capability.StallingCapability
-import dev.murad.shipping.entity.accessor.DataAccessor
+import dev.murad.shipping.entity.accessor.HeadVehicleDataAccessor
+import dev.murad.shipping.entity.custom.Engine
 import dev.murad.shipping.entity.custom.HeadVehicle
+import dev.murad.shipping.entity.custom.VehicleControl
 import dev.murad.shipping.entity.custom.vessel.VesselEntity
 import dev.murad.shipping.entity.navigation.TugPathNavigator
 import dev.murad.shipping.item.TugRouteItem
@@ -12,6 +14,7 @@ import dev.murad.shipping.setup.ModBlocks
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.setup.ModSounds
 import dev.murad.shipping.util.*
+import net.minecraft.client.Minecraft
 import net.minecraft.client.player.Input
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.core.BlockPos
@@ -22,8 +25,8 @@ import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.Mth
 import net.minecraft.world.*
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.MoverType
@@ -33,6 +36,7 @@ import net.minecraft.world.entity.ai.goal.Goal
 import net.minecraft.world.entity.ai.navigation.PathNavigation
 import net.minecraft.world.entity.animal.WaterAnimal
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
@@ -53,6 +57,9 @@ abstract class AbstractTugEntity :
     ItemHandlerVanillaContainerWrapper {
 
     protected val enrollmentHandler: ChunkManagerEnrollmentHandler
+    protected lateinit var engine: Engine
+    protected lateinit var control: VehicleControl
+
 
     // CONTAINER STUFF
     private val routeItemHandler: ItemStackHandler = createRouteItemHandler()
@@ -62,7 +69,6 @@ abstract class AbstractTugEntity :
     private var remainingStallTime: Int = 0
     private var swimSpeedMult: Double = 1.0
 
-    private var engineOn: Boolean = true
 
     private var dockCheckCooldown: Int = 0
     protected var independentMotion: Boolean = false
@@ -76,11 +82,6 @@ abstract class AbstractTugEntity :
     private var nextStop: Int = 0
 
     protected fun getNextStop(): Int = nextStop
-
-    private var inputLeft = false
-    private var inputRight = false
-    private var inputUp = false
-    private var inputDown = false
 
     constructor(type: EntityType<out WaterAnimal>, world: Level) : super(type, world)
 
@@ -109,8 +110,15 @@ abstract class AbstractTugEntity :
         super.dropLeash(p_110160_1_, p_110160_2_)
     }
 
-
-    abstract fun getDataAccessor(): DataAccessor
+    fun getDataAccessor(): HeadVehicleDataAccessor = HeadVehicleDataAccessor.Builder()
+        .withBurnProgressPct { engine.getBurnProgressPct() }
+        .withId(this.id)
+        .withLit { engine.isLit() }
+        .withVisitedSize { getNextStop() }
+        .withOn { engine.isOn() }
+        .withRouteSize { getPath()?.size ?: 0 }
+        .withCanMove { enrollmentHandler.mayMove() }
+        .build()
 
     private fun createRouteItemHandler(): ItemStackHandler {
         return object : ItemStackHandler() {
@@ -129,7 +137,7 @@ abstract class AbstractTugEntity :
     }
 
     override fun owner(): String? {
-        return entityData?.get(OWNER)
+        return entityData.get(OWNER)
     }
 
     override fun isPushedByFluid(): Boolean {
@@ -147,7 +155,7 @@ abstract class AbstractTugEntity :
             routeItemHandler.deserializeNBT(this.registryAccess(), compound.getCompound("routeHandler"))
         }
         nextStop = if (compound.contains("next_stop")) compound.getInt("next_stop") else 0
-        engineOn = !compound.contains("engineOn") || compound.getBoolean("engineOn")
+        engine.readAdditionalSaveData(compound, registryAccess())
         contentsChanged = true
         enrollmentHandler.load(compound)
         super.readAdditionalSaveData(compound)
@@ -155,7 +163,7 @@ abstract class AbstractTugEntity :
 
     override fun addAdditionalSaveData(compound: CompoundTag) {
         compound.putInt("next_stop", nextStop)
-        compound.putBoolean("engineOn", engineOn)
+        engine.addAdditionalSaveData(compound, registryAccess())
         compound.put("routeHandler", routeItemHandler.serializeNBT(this.registryAccess()))
         enrollmentHandler.save(compound)
         super.addAdditionalSaveData(compound)
@@ -174,7 +182,33 @@ abstract class AbstractTugEntity :
         }
     }
 
-    protected abstract fun tickFuel(): Boolean
+    override fun setItem(slot: Int, stack: ItemStack) {
+        if (!engine.isItemValid(slot, stack)) {
+            return
+        }
+        engine.insertItem(slot, stack, false)
+        if (!stack.isEmpty && stack.count > this.maxStackSize) {
+            stack.count = this.maxStackSize
+        }
+    }
+
+    override fun getRawHandler(): ItemStackHandler {
+        return engine
+    }
+
+    private fun tickFuel(): Int {
+
+        val isLit = engine.isLit()
+        val remainingBurnTime = engine.tickFuel()
+
+        val isLitAfterTick = remainingBurnTime > 0
+        if (isLit != isLitAfterTick) {
+            entityData.set(ENGINE_IS_ON, engine.isOn())
+            entityData.set(REMAINING_BURN_TIME, remainingBurnTime)
+        }
+
+        return remainingBurnTime
+    }
 
     protected fun onDock() {
         this.playSound(ModSounds.TUG_DOCKING.get(), 0.6f, 1.0f)
@@ -254,10 +288,9 @@ abstract class AbstractTugEntity :
                 getEntityData().set(COLOR_DATA, color.getId())
             } else {
 
-                val shiftKey = player.isSecondaryUseActive
                 if (isVehicle) {
 
-                    if (shiftKey && isControlledByLocalInstance) {
+                    if (wantsToStopRiding(player) && isControlledByLocalInstance) {
                         player.stopRiding()
                     } else {
                         player.openMenu(createContainerProvider(), getDataAccessor()::write)
@@ -265,7 +298,7 @@ abstract class AbstractTugEntity :
 
                 } else {
 
-                    if (!shiftKey) {
+                    if (!player.isSecondaryUseActive) {
                         if (!player.startRiding(this))
                             return InteractionResult.FAIL
                     } else {
@@ -277,6 +310,10 @@ abstract class AbstractTugEntity :
         }
 
         return InteractionResult.sidedSuccess(level().isClientSide)
+    }
+
+    protected open fun wantsToStopRiding(player: Player) :Boolean{
+        return player.isShiftKeyDown
     }
 
     override fun getControllingPassenger(): LivingEntity? =
@@ -296,6 +333,12 @@ abstract class AbstractTugEntity :
         if (level().isClientSide && entityData != null) {
             if (INDEPENDENT_MOTION == key) {
                 independentMotion = entityData.get(INDEPENDENT_MOTION)
+            }
+            if (ENGINE_IS_ON == key) {
+                engine.setEngineOn(entityData.get(ENGINE_IS_ON))
+            }
+            if (REMAINING_BURN_TIME == key) {
+                engine.setRemainingBurnTime(entityData.get(REMAINING_BURN_TIME))
             }
         }
     }
@@ -336,9 +379,9 @@ abstract class AbstractTugEntity :
         }
     }
 
-    override fun recreateFromPacket(p_149572_: ClientboundAddEntityPacket) {
-        super.recreateFromPacket(p_149572_)
-        frontHitbox.setId(p_149572_.getId())
+    override fun recreateFromPacket(packet: ClientboundAddEntityPacket) {
+        super.recreateFromPacket(packet)
+        frontHitbox.id = packet.id
     }
 
     override fun tick() {
@@ -346,6 +389,7 @@ abstract class AbstractTugEntity :
         if (!level().isClientSide) {
             enrollmentHandler.tick()
             enrollmentHandler.playerName.ifPresent { name: String -> entityData.set(OWNER, name) }
+            tickFuel()
         }
 
         if (this.isControlledByLocalInstance) {
@@ -358,7 +402,7 @@ abstract class AbstractTugEntity :
                         passenger.input.shiftKeyDown = false
                     }
 
-                    this.controlBoat(passenger.input)
+                    this.controlBoat(passenger.input, this.status)
                 }
             }
 
@@ -370,41 +414,17 @@ abstract class AbstractTugEntity :
         super.tick()
     }
 
-    private fun controlBoat(input: Input) {
+    private fun controlBoat(input: Input, status: Boat.Status?) {
 
-        inputLeft = input.left
-        inputRight = input.right
-        inputUp = input.up
-        inputDown = input.down
-
-        var force = 0.0f
-        if (this.inputLeft) {
-            this.deltaRotation--
+        if (!engine.isLit()) {
+            return
         }
 
-        if (this.inputRight) {
-            this.deltaRotation++
-        }
+        val result = control.calculateResult(input, status)
 
-        if (this.inputRight != this.inputLeft && !this.inputUp && !this.inputDown) {
-            force += 0.005f
-        }
-
-        if (this.inputUp) {
-            force += 0.05f
-        }
-
-        if (this.inputDown) {
-            force -= 0.005f
-        }
-
-        this.yRot += this.deltaRotation
-        this.deltaMovement = deltaMovement
-            .add(
-                (Mth.sin(-this.yRot * (Math.PI / 180.0).toFloat()) * force).toDouble(),
-                0.0,
-                (Mth.cos(this.yRot * (Math.PI / 180.0).toFloat()) * force).toDouble()
-            )
+        this.deltaRotation += result.deltaRotationModifier
+        this.yRot += result.yRotationModifier
+        this.deltaMovement = deltaMovement.add(result.calculateDeltaMovement(yRot))
     }
 
     private fun followGuideRail() {
@@ -425,7 +445,7 @@ abstract class AbstractTugEntity :
             if (below.`is`(ModBlocks.GUIDE_RAIL_TUG.get()) && water.`is`(Blocks.WATER)) {
                 val arrows: Direction = getArrowsDirection(below)
                 this.setYRot(arrows.toYRot())
-                val modifier: Double = 0.03
+                val modifier = 0.03
                 this.setDeltaMovement(
                     getDeltaMovement().add(
                         Vec3(arrows.getStepX() * modifier, 0.0, arrows.getStepZ() * modifier)
@@ -442,11 +462,10 @@ abstract class AbstractTugEntity :
 
     private fun followPath() {
         pathfindCooldown--
-        if (!path!!.isEmpty() && !this.isDocked && engineOn && !shouldFreezeTrain() && tickFuel()) {
+        if (!path!!.isEmpty() && !this.isDocked && engine.isLit() && !shouldFreezeTrain()) {
             val stop = path!!.get(nextStop)
-            if (navigation.getPath() == null || navigation.getPath()!!.isDone()
-            ) {
-                if (pathfindCooldown < 0 || navigation.getPath() != null) {  //only go on cooldown when the path was not completed
+            if (navigation.path == null || navigation.path!!.isDone) {
+                if (pathfindCooldown < 0 || navigation.path != null) {  //only go on cooldown when the path was not completed
                     navigation.moveTo(stop.x.toDouble(), this.getY(), stop.z.toDouble(), 0.3)
                     pathfindCooldown = 20
                 } else {
@@ -482,6 +501,8 @@ abstract class AbstractTugEntity :
         super.defineSynchedData(pBuilder)
         pBuilder.define(INDEPENDENT_MOTION, false)
         pBuilder.define(OWNER, "")
+        pBuilder.define(ENGINE_IS_ON, false)
+        pBuilder.define(REMAINING_BURN_TIME, 0)
     }
 
 
@@ -509,8 +530,8 @@ abstract class AbstractTugEntity :
     }
 
     override fun removeDominated() {
-        getLinkingHandler()?.follower = Optional.empty()
-        getLinkingHandler()?.train!!.tail = this
+        getLinkingHandler().follower = Optional.empty()
+        getLinkingHandler().train!!.tail = this
     }
 
     override fun hasOwner(): Boolean {
@@ -522,11 +543,11 @@ abstract class AbstractTugEntity :
     }
 
     override fun setTrain(train: Train<VesselEntity>) {
-        getLinkingHandler()?.train = train
+        getLinkingHandler().train = train
     }
 
     override fun getTrain(): Train<VesselEntity> {
-        return getLinkingHandler()?.train!!
+        return getLinkingHandler().train!!
     }
 
     override fun remove(r: RemovalReason) {
@@ -592,25 +613,23 @@ abstract class AbstractTugEntity :
         }
 
         if (this.tickCount % 10 == 0) {
-            swimSpeedMult = computeSpeedMult()
+            swimSpeedMult = computeSpeedMultiplier()
         }
 
         return swimSpeedMult * super.swimSpeed()
     }
 
-    private fun computeSpeedMult(): Double {
-        var mult: Double = 1.0
-        var doBreak: Boolean = false
+    private fun computeSpeedMultiplier(): Double {
+
+        var mult = 1.0
+        var doBreak = false
         var i: Int = 0
+        val directions = listOf(Direction.NORTH, Direction.EAST, Direction.WEST, Direction.SOUTH)
+
         while (i < 10 && !doBreak) {
-            for (direction: Direction in java.util.List.of(
-                Direction.NORTH,
-                Direction.EAST,
-                Direction.WEST,
-                Direction.SOUTH
-            )) {
-                val pos: BlockPos = getOnPos().relative(direction, i)
-                if (!level().getFluidState(pos).isSource()) {
+            for (direction: Direction in directions) {
+                val pos: BlockPos = onPos.relative(direction, i)
+                if (!level().getFluidState(pos).isSource) {
                     doBreak = true
                     break
                 }
@@ -620,16 +639,16 @@ abstract class AbstractTugEntity :
             }
             i++
         }
-        if (mult < swimSpeedMult) return mult
-        else return (mult + swimSpeedMult * 20) / 21
+
+        return if (mult < swimSpeedMult) {
+            mult
+        } else {
+            (mult + swimSpeedMult * 20) / 21
+        }
     }
 
-    fun isEngineOn(): Boolean {
-        return engineOn
-    }
-
-    override fun setEngineOn(engineOn: Boolean) {
-        this.engineOn = engineOn
+    override fun setEngineOn(state: Boolean) {
+        this.engine.setEngineOn(state)
     }
 
     override fun getRouteItemHandler(): ItemStackHandler {
@@ -688,11 +707,21 @@ abstract class AbstractTugEntity :
     }
 
     companion object {
+
         private val INDEPENDENT_MOTION: EntityDataAccessor<Boolean> = SynchedEntityData.defineId(
             AbstractTugEntity::class.java, EntityDataSerializers.BOOLEAN
         )
+
         private val OWNER: EntityDataAccessor<String> = SynchedEntityData.defineId(
             AbstractTugEntity::class.java, EntityDataSerializers.STRING
+        )
+
+        private val ENGINE_IS_ON: EntityDataAccessor<Boolean> = SynchedEntityData.defineId(
+            AbstractTugEntity::class.java, EntityDataSerializers.BOOLEAN
+        )
+
+        private val REMAINING_BURN_TIME: EntityDataAccessor<Int> = SynchedEntityData.defineId(
+            AbstractTugEntity::class.java, EntityDataSerializers.INT
         )
 
         fun setCustomAttributes(): AttributeSupplier.Builder {

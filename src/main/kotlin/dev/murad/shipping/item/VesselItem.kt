@@ -28,7 +28,7 @@ class VesselItem(props: Properties, private val addEntity: AddEntityFunction) : 
             val vector3d = player.getViewVector(1.0f)
             val list = world.getEntities(player, player.boundingBox.expandTowards(vector3d.scale(5.0)).inflate(1.0),
                 EntitySelector.NO_SPECTATORS.and { obj: Entity -> obj.isPickable })
-            if (!list.isEmpty()) {
+            if (list.isNotEmpty()) {
                 val vector3d1 = player.getEyePosition(1.0f)
 
                 for (entity in list) {

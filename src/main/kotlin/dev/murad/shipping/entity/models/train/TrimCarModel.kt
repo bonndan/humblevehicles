@@ -21,7 +21,7 @@ class TrimCarModel<T : AbstractTrainCarEntity>(root: ModelPart) : EntityModel<T>
     }
 
     override fun setupAnim(
-        entity: T?,
+        entity: T,
         limbSwing: Float,
         limbSwingAmount: Float,
         ageInTicks: Float,
@@ -31,8 +31,8 @@ class TrimCarModel<T : AbstractTrainCarEntity>(root: ModelPart) : EntityModel<T>
     }
 
     override fun renderToBuffer(
-        pPoseStack: PoseStack?,
-        pBuffer: VertexConsumer?,
+        pPoseStack: PoseStack,
+        pBuffer: VertexConsumer,
         pPackedLight: Int,
         pPackedOverlay: Int,
         pColor: Int
@@ -43,7 +43,7 @@ class TrimCarModel<T : AbstractTrainCarEntity>(root: ModelPart) : EntityModel<T>
     companion object {
         // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
         val LAYER_LOCATION: ModelLayerLocation =
-            ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "trim_car_model"), "main")
+            ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "trim_car_model"), "main")
 
         fun createBodyLayer(): LayerDefinition {
             val meshdefinition = MeshDefinition()

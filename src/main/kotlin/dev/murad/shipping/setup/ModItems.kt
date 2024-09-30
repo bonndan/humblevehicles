@@ -1,6 +1,7 @@
 package dev.murad.shipping.setup
 
 import dev.murad.shipping.HumVeeMod.Companion.MOD_ID
+import dev.murad.shipping.entity.custom.vessel.submarine.SubmarineEntity
 import dev.murad.shipping.entity.custom.train.locomotive.EnergyLocomotiveEntity
 import dev.murad.shipping.entity.custom.train.locomotive.SteamLocomotiveEntity
 import dev.murad.shipping.entity.custom.train.wagon.ChestCarEntity
@@ -11,7 +12,6 @@ import dev.murad.shipping.entity.custom.vessel.tug.EnergyTugEntity
 import dev.murad.shipping.entity.custom.vessel.tug.SteamTugEntity
 import dev.murad.shipping.item.*
 import dev.murad.shipping.util.MultiMap
-import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
@@ -119,13 +119,9 @@ object ModItems {
 
     val ENERGY_TUG = registerItem(
         "energy_tug",
-        {
-            VesselItem(Item.Properties()) { worldIn, x: Double, y: Double, z: Double ->
-                EnergyTugEntity(worldIn, x, y, z)
-            }
-        }, Item.Properties()
+        { VesselItem(Item.Properties()) { worldIn, x, y, z -> EnergyTugEntity(worldIn, x, y, z) } },
+        Item.Properties()
     )
-
 
     /**
      * Trains
@@ -212,6 +208,13 @@ object ModItems {
     val TRANSMITTER_COMPONENT = registerItem("transmitter_component", ::Item, defaultItemProperties(64))
     val LOCO_ROUTE = registerItem("locomotive_route", ::LocoRouteItem, defaultItemPropertiesWithTag(16))
 
+    //SUBMARINE
+    val SUBMARINE: Supplier<Item> = registerItem(
+        "submarine",
+        { VesselItem(Item.Properties()) { worldIn, x, y, z -> SubmarineEntity(worldIn, x, y, z) } },
+        defaultItemPropertiesWithTag(1)
+    )
+
     //            () -> new VesselItem(new Item.Properties(), ChunkLoaderBargeEntity::new), ImmutableList.of(CreativeModeTabs.TOOLS_AND_UTILITIES));
     init {
         registerTabs(CONDUCTORS_WRENCH, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES))
@@ -234,6 +237,7 @@ object ModItems {
         registerTabs(RECEIVER_COMPONENT, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES))
         registerTabs(TRANSMITTER_COMPONENT, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES))
         registerTabs(LOCO_ROUTE, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES))
+        registerTabs(SUBMARINE, listOf(CreativeModeTabs.TOOLS_AND_UTILITIES))
     }
 
 

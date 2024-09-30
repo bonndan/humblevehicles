@@ -1,11 +1,11 @@
 package dev.murad.shipping.setup
 
-import dev.murad.shipping.entity.accessor.EnergyHeadVehicleDataAccessor
-import dev.murad.shipping.entity.accessor.SteamHeadVehicleDataAccessor
+import dev.murad.shipping.entity.accessor.HeadVehicleDataAccessor
 import dev.murad.shipping.entity.accessor.RouteScreenDataAccessor
 import dev.murad.shipping.entity.container.EnergyHeadVehicleContainer
 import dev.murad.shipping.entity.container.FishingBargeContainer
 import dev.murad.shipping.entity.container.SteamHeadVehicleContainer
+import dev.murad.shipping.entity.custom.vessel.submarine.SubmarineEntity
 import dev.murad.shipping.entity.custom.train.locomotive.EnergyLocomotiveEntity
 import dev.murad.shipping.entity.custom.train.locomotive.SteamLocomotiveEntity
 import dev.murad.shipping.entity.custom.vessel.tug.EnergyTugEntity
@@ -26,7 +26,7 @@ object ModMenuTypes {
             Supplier {
                 IMenuTypeExtension.create { windowId: Int, inv: Inventory, data: RegistryFriendlyByteBuf ->
                     SteamHeadVehicleContainer(
-                        windowId, inv.player.level(), SteamHeadVehicleDataAccessor(makeIntArray(data)), inv, inv.player
+                        windowId, inv.player.level(), HeadVehicleDataAccessor(makeIntArray(data)), inv, inv.player
                     )
                 }
             })
@@ -36,7 +36,17 @@ object ModMenuTypes {
             Supplier {
                 IMenuTypeExtension.create { windowId: Int, inv: Inventory, data: RegistryFriendlyByteBuf ->
                     EnergyHeadVehicleContainer(
-                        windowId, inv.player.level(), EnergyHeadVehicleDataAccessor(makeIntArray(data)), inv, inv.player
+                        windowId, inv.player.level(), HeadVehicleDataAccessor(makeIntArray(data)), inv, inv.player
+                    )
+                }
+            })
+
+    val SUBMARINE_CONTAINER: Supplier<MenuType<EnergyHeadVehicleContainer<SubmarineEntity>>> =
+        Registration.CONTAINERS.register("submarine_container",
+            Supplier {
+                IMenuTypeExtension.create { windowId: Int, inv: Inventory, data: RegistryFriendlyByteBuf ->
+                    EnergyHeadVehicleContainer(
+                        windowId, inv.player.level(), HeadVehicleDataAccessor(makeIntArray(data)), inv, inv.player
                     )
                 }
             })
@@ -52,20 +62,18 @@ object ModMenuTypes {
         return SteamHeadVehicleContainer(
             windowId,
             inv.player.level(),
-            SteamHeadVehicleDataAccessor(makeIntArray(data)),
+            HeadVehicleDataAccessor(makeIntArray(data)),
             inv,
             inv.player
         )
     }
 
-    val ENERGY_LOCOMOTIVE_CONTAINER: Supplier<MenuType<EnergyHeadVehicleContainer<EnergyLocomotiveEntity>>> =
+    val ENERGY_HEAD_CONTAINER: Supplier<MenuType<EnergyHeadVehicleContainer<EnergyLocomotiveEntity>>> =
         Registration.CONTAINERS.register("energy_locomotive_container",
             Supplier {
                 IMenuTypeExtension.create { windowId: Int, inv: Inventory, data: RegistryFriendlyByteBuf ->
                     EnergyHeadVehicleContainer(
-                        windowId, inv.player.level(), EnergyHeadVehicleDataAccessor(
-                            makeIntArray(data)
-                        ), inv, inv.player
+                        windowId, inv.player.level(), HeadVehicleDataAccessor(makeIntArray(data)), inv, inv.player
                     )
                 }
             })
