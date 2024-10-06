@@ -32,7 +32,7 @@ object SubmarineControl : VehicleControl {
         }
 
         if (input.jumping && status == Boat.Status.UNDER_WATER) {
-            result.yMovement = 0.05
+            result.yMovement = 0.08
         }
 
         result.yRotationModifier += result.deltaRotationModifier

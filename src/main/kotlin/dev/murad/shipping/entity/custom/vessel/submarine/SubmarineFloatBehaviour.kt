@@ -1,14 +1,13 @@
 package dev.murad.shipping.entity.custom.vessel.submarine
 
 import dev.murad.shipping.entity.custom.Engine
-import dev.murad.shipping.entity.custom.vessel.BoatFloatBehaviour
 import dev.murad.shipping.entity.custom.vessel.FloatBehaviour
 import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.Level
 
 
-private const val ENGINE_ON_SINK_SPEED = -0.02
+private const val ENGINE_ON_SINK_SPEED = -0.03
 private const val ENGINE_OFF_AUTO_RAISE_SPEED = 0.1
 
 class SubmarineFloatBehaviour(private val engine: Engine): FloatBehaviour {
@@ -33,7 +32,14 @@ class SubmarineFloatBehaviour(private val engine: Engine): FloatBehaviour {
     }
 
     override fun calculateDownForce(isNoGravity: Boolean, status: Boat.Status?): Double {
-        return BoatFloatBehaviour.calculateDownForce(isNoGravity, status)
+
+        var downForce = if (isNoGravity) 0.0 else -0.04
+
+        if (status == Boat.Status.UNDER_FLOWING_WATER || status == Boat.Status.UNDER_WATER) {
+            downForce = -0.02
+        }
+
+        return downForce
     }
 
     /**
@@ -42,7 +48,7 @@ class SubmarineFloatBehaviour(private val engine: Engine): FloatBehaviour {
     override fun calculateUndrownForce(level: Level, status: Boat.Status?, onPos: BlockPos): Double {
 
         if (engine.isOn() && status == Boat.Status.IN_WATER) {
-            return  ENGINE_ON_SINK_SPEED
+            return ENGINE_ON_SINK_SPEED
         }
 
         if (!engine.isOn() && (status == Boat.Status.UNDER_WATER || status == Boat.Status.UNDER_FLOWING_WATER)) {
