@@ -7,8 +7,8 @@ import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.Level
 
 
-private const val ENGINE_ON_SINK_SPEED = -0.03
-private const val ENGINE_OFF_AUTO_RAISE_SPEED = 0.1
+const val ENGINE_ON_SINK_SPEED = -0.03
+const val ENGINE_OFF_AUTO_RAISE_SPEED = 0.1
 
 class SubmarineFloatBehaviour(private val engine: Engine): FloatBehaviour {
 
@@ -23,7 +23,7 @@ class SubmarineFloatBehaviour(private val engine: Engine): FloatBehaviour {
 
         var upForce = 0.0
         if (status == Boat.Status.IN_WATER) {
-            upForce = (waterLevel - y) / bbHeight //same as above
+            upForce = (waterLevel - y) / bbHeight //same as boats
         } else if (status == Boat.Status.UNDER_WATER) {
             upForce = 0.5 //always rise (downforce is about 0.04)
         }
