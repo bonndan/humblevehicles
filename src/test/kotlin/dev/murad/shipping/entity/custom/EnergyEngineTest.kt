@@ -16,9 +16,22 @@ class EnergyEngineTest {
 
     private lateinit var energyEngine: EnergyEngine
 
+    var engineStateUpdate = false
+    var remainingBurnTimeUpdate = 0
+
+    private val saveStateCallback: SaveStateCallback = object : SaveStateCallback {
+
+        override fun saveState(engineState: Boolean, remainingBurnTime: Int) {
+            engineStateUpdate = engineState
+            remainingBurnTimeUpdate = remainingBurnTime
+        }
+    }
+
     @BeforeEach
     fun setup() {
-        energyEngine = EnergyEngine()
+        engineStateUpdate = false
+        remainingBurnTimeUpdate = 0
+        energyEngine = EnergyEngine(saveStateCallback)
     }
 
     @Test
@@ -45,7 +58,7 @@ class EnergyEngineTest {
     fun `is lit when empty and on`() {
 
         //given
-        energyEngine.setStackInSlot(0, ItemStack(Items.REDSTONE,2))
+        energyEngine.setStackInSlot(0, ItemStack(Items.REDSTONE, 2))
         energyEngine.setEngineOn(true)
 
         //when
@@ -59,7 +72,7 @@ class EnergyEngineTest {
     fun `has progress when fuel is consumed`() {
 
         //given
-        energyEngine.setStackInSlot(0, ItemStack(Items.REDSTONE,2))
+        energyEngine.setStackInSlot(0, ItemStack(Items.REDSTONE, 2))
         energyEngine.setEngineOn(true)
 
         //when
@@ -73,13 +86,46 @@ class EnergyEngineTest {
     @Test
     fun `redstone is valid fuel`() {
 
-        assertThat(energyEngine.isItemValid(0, ItemStack(Items.REDSTONE,2))).isTrue()
+        assertThat(energyEngine.isItemValid(0, ItemStack(Items.REDSTONE, 2))).isTrue()
     }
 
     @Test
     fun `coal is not valid fuel`() {
 
-        assertThat(energyEngine.isItemValid(0, ItemStack(Items.COAL,2))).isFalse()
+        assertThat(energyEngine.isItemValid(0, ItemStack(Items.COAL, 2))).isFalse()
+    }
+
+    @Test
+    fun `remaining percent is 100 when loaded and engine still off`() {
+
+        //given
+        energyEngine.setEngineOn(false)
+
+        //when
+        energyEngine.setStackInSlot(0, ItemStack(Items.REDSTONE, 20))
+
+        //then
+        assertThat(energyEngine.getBurnProgressPct()).isEqualTo(100)
+    }
+
+    @Test
+    fun `fuel is not burned when engine is off`() {
+
+        //given
+        energyEngine.setStackInSlot(0, ItemStack(Items.REDSTONE, 20))
+        energyEngine.setEngineOn(false)
+
+        //when
+        energyEngine.tickFuel()
+
+        //then
+        assertThat(energyEngine.getBurnProgressPct()).isEqualTo(100)
+
+        //when
+        energyEngine.tickFuel()
+
+        //then
+        assertThat(energyEngine.getBurnProgressPct()).isEqualTo(100)
     }
 
     @Test
@@ -87,7 +133,7 @@ class EnergyEngineTest {
 
         //given
         val compound = CompoundTag()
-        energyEngine.setStackInSlot(0, ItemStack(Items.REDSTONE,2))
+        energyEngine.setStackInSlot(0, ItemStack(Items.REDSTONE, 2))
         energyEngine.setEngineOn(true)
         energyEngine.tickFuel()
 
@@ -99,5 +145,26 @@ class EnergyEngineTest {
         assertThat(compound.getInt(TOTAL_BURN_CAPACITY)).isNotNull()
         assertThat(compound.getBoolean(ENGINE_ON)).isTrue()
         assertThat(compound.getCompound(FUEL_ITEMS)).isNotNull()
+    }
+
+    @Test
+    fun `writes to save state callback data`() {
+
+        //when
+        energyEngine.setStackInSlot(0, ItemStack(Items.REDSTONE, 2))
+        val remaining = remainingBurnTimeUpdate
+        //then
+        assertThat(remainingBurnTimeUpdate).isGreaterThan(0)
+
+        //when
+        energyEngine.setEngineOn(true)
+        //then
+        assertThat(engineStateUpdate).isTrue()
+
+
+        energyEngine.tickFuel()
+        //when
+        assertThat(remainingBurnTimeUpdate).isLessThan(remaining)
+
     }
 }

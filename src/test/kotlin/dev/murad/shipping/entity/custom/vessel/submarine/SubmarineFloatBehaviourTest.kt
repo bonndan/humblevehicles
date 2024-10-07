@@ -4,17 +4,14 @@ import dev.murad.shipping.entity.custom.EnergyEngine
 import dev.murad.shipping.entity.custom.Engine
 import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.vehicle.Boat
-import net.minecraft.world.level.Level
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 import org.mockito.Mockito.mock
 
 class SubmarineFloatBehaviourTest {
 
-    private val engine: Engine = EnergyEngine()
+    private val engine: Engine = EnergyEngine(mock())
     private lateinit var behaviour: SubmarineFloatBehaviour
 
     @BeforeEach

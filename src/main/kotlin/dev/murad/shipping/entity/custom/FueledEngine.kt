@@ -4,7 +4,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity
 
 
-class FueledEngine(fuelMultiplier: Double = 1.0) : Engine(fuelMultiplier) {
+class FueledEngine(saveStateCallback: SaveStateCallback) : Engine(saveStateCallback) {
 
     override fun calculateBurnTimeOfNextItem(stack: ItemStack): Int {
 

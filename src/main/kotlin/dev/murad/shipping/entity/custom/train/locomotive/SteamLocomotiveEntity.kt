@@ -23,7 +23,7 @@ import net.minecraft.world.level.Level
 class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContainerWrapper, WorldlyContainer {
 
     init {
-        engine = FueledEngine(ShippingConfig.Server.STEAM_LOCO_FUEL_MULTIPLIER!!.get())
+        engine = FueledEngine(saveStateCallback)
     }
 
     constructor(type: EntityType<*>, level: Level) : super(type, level)

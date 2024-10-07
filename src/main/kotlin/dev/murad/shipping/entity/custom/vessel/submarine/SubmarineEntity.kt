@@ -23,7 +23,7 @@ import net.minecraft.world.phys.Vec3
 class SubmarineEntity : AbstractTugEntity {
 
     init {
-        engine = EnergyEngine()
+        engine = EnergyEngine(saveStateCallback)
         control = SubmarineControl
         floatBehaviour = SubmarineFloatBehaviour(engine)
     }

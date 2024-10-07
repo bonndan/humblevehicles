@@ -7,7 +7,9 @@ import dev.murad.shipping.capability.StallingCapability
 import dev.murad.shipping.entity.accessor.HeadVehicleDataAccessor
 import dev.murad.shipping.entity.custom.Engine
 import dev.murad.shipping.entity.custom.HeadVehicle
+import dev.murad.shipping.entity.custom.SaveStateCallback
 import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity
+import dev.murad.shipping.entity.custom.vessel.tug.AbstractTugEntity
 import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart
 import dev.murad.shipping.entity.navigation.LocomotiveNavigator
 import dev.murad.shipping.item.LocoRouteItem
@@ -42,7 +44,6 @@ import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.entity.PartEntity
 import net.neoforged.neoforge.items.ItemStackHandler
 import java.util.*
-import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Predicate
 import kotlin.math.abs
@@ -52,6 +53,12 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     ItemHandlerVanillaContainerWrapper, HeadVehicle {
 
     protected val enrollmentHandler: ChunkManagerEnrollmentHandler
+    protected val saveStateCallback = object: SaveStateCallback {
+        override fun saveState(engineState: Boolean, remainingBurnTime: Int) {
+            entityData[ENGINE_IS_ON] = engineState
+            entityData[REMAINING_BURN_TIME] = remainingBurnTime
+        }
+    }
     protected lateinit var engine: Engine
 
     private var independentMotion = false
@@ -177,6 +184,12 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
         if (level().isClientSide && INDEPENDENT_MOTION == key) {
             independentMotion = entityData.get(INDEPENDENT_MOTION)
+            if (ENGINE_IS_ON == key) {
+                setEngineOn(entityData[ENGINE_IS_ON])
+            }
+            if (REMAINING_BURN_TIME == key) {
+                engine.setRemainingBurnTime(entityData[REMAINING_BURN_TIME])
+            }
         }
     }
 
@@ -198,12 +211,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
                 navigator.serverTick()
             }
             enrollmentHandler.tick()
-            enrollmentHandler.playerName.ifPresent { name: String ->
-                entityData.set(
-                    OWNER,
-                    name
-                )
-            }
+            enrollmentHandler.playerName.ifPresent { name -> entityData.set(OWNER, name) }
         }
 
         tickYRot()
@@ -257,6 +265,8 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         super.defineSynchedData(pBuilder)
         pBuilder.define(INDEPENDENT_MOTION, false)
         pBuilder.define(OWNER, "")
+        pBuilder.define(ENGINE_IS_ON, false)
+        pBuilder.define(REMAINING_BURN_TIME, 0)
     }
 
     private fun tickMovement() {
@@ -300,7 +310,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
         if (shouldFreezeTrain()) {
             linkingHandler.train?.asList()
-                ?.forEach(Consumer { t: AbstractTrainCarEntity -> t.setDeltaMovement(0.0, 0.0, 0.0) })
+                ?.forEach { t: AbstractTrainCarEntity -> t.setDeltaMovement(0.0, 0.0, 0.0) }
         }
     }
 
@@ -635,8 +645,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         }
     }
 
-
-
     override fun setEngineOn(state: Boolean) {
         this.engine.setEngineOn(state)
     }
@@ -706,14 +714,19 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     companion object {
         // item handler for loco routes
         private const val LOCO_ROUTE_INV_TAG = "locoRouteInv"
-
-
         private const val NAVIGATOR_TAG = "navigator"
+
         private val INDEPENDENT_MOTION: EntityDataAccessor<Boolean> = SynchedEntityData.defineId(
             AbstractLocomotiveEntity::class.java, EntityDataSerializers.BOOLEAN
         )
         private val OWNER: EntityDataAccessor<String> = SynchedEntityData.defineId(
             AbstractLocomotiveEntity::class.java, EntityDataSerializers.STRING
+        )
+        private val ENGINE_IS_ON: EntityDataAccessor<Boolean> = SynchedEntityData.defineId(
+            AbstractTugEntity::class.java, EntityDataSerializers.BOOLEAN
+        )
+        private val REMAINING_BURN_TIME: EntityDataAccessor<Int> = SynchedEntityData.defineId(
+            AbstractTugEntity::class.java, EntityDataSerializers.INT
         )
     }
 }

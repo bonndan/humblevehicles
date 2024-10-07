@@ -49,10 +49,6 @@ interface LinkableEntity<V : LinkableEntity<V>> {
         return nextEntity!!.map { e: V -> this.checkNoLoopsHelper(e, next, set) }.orElse(false)
     }
 
-    fun <U> applyWithAll(function: Function<LinkableEntity<V>?, U>): Stream<U> {
-        return getTrain()!!.head!!.applyWithDominated(function)
-    }
-
     fun <U> applyWithDominant(function: Function<LinkableEntity<V>?, U>): Stream<U> {
         val ofThis = Stream.of(function.apply(this))
 
@@ -60,17 +56,6 @@ interface LinkableEntity<V : LinkableEntity<V>> {
             Stream.concat(
                 ofThis,
                 dom.applyWithDominant(function)
-            )
-        }.orElse(ofThis)
-    }
-
-    fun <U> applyWithDominated(function: Function<LinkableEntity<V>?, U>): Stream<U> {
-        val ofThis = Stream.of(function.apply(this))
-
-        return if (checkNoLoopsDominated()) ofThis else getFollower().map { dom: V ->
-            Stream.concat(
-                ofThis,
-                dom.applyWithDominated(function)
             )
         }.orElse(ofThis)
     }

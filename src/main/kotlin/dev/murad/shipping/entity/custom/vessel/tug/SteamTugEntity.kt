@@ -1,6 +1,5 @@
 package dev.murad.shipping.entity.custom.vessel.tug
 
-import dev.murad.shipping.ShippingConfig
 import dev.murad.shipping.entity.container.SteamHeadVehicleContainer
 import dev.murad.shipping.entity.custom.FueledEngine
 import dev.murad.shipping.entity.custom.SmokeGenerator.makeSmoke
@@ -22,7 +21,7 @@ import net.minecraft.world.level.Level
 class SteamTugEntity : AbstractTugEntity {
 
     init {
-        engine = FueledEngine(ShippingConfig.Server.STEAM_TUG_FUEL_MULTIPLIER!!.get())
+        engine = FueledEngine(saveStateCallback)
         control = TugControl
     }
 

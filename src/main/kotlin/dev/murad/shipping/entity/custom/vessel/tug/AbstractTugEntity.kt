@@ -6,6 +6,7 @@ import dev.murad.shipping.capability.StallingCapability
 import dev.murad.shipping.entity.accessor.HeadVehicleDataAccessor
 import dev.murad.shipping.entity.custom.Engine
 import dev.murad.shipping.entity.custom.HeadVehicle
+import dev.murad.shipping.entity.custom.SaveStateCallback
 import dev.murad.shipping.entity.custom.VehicleControl
 import dev.murad.shipping.entity.custom.vessel.VesselEntity
 import dev.murad.shipping.entity.navigation.TugPathNavigator
@@ -14,7 +15,6 @@ import dev.murad.shipping.setup.ModBlocks
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.setup.ModSounds
 import dev.murad.shipping.util.*
-import net.minecraft.client.Minecraft
 import net.minecraft.client.player.Input
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.core.BlockPos
@@ -26,7 +26,6 @@ import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.*
-import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.MoverType
@@ -57,6 +56,12 @@ abstract class AbstractTugEntity :
     ItemHandlerVanillaContainerWrapper {
 
     protected val enrollmentHandler: ChunkManagerEnrollmentHandler
+    protected val saveStateCallback = object : SaveStateCallback {
+        override fun saveState(engineState: Boolean, remainingBurnTime: Int) {
+            entityData[ENGINE_IS_ON] = engineState
+            entityData[REMAINING_BURN_TIME] = remainingBurnTime
+        }
+    }
     protected lateinit var engine: Engine
     protected lateinit var control: VehicleControl
 
@@ -69,19 +74,13 @@ abstract class AbstractTugEntity :
     private var remainingStallTime: Int = 0
     private var swimSpeedMult: Double = 1.0
 
-
     private var dockCheckCooldown: Int = 0
     protected var independentMotion: Boolean = false
     private var pathfindCooldown: Int = 0
     private val frontHitbox: VehicleFrontPart
 
     private var path: Route?
-
-    protected fun getPath(): Route? = path
-
     private var nextStop: Int = 0
-
-    protected fun getNextStop(): Int = nextStop
 
     constructor(type: EntityType<out WaterAnimal>, world: Level) : super(type, world)
 
@@ -114,9 +113,9 @@ abstract class AbstractTugEntity :
         .withBurnProgressPct { engine.getBurnProgressPct() }
         .withId(this.id)
         .withLit { engine.isLit() }
-        .withVisitedSize { getNextStop() }
+        .withVisitedSize { nextStop }
         .withOn { engine.isOn() }
-        .withRouteSize { getPath()?.size ?: 0 }
+        .withRouteSize { path?.size ?: 0 }
         .withCanMove { enrollmentHandler.mayMove() }
         .build()
 
@@ -194,20 +193,6 @@ abstract class AbstractTugEntity :
 
     override fun getRawHandler(): ItemStackHandler {
         return engine
-    }
-
-    private fun tickFuel(): Int {
-
-        val isLit = engine.isLit()
-        val remainingBurnTime = engine.tickFuel()
-
-        val isLitAfterTick = remainingBurnTime > 0
-        if (isLit != isLitAfterTick) {
-            entityData.set(ENGINE_IS_ON, engine.isOn())
-            entityData.set(REMAINING_BURN_TIME, remainingBurnTime)
-        }
-
-        return remainingBurnTime
     }
 
     protected fun onDock() {
@@ -312,7 +297,7 @@ abstract class AbstractTugEntity :
         return InteractionResult.sidedSuccess(level().isClientSide)
     }
 
-    protected open fun wantsToStopRiding(player: Player) :Boolean{
+    protected open fun wantsToStopRiding(player: Player): Boolean {
         return player.isShiftKeyDown
     }
 
@@ -332,17 +317,16 @@ abstract class AbstractTugEntity :
 
         if (level().isClientSide && entityData != null) {
             if (INDEPENDENT_MOTION == key) {
-                independentMotion = entityData.get(INDEPENDENT_MOTION)
+                independentMotion = entityData[INDEPENDENT_MOTION]
             }
             if (ENGINE_IS_ON == key) {
-                engine.setEngineOn(entityData.get(ENGINE_IS_ON))
+                setEngineOn(entityData[ENGINE_IS_ON])
             }
             if (REMAINING_BURN_TIME == key) {
-                engine.setRemainingBurnTime(entityData.get(REMAINING_BURN_TIME))
+                engine.setRemainingBurnTime(entityData[REMAINING_BURN_TIME])
             }
         }
     }
-
 
     override fun registerGoals() {
         goalSelector.addGoal(0, MovementGoal())
@@ -389,7 +373,7 @@ abstract class AbstractTugEntity :
         if (!level().isClientSide) {
             enrollmentHandler.tick()
             enrollmentHandler.playerName.ifPresent { name: String -> entityData.set(OWNER, name) }
-            tickFuel()
+            engine.tickFuel()
         }
 
         if (this.isControlledByLocalInstance) {
@@ -504,7 +488,6 @@ abstract class AbstractTugEntity :
         pBuilder.define(ENGINE_IS_ON, false)
         pBuilder.define(REMAINING_BURN_TIME, 0)
     }
-
 
     private fun setPath(path: Route?) {
         if (!this.path!!.isEmpty() && !this.path!!.equals(path)) {
@@ -656,8 +639,8 @@ abstract class AbstractTugEntity :
     }
 
     /*
-                           Stalling Capability
-                     */
+     Stalling Capability
+    */
     private val stalling: StallingCapability = object : StallingCapability {
         override fun isDocked(): Boolean {
             return isDocked

@@ -20,7 +20,7 @@ import net.minecraft.world.level.Level
 class EnergyLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContainerWrapper, WorldlyContainer {
 
     init {
-        engine = EnergyEngine()
+        engine = EnergyEngine(saveStateCallback)
     }
 
     constructor(type: EntityType<*>, level: Level) : super(type, level)

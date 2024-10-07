@@ -23,8 +23,8 @@ class EnergyHeadVehicleScreen<T>(menu: EnergyHeadVehicleContainer<T>, inventory:
         graphics.blit(GUI, guiLeft, guiTop, 0, 0, this.xSize, this.ySize)
 
         val remainingPercent = menu.getBurnProgress()
-        val k = (remainingPercent / 100 * METER_HEIGHT)
-        graphics.blit(GUI, guiLeft + 56, guiTop + 67 - k, 176, METER_HEIGHT - k, 12, k)
+        val meterSize: Int = (remainingPercent / 100.0f * METER_HEIGHT).toInt()
+        graphics.blit(GUI, guiLeft + 56, guiTop + 67 - meterSize, 176, METER_HEIGHT - meterSize, 12, meterSize)
     }
 
     companion object {

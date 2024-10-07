@@ -19,7 +19,7 @@ import net.minecraft.world.level.Level
 class EnergyTugEntity : AbstractTugEntity {
 
     init {
-        engine = EnergyEngine()
+        engine = EnergyEngine(saveStateCallback)
         control = TugControl
     }
 
