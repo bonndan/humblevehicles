@@ -95,9 +95,10 @@ object ModEntityTypes {
 
     val STEAM_TUG: Supplier<EntityType<SteamTugEntity>> =
         ENTITIES.register("tug", Supplier<EntityType<SteamTugEntity>> {
-            EntityType.Builder.of(
-                { type: EntityType<SteamTugEntity>, world -> SteamTugEntity(type, world) }, MobCategory.MISC
-            ).sized(0.7f, 0.9f).clientTrackingRange(8)
+            EntityType.Builder
+                .of({ type: EntityType<SteamTugEntity>, world -> SteamTugEntity(type, world) }, MobCategory.MISC)
+                .sized(0.8f, 1f)
+                .clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "tug").toString())
         })
 

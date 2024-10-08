@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.math.Axis
 import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.entity.custom.vessel.VesselEntity
+import dev.murad.shipping.entity.models.PositionAdjustedEntity
 import dev.murad.shipping.entity.models.train.ChainModel
 import net.minecraft.client.model.EntityModel
 import net.minecraft.client.renderer.LightTexture
@@ -17,7 +18,6 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.FastColor
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.item.DyeColor
@@ -42,7 +42,7 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         packetLight: Int
     ) {
         matrixStack.pushPose()
-        matrixStack.translate(0.0, getModelYoffset(), 0.0)
+        matrixStack.translate(0.0, getModelYOffset(vesselEntity), 0.0)
         matrixStack.translate(0.0, 0.07, 0.0)
         matrixStack.mulPose(Axis.YP.rotationDegrees(180.0f - yaw))
         matrixStack.scale(-1.0f, -1.0f, 1.0f)
@@ -66,7 +66,10 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         getModel(vesselEntity).renderToBuffer(matrixStack, ivertexbuilder, packedLight, overlay, white)
     }
 
-    protected fun getModelYoffset(): Double {
+    private fun getModelYOffset(vesselEntity: T): Double {
+        if (vesselEntity is PositionAdjustedEntity) {
+            return vesselEntity.getModelYOffset()
+        }
         return 0.275
     }
 

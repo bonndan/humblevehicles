@@ -5,34 +5,36 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.core.particles.SimpleParticleType
 import net.minecraft.util.RandomSource
-import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.Level
+import net.minecraft.world.phys.Vec3
 import java.util.function.Supplier
 
 object SmokeGenerator {
 
-    //TODO remove entity from API
-    fun makeSmoke(world: Level, independentMotion: Boolean, onPos: BlockPos, entity: Entity) {
+    private val smokeChance = ShippingConfig.Client.TUG_SMOKE_MODIFIER.get()
 
-        if (!world.isClientSide || !independentMotion) return
+    fun makeSmoke(level: Level, emitterPos: Vec3, entityPos: Vec3, oldEntityPos: Vec3) {
 
-        val blockpos: BlockPos = onPos.above().above()
-        val random: RandomSource = world.random
-        if (random.nextFloat() < ShippingConfig.Client.TUG_SMOKE_MODIFIER.get()) {
+        if (!level.isClientSide) return
+
+
+        val random: RandomSource = level.random
+
+        if (random.nextFloat() < smokeChance) {
             for (i in 0 until random.nextInt(2) + 2) {
-                makeParticles(world, blockpos, entity)
+                makeParticles(level, emitterPos, entityPos, oldEntityPos)
             }
         }
     }
 
-    private fun makeParticles(level: Level, pos: BlockPos, entity: Entity) {
+    private fun makeParticles(level: Level, pos: Vec3, currentPos: Vec3, oldPos: Vec3) {
 
         val random: RandomSource = level.getRandom()
         val h: Supplier<Boolean> = Supplier { random.nextDouble() < 0.5 }
 
-        val dx: Double = (entity.getX() - entity.xOld) / 12.0
-        val dy: Double = (entity.getY() - entity.yOld) / 12.0
-        val dz: Double = (entity.getZ() - entity.zOld) / 12.0
+        val dx: Double = (currentPos.x - oldPos.x) / 12.0
+        val dy: Double = (currentPos.y - oldPos.y) / 12.0
+        val dz: Double = (currentPos.z - oldPos.z) / 12.0
 
         val xDrift: Double = (if (h.get()) 1 else -1) * random.nextDouble() * 2
         val zDrift: Double = (if (h.get()) 1 else -1) * random.nextDouble() * 2
@@ -43,11 +45,9 @@ object SmokeGenerator {
         level.addAlwaysVisibleParticle(
             particleType,
             true,
-            pos.getX()
-                .toDouble() + 0.5 + random.nextDouble() / 3.0 * (if (random.nextBoolean()) 1 else -1).toDouble(),
-            pos.getY().toDouble() + random.nextDouble() + random.nextDouble(),
-            pos.getZ()
-                .toDouble() + 0.5 + random.nextDouble() / 3.0 * (if (random.nextBoolean()) 1 else -1).toDouble(),
+            pos.x + 0.5 + random.nextDouble() / 3.0 * (if (random.nextBoolean()) 1 else -1).toDouble(),
+            pos.y + random.nextDouble() + random.nextDouble(),
+            pos.z + 0.5 + random.nextDouble() / 3.0 * (if (random.nextBoolean()) 1 else -1).toDouble(),
             0.007 * xDrift + dx, 0.05 + dy, 0.007 * zDrift + dz
         )
     }

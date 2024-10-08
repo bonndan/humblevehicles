@@ -25,10 +25,19 @@ open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
     // TODO: de-uglify
     private var rotation = 90f
 
-    private val baseModel: EntityModel<T> = baseModelPack.supplier.supply(context.bakeLayer(baseModelPack.location))
-    private val insertModel: EntityModel<T> =
-        insertModelPack.supplier.supply(context.bakeLayer(insertModelPack.location))
-    private val trimModel: EntityModel<T> = trimModelPack.supplier.supply(context.bakeLayer(trimModelPack.location))
+    private val baseModel: EntityModel<T> = baseModelPack.supplier.supply(
+        context.bakeLayer(baseModelPack.location)
+    )
+    private val insertModel: EntityModel<T> = insertModelPack.supplier.supply(
+        context.bakeLayer(insertModelPack.location)
+    )
+
+    /**
+     * The trim model is used for coloring.
+     */
+    private val trimModel: EntityModel<T> = trimModelPack.supplier.supply(
+        context.bakeLayer(trimModelPack.location)
+    )
 
     private val baseTextureLocation: ResourceLocation = baseModelPack.texture
     private val insertTextureLocation: ResourceLocation = insertModelPack.texture
@@ -173,7 +182,9 @@ open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
             return this
         }
 
-
+        /**
+         * The trim model is used for coloring.
+         */
         fun trimModel(supplier: ModelSupplier<T>, location: ModelLayerLocation, texture: ResourceLocation): Builder<T> {
             this.trimModelPack = ModelPack(supplier, location, texture)
             return this

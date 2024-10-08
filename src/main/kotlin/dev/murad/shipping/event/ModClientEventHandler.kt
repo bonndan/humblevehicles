@@ -221,11 +221,11 @@ object ModClientEventHandler {
                 .derotate()
         }
 
-        event.registerEntityRenderer(ModEntityTypes.STEAM_TUG.get()) { ctx: EntityRendererProvider.Context ->
+        event.registerEntityRenderer(ModEntityTypes.STEAM_TUG.get()) { ctx ->
             MultipartVesselRenderer.Builder<VesselEntity>(ctx)
                 .baseModel(
                     { root -> SteamTugModel(root) }, SteamTugModel.LAYER_LOCATION,
-                    HumVeeMod.entityTexture("barge/steam_tug_base.png")
+                    HumVeeMod.entityTexture("barge/steam_tug_texture.png")
                 )
                 .emptyInsert()
                 .trimModel(

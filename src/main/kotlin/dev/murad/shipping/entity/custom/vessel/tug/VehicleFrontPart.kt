@@ -14,26 +14,26 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.LeadItem
 import net.neoforged.neoforge.entity.PartEntity
 
-class VehicleFrontPart(parent: Entity) : PartEntity<Entity?>(parent) {
+class VehicleFrontPart(parent: Entity) : PartEntity<Entity>(parent) {
     init {
         this.refreshDimensions()
     }
 
     override fun hurt(pSource: DamageSource, pAmount: Float): Boolean {
         return if (this.isInvulnerableTo(pSource)) false
-        else parent?.hurt(pSource, pAmount) == true
+        else parent.hurt(pSource, pAmount) == true
     }
 
     override fun `is`(pEntity: Entity): Boolean {
-        return this === pEntity || getParent() === pEntity
+        return this === pEntity || parent === pEntity
     }
 
     override fun getPickResult(): ItemStack? {
-        return getParent()!!.getPickResult()
+        return parent.pickResult
     }
 
     override fun getDimensions(pPose: Pose): EntityDimensions {
-        return getParent()!!.getDimensions(pPose)
+        return parent.getDimensions(pPose)
     }
 
     override fun shouldBeSaved(): Boolean {

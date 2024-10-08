@@ -9,7 +9,6 @@ import dev.murad.shipping.entity.custom.Engine
 import dev.murad.shipping.entity.custom.HeadVehicle
 import dev.murad.shipping.entity.custom.SaveStateCallback
 import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity
-import dev.murad.shipping.entity.custom.vessel.tug.AbstractTugEntity
 import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart
 import dev.murad.shipping.entity.navigation.LocomotiveNavigator
 import dev.murad.shipping.item.LocoRouteItem
@@ -183,7 +182,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         super.onSyncedDataUpdated(key)
 
         if (level().isClientSide && INDEPENDENT_MOTION == key) {
-            independentMotion = entityData.get(INDEPENDENT_MOTION)
+            independentMotion = entityData[INDEPENDENT_MOTION]
             if (ENGINE_IS_ON == key) {
                 setEngineOn(entityData[ENGINE_IS_ON])
             }
@@ -194,7 +193,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     }
 
     override fun owner(): String {
-        return entityData.get(OWNER)
+        return entityData[OWNER]
     }
 
     override fun hasOwner(): Boolean {
@@ -226,12 +225,9 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
             tickMovement()
         }
 
-        if (level().isClientSide
-            && independentMotion
-        ) {
+        if (level().isClientSide && independentMotion) {
             doMovementEffect()
         }
-
 
         frontHitbox.updatePosition(this)
     }
@@ -291,7 +287,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         }
         if (!isDocked && engine.isOn() && remainingStallTime <= 0 && !forceStallCheck && !shouldFreezeTrain() && tickFuel()) {
             tickSpeedLimit()
-            entityData.set(INDEPENDENT_MOTION, true)
+            entityData[INDEPENDENT_MOTION] = true
             accelerate()
         } else {
             if (RailHelper.getRail(this.onPos.above(), this.level())
@@ -301,10 +297,10 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
                     .orElse(true) && tickFuel()
             ) {
                 this.deltaMovement = Vec3.ZERO
-                entityData.set(INDEPENDENT_MOTION, true)
+                entityData[INDEPENDENT_MOTION] = true
                 this.setPos(xOld, yOld, zOld)
             } else {
-                entityData.set(INDEPENDENT_MOTION, false)
+                entityData[INDEPENDENT_MOTION] = false
             }
         }
 
@@ -340,8 +336,8 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
                                 2
                             )
                         }
-                        .map<Boolean> { obj -> obj.isPresent }
-                        .reduce { a: Boolean, b: Boolean -> java.lang.Boolean.logicalOr(a, b) }
+                        .map { obj -> obj.isPresent }
+                        .reduce { a, b -> java.lang.Boolean.logicalOr(a, b) }
                 } else return@flatMap Optional.of<Boolean>(false)
             }.orElse(false)
     }
@@ -629,21 +625,13 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
 
     // duplicate due to linking issues
-    override fun isValid(pPlayer: Player): Boolean {
-        return if (this.isRemoved) {
-            false
-        } else {
-            !(this.distanceToSqr(pPlayer) > 64.0)
-        }
-    }
+    override fun isValid(pPlayer: Player): Boolean =
+        if (this.isRemoved) { false }
+        else { this.distanceToSqr(pPlayer) <= 64.0 }
 
-    override fun stillValid(pPlayer: Player): Boolean {
-        return if (this.isRemoved) {
-            false
-        } else {
-            !(this.distanceToSqr(pPlayer) > 64.0)
-        }
-    }
+    override fun stillValid(pPlayer: Player): Boolean =
+        if (this.isRemoved) { false }
+        else { this.distanceToSqr(pPlayer) <= 64.0 }
 
     override fun setEngineOn(state: Boolean) {
         this.engine.setEngineOn(state)
@@ -723,10 +711,10 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
             AbstractLocomotiveEntity::class.java, EntityDataSerializers.STRING
         )
         private val ENGINE_IS_ON: EntityDataAccessor<Boolean> = SynchedEntityData.defineId(
-            AbstractTugEntity::class.java, EntityDataSerializers.BOOLEAN
+            AbstractLocomotiveEntity::class.java, EntityDataSerializers.BOOLEAN
         )
         private val REMAINING_BURN_TIME: EntityDataAccessor<Int> = SynchedEntityData.defineId(
-            AbstractTugEntity::class.java, EntityDataSerializers.INT
+            AbstractLocomotiveEntity::class.java, EntityDataSerializers.INT
         )
     }
 }

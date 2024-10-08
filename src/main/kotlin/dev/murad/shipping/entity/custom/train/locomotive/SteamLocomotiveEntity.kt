@@ -1,6 +1,5 @@
 package dev.murad.shipping.entity.custom.train.locomotive
 
-import dev.murad.shipping.ShippingConfig
 import dev.murad.shipping.entity.container.SteamHeadVehicleContainer
 import dev.murad.shipping.entity.custom.FueledEngine
 import dev.murad.shipping.entity.custom.SmokeGenerator.makeSmoke
@@ -19,6 +18,8 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
+import net.minecraft.world.phys.Vec3
+import thedarkcolour.kotlinforforge.neoforge.forge.vectorutil.v3d.toVec3
 
 class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContainerWrapper, WorldlyContainer {
 
@@ -71,12 +72,7 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
     }
 
     override fun doMovementEffect() {
-
-        val level = this.level()
-        val random = level.random
-        if (random.nextFloat() < ShippingConfig.Client.LOCO_SMOKE_MODIFIER.get()) {
-            makeSmoke(level(), true, onPos, this)
-        }
+        makeSmoke(level(), onPos.above().above().toVec3(), Vec3(x, y, z), Vec3(xOld, yOld, zOld))
     }
 
     override fun canTakeItemThroughFace(index: Int, itemStack: ItemStack, dir: Direction): Boolean {

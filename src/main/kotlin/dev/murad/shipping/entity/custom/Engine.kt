@@ -116,8 +116,6 @@ abstract class Engine(private var saveStateCallback: SaveStateCallback) : ItemSt
         const val TOTAL_BURN_CAPACITY = "burn_capacity"
         const val ENGINE_ON = "eo"
         const val FUEL_ITEMS = "fuelItems"
-
-
     }
 
 }
