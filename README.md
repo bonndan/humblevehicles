@@ -33,6 +33,9 @@ This is a NeoForge port of [LittleLogistics](https://littlelogistics.murad.dev/)
 LGPLv3
 https://www.gnu.org/licenses/lgpl-3.0.en.html
 
+All assets are used with permission from the original authors of the Little Logistics project. 
+
+New models made by [pega](https://www.fiverr.com/s/38y2BGL) are published under the same license as the source code.  
 
 ## Development
 
