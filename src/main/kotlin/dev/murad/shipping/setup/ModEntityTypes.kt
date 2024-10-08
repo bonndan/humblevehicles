@@ -107,7 +107,7 @@ object ModEntityTypes {
         ENTITIES.register("energy_tug", Supplier<EntityType<EnergyTugEntity>> {
             EntityType.Builder.of(
                 { type: EntityType<EnergyTugEntity>, world -> EnergyTugEntity(type, world) }, MobCategory.MISC
-            ).sized(0.7f, 0.9f).clientTrackingRange(8)
+            ).sized(0.8f, 1f).clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "energy_tug").toString())
         })
 

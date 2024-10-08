@@ -185,9 +185,8 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
                 )
             )
 
-        isCustomNameVisible = true
-        getAttribute(NeoForgeMod.NAMETAG_DISTANCE.delegate)!!.baseValue =
-            NAMETAG_RENDERING_DISTANCE
+        isCustomNameVisible = hasCustomName()
+        getAttribute(NeoForgeMod.NAMETAG_DISTANCE.delegate)!!.baseValue = NAMETAG_RENDERING_DISTANCE
     }
 
     override fun handleAirSupply(airSupply: Int) {

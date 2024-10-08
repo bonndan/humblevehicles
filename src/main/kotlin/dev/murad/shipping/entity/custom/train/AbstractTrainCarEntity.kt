@@ -85,12 +85,12 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
     }
 
     private fun resetAttributes() {
-        isCustomNameVisible = true
+        isCustomNameVisible = hasCustomName()
     }
 
     protected val railShape: Optional<RailShape>
         get() {
-            for (pos in Arrays.asList(onPos.above(), onPos)) {
+            for (pos in mutableListOf(onPos.above(), onPos)) {
                 val state = level().getBlockState(pos)
                 if (state.block is BaseRailBlock) {
                     return Optional.of(railHelper.getShape(pos))
