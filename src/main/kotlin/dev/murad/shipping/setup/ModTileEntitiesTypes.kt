@@ -56,14 +56,13 @@ object ModTileEntitiesTypes {
 
     val VESSEL_CHARGER: Supplier<BlockEntityType<VesselChargerTileEntity>> = register(
         "vessel_charger",
-        { pos: BlockPos, state: BlockState -> VesselChargerTileEntity(pos, state) },
+        { pos, state -> VesselChargerTileEntity(pos, state) },
         ModBlocks.VESSEL_CHARGER
     )
-
     
     val RAPID_HOPPER: Supplier<BlockEntityType<RapidHopperTileEntity>> = register(
         "rapid_hopper",
-        { pWorldPosition: BlockPos, pBlockState: BlockState -> RapidHopperTileEntity(pWorldPosition, pBlockState) },
+        { pos, state -> RapidHopperTileEntity(pos, state) },
         ModBlocks.RAPID_HOPPER
     )
 

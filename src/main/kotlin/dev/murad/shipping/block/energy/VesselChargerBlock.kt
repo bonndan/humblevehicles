@@ -29,7 +29,8 @@ import net.minecraft.world.phys.shapes.VoxelShape
 import java.util.*
 import java.util.stream.Stream
 
-class VesselChargerBlock(p_i48440_1_: Properties?) : Block(p_i48440_1_), EntityBlock {
+class VesselChargerBlock(properties: Properties) : Block(properties), EntityBlock {
+
     override fun useItemOn(
         pStack: ItemStack,
         pState: BlockState,
@@ -101,8 +102,8 @@ class VesselChargerBlock(p_i48440_1_: Properties?) : Block(p_i48440_1_), EntityB
     override fun getStateForPlacement(context: BlockPlaceContext): BlockState? {
         return defaultBlockState()
             .setValue(
-                FACING, getPlaceDir(context.clickedPos, context.level)
-                    .orElse(context.horizontalDirection.opposite)
+                FACING,
+                getPlaceDir(context.clickedPos, context.level).orElse(context.horizontalDirection.opposite)
             )
     }
 
@@ -111,21 +112,19 @@ class VesselChargerBlock(p_i48440_1_: Properties?) : Block(p_i48440_1_), EntityB
         state: BlockState,
         type: BlockEntityType<T>
     ): BlockEntityTicker<T>? {
-        return if (level.isClientSide()) null else TickerUtil.createTickerHelper(
+
+        if (level.isClientSide()) {
+            return null
+        }
+
+        return TickerUtil.createTickerHelper(
             type,
             ModTileEntitiesTypes.VESSEL_CHARGER.get()
-        ) { pLevel: Level?, pPos: BlockPos?, pState: BlockState?, e: VesselChargerTileEntity ->
-            VesselChargerTileEntity.serverTick(
-                pLevel,
-                pPos,
-                pState,
-                e
-            )
-        }
+        ) { pLevel, pPos, pState, entity -> VesselChargerTileEntity.serverTick(pLevel, pPos, pState, entity) }
     }
 
     companion object {
-        
+
         val FACING: DirectionProperty = HorizontalDirectionalBlock.FACING
         private val SHAPE_N = Stream.of(
             box(3.0, 2.0, 3.0, 13.0, 13.0, 13.0),
