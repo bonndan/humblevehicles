@@ -6,7 +6,6 @@ import dev.murad.shipping.block.energy.VesselChargerTileEntity
 import dev.murad.shipping.block.fluid.FluidHopperTileEntity
 import dev.murad.shipping.block.rail.blockentity.LocomotiveDockTileEntity
 import dev.murad.shipping.block.rail.blockentity.TrainCarDockTileEntity
-import dev.murad.shipping.block.rapidhopper.RapidHopperTileEntity
 import dev.murad.shipping.block.vesseldetector.VesselDetectorTileEntity
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Block
@@ -58,12 +57,6 @@ object ModTileEntitiesTypes {
         "vessel_charger",
         { pos, state -> VesselChargerTileEntity(pos, state) },
         ModBlocks.VESSEL_CHARGER
-    )
-    
-    val RAPID_HOPPER: Supplier<BlockEntityType<RapidHopperTileEntity>> = register(
-        "rapid_hopper",
-        { pos, state -> RapidHopperTileEntity(pos, state) },
-        ModBlocks.RAPID_HOPPER
     )
 
     private fun <T : BlockEntity> register(

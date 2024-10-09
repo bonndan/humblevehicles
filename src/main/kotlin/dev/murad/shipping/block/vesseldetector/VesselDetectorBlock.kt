@@ -33,7 +33,6 @@ class VesselDetectorBlock(properties: Properties) : Block(properties), EntityBlo
         return ModTileEntitiesTypes.VESSEL_DETECTOR.get().create(pos, state)
     }
 
-
     override fun canConnectRedstone(state: BlockState, world: BlockGetter, pos: BlockPos, side: Direction?): Boolean {
         return state.getValue(FACING) == side
     }
@@ -80,11 +79,7 @@ class VesselDetectorBlock(properties: Properties) : Block(properties), EntityBlo
 
     // client only
     private fun showParticles(pos: BlockPos, state: BlockState, level: Level) {
-        val bb: AABB = VesselDetectorTileEntity.Companion.getSearchBox(
-            pos, state.getValue<Direction>(
-                FACING
-            ), level
-        )
+        val bb: AABB = VesselDetectorTileEntity.getSearchBox(pos, state.getValue(FACING), level)
         val edges = MathUtil.getEdges(bb)
 
         for (edge in edges) {
@@ -116,22 +111,16 @@ class VesselDetectorBlock(properties: Properties) : Block(properties), EntityBlo
         state: BlockState,
         type: BlockEntityType<T>
     ): BlockEntityTicker<T>? {
-        return if (level.isClientSide()) null else TickerUtil.createTickerHelper<VesselDetectorTileEntity, T>(
-            type, ModTileEntitiesTypes.VESSEL_DETECTOR.get()
-        ) { pLevel: Level?, pPos: BlockPos?, pState: BlockState?, e: VesselDetectorTileEntity ->
-            VesselDetectorTileEntity.Companion.serverTick(
-                pLevel,
-                pPos,
-                pState,
-                e
-            )
-        }
+        return if (level.isClientSide()) null else TickerUtil.createTickerHelper(
+            type,
+            ModTileEntitiesTypes.VESSEL_DETECTOR.get()
+        ) { pLevel, pPos, pState, e -> VesselDetectorTileEntity.serverTick(pLevel, pPos, pState, e) }
     }
 
     companion object {
-        
+
         val POWERED: BooleanProperty = BlockStateProperties.POWERED
-        
+
         val FACING: DirectionProperty = BlockStateProperties.FACING
 
         private val PARTICLE = DustParticleOptions(Vector3f(0.9f, 0.65f, 0.2f), 1.0f)

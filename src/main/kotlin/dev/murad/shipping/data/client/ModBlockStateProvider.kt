@@ -12,10 +12,8 @@ import dev.murad.shipping.setup.ModBlocks
 import net.minecraft.core.Direction
 import net.minecraft.data.PackOutput
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.level.block.HopperBlock
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.RailShape
-import net.neoforged.neoforge.client.model.generators.BlockModelBuilder
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel
 import net.neoforged.neoforge.client.model.generators.ModelFile
@@ -247,23 +245,6 @@ class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper
                 )
                 .build()
         }
-
-        getVariantBuilder(ModBlocks.RAPID_HOPPER.get()).forAllStates { state: BlockState ->
-            ConfiguredModel.builder()
-                .modelFile(getRapidHopperModel(state))
-                .rotationY(state.getValue(HopperBlock.FACING).opposite.toYRot().toInt())
-                .build()
-        }
-    }
-
-    private fun getRapidHopperModel(state: BlockState): BlockModelBuilder {
-        val side = if (state.getValue(HopperBlock.FACING) == Direction.DOWN) "" else "_side"
-        return models()
-            .withExistingParent("rapid_hopper$side", mcLoc("hopper$side"))
-            .texture("particle", getBlTx("rapid_hopper_outside"))
-            .texture("top", getBlTx("rapid_hopper_top"))
-            .texture("side", getBlTx("rapid_hopper_outside"))
-            .texture("inside", getBlTx("rapid_hopper_inside"))
     }
 
     companion object {

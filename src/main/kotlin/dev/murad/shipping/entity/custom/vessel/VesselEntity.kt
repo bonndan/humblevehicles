@@ -56,7 +56,7 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
 
     /**
      * The linking handler can be null if used in constructors.
-     * TODO leave the getter here before init right under the property
+     * IMPORTANT: leave the getter here before init right under the property!
      */
     protected fun getLinkingHandler(): LinkingHandler<VesselEntity> {
         return linkingHandler
@@ -75,10 +75,6 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
     init {
         resetAttributes(ShippingConfig.Server.TUG_BASE_SPEED!!.get())
     }
-
-
-
-
 
     override fun isPickable(): Boolean {
         return true
@@ -115,7 +111,6 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
         }
     }
 
-
     override fun readAdditionalSaveData(compound: CompoundTag) {
         linkingHandler.readAdditionalSaveData(compound)
         if (compound.contains("Color", Tag.TAG_INT.toInt())) {
@@ -148,7 +143,7 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
     }
 
     override fun getColor(): Int? {
-        val color = getEntityData().get(COLOR_DATA)
+        val color = getEntityData()[COLOR_DATA]
         return if (color == -1) null else color
     }
 
@@ -162,30 +157,27 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
 
     // reset speed to 1
     private fun resetAttributes(newSpeed: Double) {
-        getAttribute(Attributes.MOVEMENT_SPEED)!!.baseValue =
-            0.0
+
+        getAttribute(Attributes.MOVEMENT_SPEED)!!.baseValue = 0.0
 
         val swimSpeed = NeoForgeMod.SWIM_SPEED.delegate
         getAttribute(swimSpeed)!!.baseValue = 0.0
 
-        getAttribute(Attributes.MOVEMENT_SPEED)
-            ?.addTransientModifier(
-                AttributeModifier(
-                    ResourceLocation.parse("movementspeed_mult"),
-                    newSpeed,
-                    AttributeModifier.Operation.ADD_VALUE
-                )
+        getAttribute(Attributes.MOVEMENT_SPEED)?.addTransientModifier(
+            AttributeModifier(
+                ResourceLocation.parse("movementspeed_mult"),
+                newSpeed,
+                AttributeModifier.Operation.ADD_VALUE
             )
-        getAttribute(swimSpeed)
-            ?.addTransientModifier(
-                AttributeModifier(
-                    ResourceLocation.parse("swimspeed_mult"),
-                    newSpeed,
-                    AttributeModifier.Operation.ADD_VALUE
-                )
+        )
+        getAttribute(swimSpeed)?.addTransientModifier(
+            AttributeModifier(
+                ResourceLocation.parse("swimspeed_mult"),
+                newSpeed,
+                AttributeModifier.Operation.ADD_VALUE
             )
+        )
 
-        isCustomNameVisible = hasCustomName()
         getAttribute(NeoForgeMod.NAMETAG_DISTANCE.delegate)!!.baseValue = NAMETAG_RENDERING_DISTANCE
     }
 
@@ -203,7 +195,6 @@ abstract class VesselEntity(type: EntityType<out WaterAnimal>, world: Level) :
     override fun getLeader(): Optional<VesselEntity> {
         return linkingHandler.leader
     }
-
 
     override fun checkDespawn() {
     }

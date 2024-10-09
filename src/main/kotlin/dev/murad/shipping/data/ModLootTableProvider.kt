@@ -38,7 +38,6 @@ class ModLootTableProvider(output: PackOutput, lookupProvider: CompletableFuture
             dropSelf(ModBlocks.TEE_JUNCTION_RAIL.get())
             dropSelf(ModBlocks.AUTOMATIC_TEE_JUNCTION_RAIL.get())
             dropSelf(ModBlocks.JUNCTION_RAIL.get())
-            dropSelf(ModBlocks.RAPID_HOPPER.get())
             dropSelf(ModBlocks.CAR_DOCK_RAIL.get())
             dropSelf(ModBlocks.LOCOMOTIVE_DOCK_RAIL.get())
         }

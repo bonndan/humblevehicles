@@ -1,20 +1,15 @@
 package dev.murad.shipping.entity.custom
 
-import dev.murad.shipping.entity.custom.movement.InWaterCheckResult
 import net.minecraft.core.BlockPos
 import net.minecraft.core.BlockPos.MutableBlockPos
 import net.minecraft.core.Direction
 import net.minecraft.tags.FluidTags
 import net.minecraft.util.Mth
-import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.WaterlilyBlock
 import net.minecraft.world.level.material.Fluids
 import net.minecraft.world.phys.AABB
-import net.minecraft.world.phys.shapes.BooleanOp
-import net.minecraft.world.phys.shapes.Shapes
 import kotlin.math.max
 
 object StatusDetector {

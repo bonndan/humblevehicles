@@ -13,17 +13,8 @@ import java.util.*
 import java.util.function.Consumer
 
 class MobileChunkLoader(private val entity: Entity) {
-    private var loadedChunk = Optional.empty<Pair<Int, Int>>()
 
-    private fun getSurroundingChunks(chunk: Pair<Int, Int>): MutableSet<Pair<Int, Int>> {
-        val set: MutableSet<Pair<Int, Int>> = HashSet()
-        for (i in -1..1) {
-            for (j in -1..1) {
-                set.add(Pair(chunk.first + i, chunk.second + j))
-            }
-        }
-        return set
-    }
+    private var loadedChunk = Optional.empty<Pair<Int, Int>>()
 
     @SubscribeEvent
     fun register(registerTicketControllersEvent: RegisterTicketControllersEvent) {
@@ -31,10 +22,7 @@ class MobileChunkLoader(private val entity: Entity) {
     }
 
     private fun setChunkLoad(add: Boolean, chunk: Pair<Int, Int>) {
-        ticketController.forceChunk(
-            entity.level() as ServerLevel,
-            entity, chunk.first, chunk.second, add, false
-        )
+        ticketController.forceChunk(entity.level() as ServerLevel, entity, chunk.first, chunk.second, add, false)
     }
 
     fun serverTick() {
@@ -59,31 +47,35 @@ class MobileChunkLoader(private val entity: Entity) {
         }
     }
 
-    fun addAdditionalSaveData(p_213281_1_: CompoundTag) {
+    fun addAdditionalSaveData(compoundTag: CompoundTag) {
         if (loadedChunk.isPresent) {
-            p_213281_1_.putInt("xchunk", loadedChunk.get().first)
-            p_213281_1_.putInt("zchunk", loadedChunk.get().second)
+            compoundTag.putInt("xchunk", loadedChunk.get().first)
+            compoundTag.putInt("zchunk", loadedChunk.get().second)
         }
     }
 
-    fun readAdditionalSaveData(p_70037_1_: CompoundTag) {
-        if (p_70037_1_.contains("xchunk")) {
-            val x = p_70037_1_.getInt("xchunk")
-            val z = p_70037_1_.getInt("zchunk")
+    fun readAdditionalSaveData(compoundTag: CompoundTag) {
+        if (compoundTag.contains("xchunk")) {
+            val x = compoundTag.getInt("xchunk")
+            val z = compoundTag.getInt("zchunk")
             loadedChunk = Optional.of(Pair(x, z))
         }
     }
 
     fun remove() {
-        loadedChunk.ifPresent { c: Pair<Int, Int> ->
-            getSurroundingChunks(c).forEach(
-                Consumer { ch: Pair<Int, Int> ->
-                    this.setChunkLoad(
-                        false,
-                        ch
-                    )
-                })
+        loadedChunk.ifPresent { pair: Pair<Int, Int> ->
+            getSurroundingChunks(pair).forEach { chunk -> this.setChunkLoad(false, chunk) }
         }
+    }
+
+    private fun getSurroundingChunks(chunk: Pair<Int, Int>): MutableSet<Pair<Int, Int>> {
+        val set: MutableSet<Pair<Int, Int>> = HashSet()
+        for (i in -1..1) {
+            for (j in -1..1) {
+                set.add(Pair(chunk.first + i, chunk.second + j))
+            }
+        }
+        return set
     }
 
     companion object {

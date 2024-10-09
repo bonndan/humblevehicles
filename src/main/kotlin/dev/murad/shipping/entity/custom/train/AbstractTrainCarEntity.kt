@@ -61,7 +61,6 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
     constructor(entityType: EntityType<*>, level: Level) : super(entityType, level) {
         linkingHandler.train = Train(this)
         railHelper = RailHelper(this)
-        resetAttributes()
     }
 
     constructor(entityType: EntityType<*>, level: Level, x: Double, y: Double, z: Double) : super(
@@ -81,11 +80,6 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
         }
         linkingHandler.train = Train(this)
         railHelper = RailHelper(this)
-        resetAttributes()
-    }
-
-    private fun resetAttributes() {
-        isCustomNameVisible = hasCustomName()
     }
 
     protected val railShape: Optional<RailShape>
@@ -111,7 +105,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
     override fun setColor(color: Int?) {
         var color = color
         if (color == null) color = -1
-        getEntityData().set(COLOR_DATA, color)
+        getEntityData()[COLOR_DATA] = color
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
@@ -122,7 +116,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
 
         if (color != null) {
             if (!level().isClientSide) {
-                getEntityData().set(COLOR_DATA, color.id)
+                getEntityData()[COLOR_DATA] = color.id
             }
             // don't interact *and* use current item
             return InteractionResult.sidedSuccess(level().isClientSide)

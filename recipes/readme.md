@@ -514,28 +514,6 @@ Pattern:
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
-<a id="rapid_hopper"></a>
-
-## Rapid Hopper
-
-Requires: [hopper](https://minecraft.wiki/w/hopper)
-
-Type: crafting
-
-Ingredients: 
-* [gold_ingot](https://minecraft.wiki/w/gold_ingot)
-* [hopper](https://minecraft.wiki/w/hopper)
-* [redstone_block](https://minecraft.wiki/w/redstone_block)
-
-
-Pattern: 
-
-| | | |
-| --- | --- | --- |
-| ![minecraft:gold_ingot](./gold_ingot.png) | ![minecraft:hopper](./hopper.png) | ![minecraft:gold_ingot](./gold_ingot.png) |
-| ![](./.png) | ![minecraft:redstone_block](./redstone_block.png) | ![](./.png) |
-
-
 <a id="seater_car"></a>
 
 ## Train Car

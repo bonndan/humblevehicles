@@ -23,8 +23,12 @@ This is a NeoForge port of [LittleLogistics](https://littlelogistics.murad.dev/)
     - routing AI
     - fish automatically
 
-- [Recipes](./recipes/readme.md) in markdown
+### Differences to the original mod
 
+- [Recipes](./recipes/readme.md) in markdown
+- rideable vehicles plus **submarine**
+- removed the rapid hopper
+- simplified routes
 
 ## License
 

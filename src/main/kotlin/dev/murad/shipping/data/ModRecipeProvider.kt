@@ -242,15 +242,6 @@ class ModRecipeProvider(packOutput: PackOutput, pRegistries: CompletableFuture<H
             .unlockedBy("has_item", has(Items.GLASS))
             .save(consumer)
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.TRANSPORTATION, ModBlocks.RAPID_HOPPER.get())
-            .define('_', Items.HOPPER)
-            .define('#', Items.REDSTONE_BLOCK)
-            .define('$', Items.GOLD_INGOT)
-            .pattern("\$_$")
-            .pattern(" # ")
-            .unlockedBy("has_item", has(Items.HOPPER))
-            .save(consumer)
-
         ShapedRecipeBuilder.shaped(RecipeCategory.TRANSPORTATION, ModItems.SEATER_CAR.get())
             .define('#', ItemTags.PLANKS)
             .define('$', Items.IRON_INGOT)

@@ -1,13 +1,13 @@
 package dev.murad.shipping.setup
 
 import dev.murad.shipping.HumVeeMod.Companion.MOD_ID
-import dev.murad.shipping.entity.custom.vessel.submarine.SubmarineEntity
 import dev.murad.shipping.entity.custom.train.locomotive.EnergyLocomotiveEntity
 import dev.murad.shipping.entity.custom.train.locomotive.SteamLocomotiveEntity
 import dev.murad.shipping.entity.custom.train.wagon.ChestCarEntity
 import dev.murad.shipping.entity.custom.train.wagon.FluidTankCarEntity
 import dev.murad.shipping.entity.custom.train.wagon.SeaterCarEntity
 import dev.murad.shipping.entity.custom.vessel.barge.*
+import dev.murad.shipping.entity.custom.vessel.submarine.SubmarineEntity
 import dev.murad.shipping.entity.custom.vessel.tug.EnergyTugEntity
 import dev.murad.shipping.entity.custom.vessel.tug.SteamTugEntity
 import dev.murad.shipping.item.*
@@ -17,7 +17,6 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
 import net.minecraft.world.item.CreativeModeTabs
 import net.minecraft.world.item.Item
-import net.minecraft.world.level.Level
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent
 import net.neoforged.neoforge.registries.DeferredItem
 import java.util.function.Consumer
@@ -47,7 +46,7 @@ object ModItems {
     val CHEST_BARGE = registerItem(
         "barge",
         {
-            VesselItem(Item.Properties()) { level: Level, x: Double, y: Double, z: Double ->
+            VesselItem(Item.Properties()) { level, x, y, z ->
                 ChestBargeEntity(ModEntityTypes.CHEST_BARGE.get(), level, x, y, z)
             }
         },
@@ -57,7 +56,7 @@ object ModItems {
     val BARREL_BARGE = registerItem(
         "barrel_barge",
         {
-            VesselItem(Item.Properties()) { level: Level, x: Double, y: Double, z: Double ->
+            VesselItem(Item.Properties()) { level, x, y, z ->
                 ChestBargeEntity(ModEntityTypes.BARREL_BARGE.get(), level, x, y, z)
             }
         },
@@ -68,52 +67,32 @@ object ModItems {
 
     val FISHING_BARGE = registerItem(
         "fishing_barge",
-        {
-            VesselItem(Item.Properties()) { worldIn: Level, x: Double, y: Double, z: Double ->
-                FishingBargeEntity(worldIn, x, y, z)
-            }
-        },
+        { VesselItem(Item.Properties()) { worldIn, x, y, z -> FishingBargeEntity(worldIn, x, y, z) } },
         Item.Properties()
     )
 
     val FLUID_BARGE = registerItem(
         "fluid_barge",
-        {
-            VesselItem(Item.Properties()) { worldIn: Level, x: Double, y: Double, z: Double ->
-                FluidTankBargeEntity(worldIn, x, y, z)
-            }
-        },
+        { VesselItem(Item.Properties()) { worldIn, x, y, z -> FluidTankBargeEntity(worldIn, x, y, z) } },
         Item.Properties()
     )
 
-
     val SEATER_BARGE = registerItem(
         "seater_barge",
-        {
-            VesselItem(Item.Properties()) { worldIn: Level, x: Double, y: Double, z: Double ->
-                SeaterBargeEntity(worldIn, x, y, z)
-            }
-        }, Item.Properties()
+        { VesselItem(Item.Properties()) { worldIn, x, y, z -> SeaterBargeEntity(worldIn, x, y, z) } },
+        Item.Properties()
     )
-
 
     val VACUUM_BARGE: Supplier<Item> = registerItem(
         "vacuum_barge",
-        {
-            VesselItem(Item.Properties()) { worldIn, x: Double, y: Double, z: Double ->
-                VacuumBargeEntity(worldIn, x, y, z)
-            }
-        },
+        { VesselItem(Item.Properties()) { worldIn, x, y, z -> VacuumBargeEntity(worldIn, x, y, z) } },
         Item.Properties()
     )
 
     val STEAM_TUG: Supplier<Item> = registerItem(
         "tug",
-        {
-            VesselItem(Item.Properties()) { worldIn, x: Double, y: Double, z: Double ->
-                SteamTugEntity(worldIn, x, y, z)
-            }
-        }, Item.Properties()
+        { VesselItem(Item.Properties()) { worldIn, x, y, z -> SteamTugEntity(worldIn, x, y, z) } },
+        Item.Properties()
     )
 
 
@@ -132,9 +111,7 @@ object ModItems {
         "chest_car",
         {
             TrainCarItem(
-                { level: Level, x: Double, y: Double, z: Double ->
-                    ChestCarEntity(ModEntityTypes.CHEST_CAR.get(), level, x, y, z)
-                },
+                { level, x, y, z -> ChestCarEntity(ModEntityTypes.CHEST_CAR.get(), level, x, y, z) },
                 Item.Properties()
             )
         },
@@ -145,9 +122,7 @@ object ModItems {
         "barrel_car",
         {
             TrainCarItem(
-                { level: Level, x: Double, y: Double, z: Double ->
-                    ChestCarEntity(ModEntityTypes.BARREL_CAR.get(), level, x, y, z)
-                },
+                { level, x, y, z -> ChestCarEntity(ModEntityTypes.BARREL_CAR.get(), level, x, y, z) },
                 Item.Properties()
             )
         },
@@ -157,52 +132,27 @@ object ModItems {
 
     val FLUID_CAR = registerItem(
         "fluid_car",
-        {
-            TrainCarItem({ level: Level, aDouble: Double, aDouble1: Double, aDouble2: Double ->
-                FluidTankCarEntity(
-                    level,
-                    aDouble,
-                    aDouble1,
-                    aDouble2
-                )
-            }, defaultItemProperties(64))
-        },
+        { TrainCarItem({ level, x, y, z -> FluidTankCarEntity(level, x, y, z) }, defaultItemProperties(64)) },
         defaultItemProperties(64)
     )
-
 
     val SEATER_CAR = registerItem(
         "seater_car",
-        {
-            TrainCarItem({ level: Level, aDouble: Double, aDouble1: Double, aDouble2: Double ->
-                SeaterCarEntity(level, aDouble, aDouble1, aDouble2)
-            }, defaultItemProperties(64))
-        },
+        { TrainCarItem({ level, x, y, z -> SeaterCarEntity(level, x, y, z) }, defaultItemProperties(64)) },
         defaultItemProperties(64)
     )
 
-
     val STEAM_LOCOMOTIVE = registerItem(
         "steam_locomotive",
-        {
-            TrainCarItem(
-                { level: Level, x: Double, y: Double, z: Double -> SteamLocomotiveEntity(level, x, y, z) },
-                defaultItemProperties(64)
-            )
-        },
+        { TrainCarItem({ level, x, y, z -> SteamLocomotiveEntity(level, x, y, z) }, defaultItemProperties(64)) },
         defaultItemProperties(64)
     )
 
     val ENERGY_LOCOMOTIVE: Supplier<Item> = registerItem(
         "energy_locomotive",
-        {
-            TrainCarItem(
-                { level: Level, x: Double, y: Double, z: Double -> EnergyLocomotiveEntity(level, x, y, z) },
-                defaultItemProperties(64)
-            )
-        }, defaultItemProperties(64)
+        { TrainCarItem({ level, x, y, z -> EnergyLocomotiveEntity(level, x, y, z) }, defaultItemProperties(64)) },
+        defaultItemProperties(64)
     )
-
 
     val RECEIVER_COMPONENT = registerItem("receiver_component", ::Item, defaultItemProperties(64))
     val TRANSMITTER_COMPONENT = registerItem("transmitter_component", ::Item, defaultItemProperties(64))
@@ -273,6 +223,6 @@ object ModItems {
     private fun defaultItemPropertiesWithTag(pMaxStackSize: Int): Item.Properties {
         return Item.Properties()
             .stacksTo(pMaxStackSize)
-            //TODO trying to access unbound value in DeferredHolder .component(ModDataComponents.getCompoundTag().get(), CompoundTag())
+        //TODO trying to access unbound value in DeferredHolder .component(ModDataComponents.getCompoundTag().get(), CompoundTag())
     }
 }
