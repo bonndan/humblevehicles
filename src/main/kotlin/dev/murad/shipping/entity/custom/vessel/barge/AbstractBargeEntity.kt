@@ -15,8 +15,8 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
+import net.neoforged.neoforge.items.ItemStackHandler
 import java.util.*
-
 
 abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, world: Level) :
     VesselEntity(type, world), Stalling {
@@ -33,6 +33,11 @@ abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, wo
         this.xo = x
         this.yo = y
         this.zo = z
+    }
+
+    init {
+        this.blocksBuilding = true
+        getLinkingHandler()?.train = Train(this)
     }
 
     override fun canAddPassenger(passenger: Entity): Boolean {
@@ -168,8 +173,15 @@ abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, wo
         }
     }
 
-    init {
-        this.blocksBuilding = true
-        getLinkingHandler()?.train = Train(this)
+    fun moveItemStackIntoHandler(handler: ItemStackHandler, stack: ItemStack): ItemStack {
+        var stack = stack
+        val slots = handler.slots
+        var i = 0
+        while (i < slots && !stack.isEmpty) {
+            stack = handler.insertItem(i, stack, false)
+            i++
+        }
+        return stack
     }
+
 }

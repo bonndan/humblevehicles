@@ -23,7 +23,6 @@ abstract class AbstractDockBlock(properties: Properties) : Block(properties), En
     ) {
         super.neighborChanged(state, world, p_220069_3_, p_220069_4_, p_220069_5_, p_220069_6_)
         DockingBlockStates.fixHopperPos(
-            state,
             world,
             p_220069_3_,
             Direction.UP,

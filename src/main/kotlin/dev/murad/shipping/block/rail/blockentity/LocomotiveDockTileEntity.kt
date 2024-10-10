@@ -10,15 +10,12 @@ import net.minecraft.world.level.block.state.BlockState
 
 class LocomotiveDockTileEntity(pos: BlockPos, state: BlockState) :
     AbstractHeadDockTileEntity<AbstractTrainCarEntity>(ModTileEntitiesTypes.LOCOMOTIVE_DOCK.get(), pos, state) {
-    override val targetBlockPos: List<BlockPos>
-        get() {
-            val facing =
-                blockState.getValue(DockingBlockStates.FACING)
-            return java.util.List.of(
-                blockPos.relative(facing.counterClockWise),
-                blockPos.relative(facing.clockWise)
-            )
-        }
+
+    override fun getTargetBlockPos(): List<BlockPos> {
+
+        val facing = blockState.getValue(DockingBlockStates.FACING)
+        return listOf(blockPos.relative(facing.counterClockWise), blockPos.relative(facing.clockWise))
+    }
 
     override fun checkBadDirCondition(tug: AbstractTrainCarEntity, direction: Direction): Boolean {
         return tug.direction != blockState.getValue(DockingBlockStates.FACING)

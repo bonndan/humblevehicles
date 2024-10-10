@@ -12,18 +12,16 @@ import net.minecraft.world.level.block.state.properties.RailShape
 class TrainCarDockTileEntity(pos: BlockPos, state: BlockState) :
     AbstractTailDockTileEntity<AbstractTrainCarEntity>(ModTileEntitiesTypes.CAR_DOCK.get(), pos, state) {
 
-    override val targetBlockPos: List<BlockPos>
-        get() {
-            if (this.isExtract) {
-                return listOf(blockPos.below())
-            }
-            val facing =
-                if (blockState.getValue(AbstractDockingRail.RAIL_SHAPE) == RailShape.EAST_WEST) Direction.EAST else Direction.NORTH
-            return listOf(
-                blockPos.relative(facing.counterClockWise),
-                blockPos.relative(facing.clockWise)
-            )
+    override fun getTargetBlockPos(): List<BlockPos> {
+
+        if (this.isExtracting) {
+            return listOf(blockPos.below())
         }
+        val facing =
+            if (blockState.getValue(AbstractDockingRail.RAIL_SHAPE) == RailShape.EAST_WEST) Direction.EAST else Direction.NORTH
+
+        return listOf(blockPos.relative(facing.counterClockWise), blockPos.relative(facing.clockWise))
+    }
 
     override fun checkBadDirCondition(direction: Direction): Boolean {
         return false

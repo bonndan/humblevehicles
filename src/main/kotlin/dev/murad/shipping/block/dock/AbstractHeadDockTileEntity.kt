@@ -2,7 +2,6 @@ package dev.murad.shipping.block.dock
 
 import com.mojang.datafixers.util.Pair
 import dev.murad.shipping.block.IVesselLoader
-import dev.murad.shipping.util.InventoryUtils
 import dev.murad.shipping.util.LinkableEntity
 import dev.murad.shipping.util.LinkableEntityHead
 import net.minecraft.core.BlockPos
@@ -25,7 +24,7 @@ abstract class AbstractHeadDockTileEntity<T>(t: BlockEntityType<*>, pos: BlockPo
         if (tugEntity !is Container) {
             return false
         }
-        return InventoryUtils.mayMoveIntoInventory(tugEntity as Container, hopper)
+        return mayMoveIntoInventory(tugEntity as Container, hopper)
     }
 
 
@@ -40,9 +39,9 @@ abstract class AbstractHeadDockTileEntity<T>(t: BlockEntityType<*>, pos: BlockPo
             return true
         }
 
-        for (p in targetBlockPos) {
-            if (getHopper(p).map { hopper: HopperBlockEntity -> handleItemHopper(tug, hopper) }
-                    .orElse(getVesselLoader(p).map { l: IVesselLoader -> l.hold<T>(tug as T, IVesselLoader.Mode.EXPORT) }
+        for (p in getTargetBlockPos()) {
+            if (getHopperAt(p).map { hopper -> handleItemHopper(tug, hopper) }
+                    .orElse(getVesselLoader(p).map { loader -> loader.hold(tug as T, IVesselLoader.Mode.EXPORT) }
                         .orElse(false))) {
                 return true
             }

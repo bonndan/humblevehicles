@@ -3,7 +3,6 @@ package dev.murad.shipping.entity.custom.vessel.barge
 import dev.murad.shipping.entity.custom.TrainInventoryProvider
 import dev.murad.shipping.setup.ModEntityTypes
 import dev.murad.shipping.setup.ModItems
-import dev.murad.shipping.util.InventoryUtils.isEmpty
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.Container
@@ -17,6 +16,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.ChestMenu
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 import net.minecraft.world.level.Level
 import net.neoforged.neoforge.items.ItemStackHandler
 import java.util.Optional
@@ -132,5 +132,14 @@ class ChestBargeEntity : AbstractBargeEntity, Container, MenuProvider, WorldlyCo
 
     override fun getTrainInventoryHandler(): Optional<ItemStackHandler> {
         return Optional.of<ItemStackHandler>(itemHandler)
+    }
+
+    private fun isEmpty(itemHandler: ItemStackHandler): Boolean {
+        for (i in 0 until itemHandler.slots) {
+            if (!itemHandler.getStackInSlot(i).isEmpty && itemHandler.getStackInSlot(i).item != Items.AIR) {
+                return false
+            }
+        }
+        return true
     }
 }

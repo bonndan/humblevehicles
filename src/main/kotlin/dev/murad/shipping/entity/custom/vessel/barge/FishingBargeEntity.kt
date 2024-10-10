@@ -5,7 +5,6 @@ import dev.murad.shipping.ShippingConfig
 import dev.murad.shipping.entity.custom.StatusDetector.hasWaterOnSides
 import dev.murad.shipping.setup.ModEntityTypes
 import dev.murad.shipping.setup.ModItems
-import dev.murad.shipping.util.InventoryUtils.moveItemStackIntoHandler
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -91,7 +90,7 @@ class FishingBargeEntity : AbstractBargeEntity {
         val overFishPenalty = if (isOverFished()) 0.05 else 1.0
         val shallowPenalty = computeDepthPenalty()
         val chance = 0.25 * overFishPenalty * shallowPenalty
-        val treasure_chance = if (shallowPenalty > 0.4) (chance * (shallowPenalty / 2)
+        val treasureChance = if (shallowPenalty > 0.4) (chance * (shallowPenalty / 2)
                 * FISHING_TREASURE_CHANCE) else 0.0
         val r = Math.random()
         if (r < chance) {
@@ -106,7 +105,7 @@ class FishingBargeEntity : AbstractBargeEntity {
             val loottable = this.level()
                 .server!!
                 .reloadableRegistries()
-                .getLootTable(if (r < treasure_chance) BuiltInLootTables.FISHING_TREASURE else BuiltInLootTables.FISHING_FISH)
+                .getLootTable(if (r < treasureChance) BuiltInLootTables.FISHING_TREASURE else BuiltInLootTables.FISHING_FISH)
 
             val randomItems = loottable.getRandomItems(params)
 
@@ -139,7 +138,7 @@ class FishingBargeEntity : AbstractBargeEntity {
 
     private fun populateOverfish(string: String) {
         Arrays.stream(string.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
-            .filter { s -> !s.isEmpty() }
+            .filter { s -> s.isNotEmpty() }
             .map { s -> s!!.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray() }
             .map { arr -> Pair(arr!![0].toInt(), arr[1]!!.toInt()) }
             .forEach { e: Pair<Int, Int> -> overFishedQueue.add(e) }
@@ -186,12 +185,10 @@ class FishingBargeEntity : AbstractBargeEntity {
             return Status.TRANSITION
         }
 
-        return if (this.applyWithDominant { obj -> obj!!.hasWaterOnSides() }
-                .reduce(true) { a: Boolean, b: Boolean -> java.lang.Boolean.logicalAnd(a, b) }
-        )
-            Status.DEPLOYED
-        else
-            Status.TRANSITION
+        val isDeployed = this.applyWithDominant { obj -> obj!!.hasWaterOnSides() }
+            .reduce(true) { a: Boolean, b: Boolean -> java.lang.Boolean.logicalAnd(a, b) }
+
+        return if (isDeployed) Status.DEPLOYED else Status.TRANSITION
     }
 
     enum class Status {

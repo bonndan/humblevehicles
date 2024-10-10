@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.state.properties.RailShape
 import net.minecraft.world.level.material.Fluids
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
-import java.util.function.Consumer
 
 abstract class AbstractDockingRail  // facing denotes direction of straight out
 protected constructor(pProperties: Properties) : BaseRailBlock(true, pProperties), EntityBlock {
@@ -102,7 +101,7 @@ protected constructor(pProperties: Properties) : BaseRailBlock(true, pProperties
                 listOf(Direction.EAST, Direction.WEST)
             }
 
-            dirs.forEach { direction -> fixHopperPos(state, level!!, pos!!, direction, direction.opposite) }
+            dirs.forEach { direction -> fixHopperPos(level!!, pos!!, direction, direction.opposite) }
         }
     }
 }

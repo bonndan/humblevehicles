@@ -2,7 +2,6 @@ package dev.murad.shipping.entity.custom.vessel.barge
 
 import dev.murad.shipping.setup.ModEntityTypes
 import dev.murad.shipping.setup.ModItems
-import dev.murad.shipping.util.InventoryUtils.moveItemStackIntoHandler
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel

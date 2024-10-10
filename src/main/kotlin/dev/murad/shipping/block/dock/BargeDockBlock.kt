@@ -32,7 +32,7 @@ class BargeDockBlock(p_i48440_1_: Properties) : AbstractDockBlock(p_i48440_1_) {
                 pPos,
                 pState.setValue(DockingBlockStates.INVERTED, !pState.getValue(DockingBlockStates.INVERTED))
             )
-            fixHopperPos(pState, pLevel, pPos, Direction.UP, pState.getValue(DockingBlockStates.FACING))
+            fixHopperPos(pLevel, pPos, Direction.UP, pState.getValue(DockingBlockStates.FACING))
             return ItemInteractionResult.SUCCESS
         }
 
