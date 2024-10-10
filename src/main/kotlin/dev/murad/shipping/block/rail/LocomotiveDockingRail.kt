@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 
-class LocomotiveDockingRail(pProperties: Properties?) : AbstractDockingRail(pProperties) {
+class LocomotiveDockingRail(pProperties: Properties) : AbstractDockingRail(pProperties) {
 
     override fun getStateForPlacement(pContext: BlockPlaceContext): BlockState? {
         return super.getStateForPlacement(pContext)
@@ -27,7 +27,7 @@ class LocomotiveDockingRail(pProperties: Properties?) : AbstractDockingRail(pPro
         pBuilder.add(DockingBlockStates.POWERED, DockingBlockStates.FACING)
     }
 
-    override fun codec(): MapCodec<out BaseRailBlock?> {
+    override fun codec(): MapCodec<out BaseRailBlock> {
         return CODEC
     }
 
@@ -57,10 +57,6 @@ class LocomotiveDockingRail(pProperties: Properties?) : AbstractDockingRail(pPro
     }
 
     companion object {
-        val CODEC: MapCodec<LocomotiveDockingRail?> = simpleCodec { pProperties: Properties? ->
-            LocomotiveDockingRail(
-                pProperties
-            )
-        }
+        val CODEC: MapCodec<LocomotiveDockingRail> = simpleCodec { pProperties -> LocomotiveDockingRail(pProperties) }
     }
 }

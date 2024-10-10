@@ -4,10 +4,7 @@ import dev.murad.shipping.block.dock.TugDockTileEntity
 import dev.murad.shipping.block.guiderail.TugGuideRailBlock.Companion.getArrowsDirection
 import dev.murad.shipping.capability.StallingCapability
 import dev.murad.shipping.entity.accessor.HeadVehicleDataAccessor
-import dev.murad.shipping.entity.custom.Engine
-import dev.murad.shipping.entity.custom.HeadVehicle
-import dev.murad.shipping.entity.custom.SaveStateCallback
-import dev.murad.shipping.entity.custom.VehicleControl
+import dev.murad.shipping.entity.custom.*
 import dev.murad.shipping.entity.custom.vessel.VesselEntity
 import dev.murad.shipping.entity.navigation.TugPathNavigator
 import dev.murad.shipping.item.TugRouteItem
@@ -53,7 +50,7 @@ import kotlin.math.hypot
 
 abstract class AbstractTugEntity :
     VesselEntity, LinkableEntityHead<VesselEntity>, Container, WorldlyContainer, HeadVehicle,
-    ItemHandlerVanillaContainerWrapper {
+    ItemHandlerVanillaContainerWrapper, Stalling {
 
     protected val enrollmentHandler: ChunkManagerEnrollmentHandler
     protected val saveStateCallback = object : SaveStateCallback {
@@ -636,6 +633,10 @@ abstract class AbstractTugEntity :
 
     override fun getRouteItemHandler(): ItemStackHandler {
         return routeItemHandler
+    }
+
+    override fun getStalling(): StallingCapability {
+        return stalling
     }
 
     /*

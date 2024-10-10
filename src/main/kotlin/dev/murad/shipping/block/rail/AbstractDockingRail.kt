@@ -23,7 +23,8 @@ import net.minecraft.world.phys.shapes.VoxelShape
 import java.util.function.Consumer
 
 abstract class AbstractDockingRail  // facing denotes direction of straight out
-protected constructor(pProperties: Properties?) : BaseRailBlock(true, pProperties), EntityBlock {
+protected constructor(pProperties: Properties) : BaseRailBlock(true, pProperties), EntityBlock {
+
     override fun updateState(pState: BlockState, pLevel: Level, pPos: BlockPos, pIsMoving: Boolean): BlockState {
         return pState
     }
@@ -91,19 +92,17 @@ protected constructor(pProperties: Properties?) : BaseRailBlock(true, pPropertie
     }
 
     companion object {
-        
+
         val RAIL_SHAPE: EnumProperty<RailShape> = RailShapeUtil.RAIL_SHAPE_STRAIGHT_FLAT
 
-        @JvmStatic
-        protected fun fixHopperPos(state: BlockState, level: Level?, pos: BlockPos?) {
-            val dirs = if (state.getValue(RAIL_SHAPE) == RailShape.EAST_WEST) listOf(
-                Direction.NORTH,
-                Direction.SOUTH
-            ) else listOf(
-                Direction.EAST, Direction.WEST
-            )
+        fun fixHopperPos(state: BlockState, level: Level?, pos: BlockPos?) {
+            val dirs = if (state.getValue(RAIL_SHAPE) == RailShape.EAST_WEST) {
+                listOf(Direction.NORTH, Direction.SOUTH)
+            } else {
+                listOf(Direction.EAST, Direction.WEST)
+            }
 
-            dirs.forEach(Consumer { d: Direction -> fixHopperPos(state, level!!, pos!!, d, d.opposite) })
+            dirs.forEach { direction -> fixHopperPos(state, level!!, pos!!, direction, direction.opposite) }
         }
     }
 }

@@ -17,7 +17,8 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.phys.BlockHitResult
 
-class TrainCarDockingRail(pProperties: Properties?) : AbstractDockingRail(pProperties) {
+class TrainCarDockingRail(pProperties: Properties) : AbstractDockingRail(pProperties) {
+
     override fun useItemOn(
         pStack: ItemStack,
         pState: BlockState,
@@ -47,15 +48,11 @@ class TrainCarDockingRail(pProperties: Properties?) : AbstractDockingRail(pPrope
         return ModTileEntitiesTypes.CAR_DOCK.get().create(pPos, pState)
     }
 
-    override fun codec(): MapCodec<out BaseRailBlock?> {
+    override fun codec(): MapCodec<out BaseRailBlock> {
         return CODEC
     }
 
     companion object {
-        val CODEC: MapCodec<TrainCarDockingRail?> = simpleCodec { pProperties: Properties? ->
-            TrainCarDockingRail(
-                pProperties
-            )
-        }
+        val CODEC: MapCodec<TrainCarDockingRail> = simpleCodec { pProperties -> TrainCarDockingRail(pProperties) }
     }
 }

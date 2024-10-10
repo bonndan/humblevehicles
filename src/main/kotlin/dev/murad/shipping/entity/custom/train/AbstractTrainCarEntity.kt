@@ -15,6 +15,7 @@ import net.minecraft.Util
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.Vec3i
+import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
@@ -70,6 +71,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
         y,
         z
     ) {
+
         val pos = BlockPos.containing(x, y, z)
         val state = level.getBlockState(pos)
         if (state.block is BaseRailBlock) {
@@ -447,7 +449,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
             val stack = this.pickResult
 
             if (this.hasCustomName()) {
-                //stack.setHoverName(this.getCustomName());
+                stack[DataComponents.CUSTOM_NAME] = customName;
             }
 
             this.spawnAtLocation(stack)

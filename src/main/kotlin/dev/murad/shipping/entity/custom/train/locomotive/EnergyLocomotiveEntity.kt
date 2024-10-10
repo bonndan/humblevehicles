@@ -5,11 +5,9 @@ import dev.murad.shipping.entity.custom.EnergyEngine
 import dev.murad.shipping.setup.ModEntityTypes
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.util.ItemHandlerVanillaContainerWrapper
-import net.minecraft.core.Direction
 import net.minecraft.network.chat.Component
 import net.minecraft.world.Containers
 import net.minecraft.world.MenuProvider
-import net.minecraft.world.WorldlyContainer
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
@@ -17,7 +15,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 
-class EnergyLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContainerWrapper, WorldlyContainer {
+class EnergyLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContainerWrapper {
 
     init {
         engine = EnergyEngine(saveStateCallback)
@@ -28,13 +26,6 @@ class EnergyLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaConta
     constructor(level: Level, x: Double, y: Double, z: Double) : super(
         ModEntityTypes.ENERGY_LOCOMOTIVE.get(), level, x, y, z
     )
-
-    override fun remove(r: RemovalReason) {
-        if (!level().isClientSide) {
-            Containers.dropContents(this.level(), this, this)
-        }
-        super.remove(r)
-    }
 
     override fun createContainerProvider(): MenuProvider {
         return object : MenuProvider {
@@ -54,20 +45,14 @@ class EnergyLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaConta
         }
     }
 
+    override fun remove(r: RemovalReason) {
+        if (!level().isClientSide) {
+            Containers.dropContents(this.level(), this, this)
+        }
+        super.remove(r)
+    }
 
     override fun getPickResult(): ItemStack {
         return ItemStack(ModItems.ENERGY_LOCOMOTIVE.get())
-    }
-
-    override fun getSlotsForFace(dir: Direction): IntArray {
-        return intArrayOf(0)
-    }
-
-    override fun canPlaceItemThroughFace(index: Int, itemStack: ItemStack, dir: Direction?): Boolean {
-        return stalling.isDocked()
-    }
-
-    override fun canTakeItemThroughFace(index: Int, itemStack: ItemStack, dir: Direction): Boolean {
-        return false
     }
 }

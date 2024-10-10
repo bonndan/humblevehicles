@@ -7,7 +7,6 @@ import dev.murad.shipping.setup.ModEntityTypes
 import dev.murad.shipping.setup.ModItems
 import dev.murad.shipping.setup.ModSounds
 import dev.murad.shipping.util.ItemHandlerVanillaContainerWrapper
-import net.minecraft.core.Direction
 import net.minecraft.network.chat.Component
 import net.minecraft.world.Containers
 import net.minecraft.world.MenuProvider
@@ -30,11 +29,7 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
     constructor(type: EntityType<*>, level: Level) : super(type, level)
 
     constructor(level: Level, x: Double, y: Double, z: Double) : super(
-        ModEntityTypes.STEAM_LOCOMOTIVE.get(),
-        level,
-        x,
-        y,
-        z
+        ModEntityTypes.STEAM_LOCOMOTIVE.get(), level, x, y, z
     )
 
     override fun onUndock() {
@@ -60,6 +55,12 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
         }
     }
 
+    override fun doMovementEffect() {
+        if (engine.isLit()) {
+            makeSmoke(level(), onPos.above().above().toVec3(), Vec3(x, y, z), Vec3(xOld, yOld, zOld))
+        }
+    }
+
     override fun remove(r: RemovalReason) {
         if (!level().isClientSide) {
             Containers.dropContents(this.level(), this, this)
@@ -69,21 +70,5 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
 
     override fun getPickResult(): ItemStack {
         return ItemStack(ModItems.STEAM_LOCOMOTIVE.get())
-    }
-
-    override fun doMovementEffect() {
-        makeSmoke(level(), onPos.above().above().toVec3(), Vec3(x, y, z), Vec3(xOld, yOld, zOld))
-    }
-
-    override fun canTakeItemThroughFace(index: Int, itemStack: ItemStack, dir: Direction): Boolean {
-        return false
-    }
-
-    override fun getSlotsForFace(dir: Direction): IntArray {
-        return intArrayOf(0)
-    }
-
-    override fun canPlaceItemThroughFace(index: Int, itemStack: ItemStack, dir: Direction?): Boolean {
-        return stalling.isDocked()
     }
 }

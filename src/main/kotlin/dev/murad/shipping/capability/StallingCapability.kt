@@ -1,5 +1,6 @@
 package dev.murad.shipping.capability
 
+import dev.murad.shipping.HumVeeMod
 import net.minecraft.resources.ResourceLocation
 import net.neoforged.neoforge.capabilities.EntityCapability
 
@@ -19,9 +20,9 @@ interface StallingCapability {
     fun unfreeze()
 
     companion object {
-        
+
         val STALLING_CAPABILITY: EntityCapability<StallingCapability, Void?> = EntityCapability.createVoid(
-            ResourceLocation.parse("item_handler"),  //"create"
+            ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "stalling_capability"),
             StallingCapability::class.java
         )
     }

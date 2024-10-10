@@ -1,5 +1,6 @@
 package dev.murad.shipping.entity.custom
 
+import dev.murad.shipping.capability.StallingCapability
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Player
 import net.neoforged.neoforge.items.ItemStackHandler

@@ -162,13 +162,14 @@ object ModEntityTypes {
 
     val STEAM_LOCOMOTIVE: Supplier<EntityType<AbstractLocomotiveEntity>> =
         ENTITIES.register("steam_locomotive", Supplier<EntityType<AbstractLocomotiveEntity>> {
-            EntityType.Builder.of(
-                { type: EntityType<AbstractLocomotiveEntity>, level: Level ->
-                    SteamLocomotiveEntity(
-                        type, level
-                    )
-                }, MobCategory.MISC
-            ).sized(0.7f, 0.9f).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
+            EntityType.Builder
+                .of(
+                    { type: EntityType<AbstractLocomotiveEntity>, level: Level -> SteamLocomotiveEntity(type, level) },
+                    MobCategory.MISC
+                )
+                .sized(0.7f, 0.9f)
+                .clientTrackingRange(8)
+                .setShouldReceiveVelocityUpdates(true)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "steam_locomotive").toString())
         })
 

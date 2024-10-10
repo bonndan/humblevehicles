@@ -28,6 +28,7 @@ import kotlin.collections.set
 import kotlin.math.abs
 
 class RailHelper(private val minecart: AbstractMinecart) {
+
     class RailDir {
         var horizontal: Direction
         var above: Boolean
@@ -187,6 +188,7 @@ class RailHelper(private val minecart: AbstractMinecart) {
         prevDirTaken: Direction,
         heuristic: Function<BlockPos, Double>
     ): Optional<RailPathFindNode> {
+
         val visited: MutableSet<Pair<BlockPos, Direction>> = HashSet()
         val queue = PriorityQueue<RailPathFindNode>()
         val ends = PriorityQueue<RailPathFindNode>()
@@ -257,82 +259,43 @@ class RailHelper(private val minecart: AbstractMinecart) {
     }
 
     companion object {
-        val EXITS: Map<RailShape?, Pair<Vec3i, Vec3i>> = Util.make(
-            Maps.newEnumMap(
-                RailShape::class.java
-            )
-        ) { map: EnumMap<RailShape?, Pair<Vec3i, Vec3i>> ->
-            val west = Direction.WEST.normal
-            val east = Direction.EAST.normal
-            val north = Direction.NORTH.normal
-            val south = Direction.SOUTH.normal
-            val westb = west.below()
-            val eastb = east.below()
-            val nothb = north.below()
-            val southb = south.below()
-            map[RailShape.NORTH_SOUTH] = Pair.of(north, south)
-            map[RailShape.EAST_WEST] = Pair.of(west, east)
-            map[RailShape.ASCENDING_EAST] = Pair.of(westb, east)
-            map[RailShape.ASCENDING_WEST] = Pair.of(west, eastb)
-            map[RailShape.ASCENDING_NORTH] = Pair.of(north, southb)
-            map[RailShape.ASCENDING_SOUTH] = Pair.of(nothb, south)
-            map[RailShape.SOUTH_EAST] = Pair.of(south, east)
-            map[RailShape.SOUTH_WEST] = Pair.of(south, west)
-            map[RailShape.NORTH_WEST] = Pair.of(north, west)
-            map[RailShape.NORTH_EAST] = Pair.of(north, east)
-        }
+        val EXITS: Map<RailShape, Pair<Vec3i, Vec3i>> =
+            Util.make(Maps.newEnumMap(RailShape::class.java)) { map: EnumMap<RailShape, Pair<Vec3i, Vec3i>> ->
+                val west = Direction.WEST.normal
+                val east = Direction.EAST.normal
+                val north = Direction.NORTH.normal
+                val south = Direction.SOUTH.normal
+                val westb = west.below()
+                val eastb = east.below()
+                val nothb = north.below()
+                val southb = south.below()
+                map[RailShape.NORTH_SOUTH] = Pair.of(north, south)
+                map[RailShape.EAST_WEST] = Pair.of(west, east)
+                map[RailShape.ASCENDING_EAST] = Pair.of(westb, east)
+                map[RailShape.ASCENDING_WEST] = Pair.of(west, eastb)
+                map[RailShape.ASCENDING_NORTH] = Pair.of(north, southb)
+                map[RailShape.ASCENDING_SOUTH] = Pair.of(nothb, south)
+                map[RailShape.SOUTH_EAST] = Pair.of(south, east)
+                map[RailShape.SOUTH_WEST] = Pair.of(south, west)
+                map[RailShape.NORTH_WEST] = Pair.of(north, west)
+                map[RailShape.NORTH_EAST] = Pair.of(north, east)
+            }
+
         private const val MAX_VISITED = 200
 
-        val EXITS_DIRECTION: Map<RailShape, Pair<RailDir, RailDir>> = Util.make(
-            Maps.newEnumMap(
-                RailShape::class.java
-            )
-        ) { map: EnumMap<RailShape, Pair<RailDir, RailDir>> ->
-            map[RailShape.NORTH_SOUTH] = Pair.of(
-                RailDir(Direction.NORTH),
-                RailDir(Direction.SOUTH)
-            )
-            map[RailShape.EAST_WEST] = Pair.of(
-                RailDir(Direction.WEST),
-                RailDir(Direction.EAST)
-            )
-            map[RailShape.ASCENDING_EAST] = Pair.of(
-                RailDir(Direction.WEST),
-                RailDir(Direction.EAST, true)
-            )
-            map[RailShape.ASCENDING_WEST] = Pair.of(
-                RailDir(
-                    Direction.WEST,
-                    true
-                ), RailDir(Direction.EAST)
-            )
-            map[RailShape.ASCENDING_NORTH] = Pair.of(
-                RailDir(
-                    Direction.NORTH,
-                    true
-                ), RailDir(Direction.SOUTH)
-            )
-            map[RailShape.ASCENDING_SOUTH] = Pair.of(
-                RailDir(Direction.NORTH),
-                RailDir(Direction.SOUTH, true)
-            )
-            map[RailShape.SOUTH_EAST] = Pair.of(
-                RailDir(Direction.SOUTH),
-                RailDir(Direction.EAST)
-            )
-            map[RailShape.SOUTH_WEST] = Pair.of(
-                RailDir(Direction.WEST),
-                RailDir(Direction.SOUTH)
-            )
-            map[RailShape.NORTH_WEST] = Pair.of(
-                RailDir(Direction.WEST),
-                RailDir(Direction.NORTH)
-            )
-            map[RailShape.NORTH_EAST] = Pair.of(
-                RailDir(Direction.NORTH),
-                RailDir(Direction.EAST)
-            )
-        }
+        val EXITS_DIRECTION: Map<RailShape, Pair<RailDir, RailDir>> =
+            Util.make(Maps.newEnumMap(RailShape::class.java)) { map: EnumMap<RailShape, Pair<RailDir, RailDir>> ->
+                map[RailShape.NORTH_SOUTH] = Pair.of(RailDir(Direction.NORTH), RailDir(Direction.SOUTH))
+                map[RailShape.EAST_WEST] = Pair.of(RailDir(Direction.WEST), RailDir(Direction.EAST))
+                map[RailShape.ASCENDING_EAST] = Pair.of(RailDir(Direction.WEST), RailDir(Direction.EAST, true))
+                map[RailShape.ASCENDING_WEST] = Pair.of(RailDir(Direction.WEST, true), RailDir(Direction.EAST))
+                map[RailShape.ASCENDING_NORTH] = Pair.of(RailDir(Direction.NORTH, true), RailDir(Direction.SOUTH))
+                map[RailShape.ASCENDING_SOUTH] = Pair.of(RailDir(Direction.NORTH), RailDir(Direction.SOUTH, true))
+                map[RailShape.SOUTH_EAST] = Pair.of(RailDir(Direction.SOUTH), RailDir(Direction.EAST))
+                map[RailShape.SOUTH_WEST] = Pair.of(RailDir(Direction.WEST), RailDir(Direction.SOUTH))
+                map[RailShape.NORTH_WEST] = Pair.of(RailDir(Direction.WEST), RailDir(Direction.NORTH))
+                map[RailShape.NORTH_EAST] = Pair.of(RailDir(Direction.NORTH), RailDir(Direction.EAST))
+            }
 
         fun getShape(pos: BlockPos, level: Level): RailShape {
             val state = level.getBlockState(pos)
@@ -385,23 +348,15 @@ class RailHelper(private val minecart: AbstractMinecart) {
             }
         }
 
-        fun samePositionHeuristic(p: BlockPos): Function<BlockPos, Double> {
-            return (Function { pVector: BlockPos? -> p.distSqr(pVector) })
-        }
-
         fun samePositionHeuristicSet(potentialDestinations: Set<BlockPos>): Function<BlockPos, Double> {
-            return (Function { pos: BlockPos? ->
+            return Function { pos: BlockPos ->
                 potentialDestinations.stream().map { p: BlockPos -> p.distSqr(pos) }
                     .min { obj: Double, anotherDouble: Double? ->
                         obj.compareTo(
                             anotherDouble!!
                         )
                     }.orElse(0.0)
-            })
-        }
-
-        fun toVec3(dir: Vec3i): Vec3 {
-            return Vec3(dir.x.toDouble(), dir.y.toDouble(), dir.z.toDouble())
+            }
         }
     }
 }

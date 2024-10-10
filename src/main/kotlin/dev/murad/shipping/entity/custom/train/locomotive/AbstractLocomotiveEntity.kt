@@ -8,6 +8,7 @@ import dev.murad.shipping.entity.accessor.HeadVehicleDataAccessor
 import dev.murad.shipping.entity.custom.Engine
 import dev.murad.shipping.entity.custom.HeadVehicle
 import dev.murad.shipping.entity.custom.SaveStateCallback
+import dev.murad.shipping.entity.custom.Stalling
 import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity
 import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart
 import dev.murad.shipping.entity.navigation.LocomotiveNavigator
@@ -28,6 +29,7 @@ import net.minecraft.util.Mth
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.MenuProvider
+import net.minecraft.world.WorldlyContainer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.player.Player
@@ -49,7 +51,7 @@ import kotlin.math.abs
 import kotlin.math.floor
 
 abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntityHead<AbstractTrainCarEntity>,
-    ItemHandlerVanillaContainerWrapper, HeadVehicle {
+    ItemHandlerVanillaContainerWrapper, HeadVehicle, Stalling, WorldlyContainer {
 
     protected val enrollmentHandler: ChunkManagerEnrollmentHandler
     protected val saveStateCallback = object: SaveStateCallback {
@@ -558,7 +560,11 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         linkingHandler.train = train
     }
 
-    protected val stalling: StallingCapability = object : StallingCapability {
+    override fun getStalling(): StallingCapability {
+        return stalling
+    }
+
+    private val stalling: StallingCapability = object : StallingCapability {
 
         override fun isDocked(): Boolean = isDocked
 
@@ -698,6 +704,17 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         return Type.RIDEABLE
     }
 
+    override fun canTakeItemThroughFace(index: Int, itemStack: ItemStack, dir: Direction): Boolean {
+        return false
+    }
+
+    override fun getSlotsForFace(dir: Direction): IntArray {
+        return intArrayOf(0)
+    }
+
+    override fun canPlaceItemThroughFace(index: Int, itemStack: ItemStack, dir: Direction?): Boolean {
+        return getStalling().isDocked()
+    }
 
     companion object {
         // item handler for loco routes

@@ -13,8 +13,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.neoforged.bus.api.IEventBus
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent
-import net.neoforged.neoforge.fluids.CauldronFluidContent
 import net.neoforged.neoforge.registries.DeferredRegister
 
 object Registration {
@@ -53,7 +51,7 @@ object Registration {
         eventBus.register(VehicleTrackerPacketHandler)
         eventBus.register(VehiclePacketHandler)
         ModSounds.register()
-        eventBus.addListener { event: RegisterCapabilitiesEvent -> CauldronFluidContent.registerCapabilities(event) }
+        ModCapabilities.register(eventBus)
 
     }
 }

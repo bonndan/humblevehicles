@@ -1,6 +1,7 @@
 package dev.murad.shipping.entity.custom.vessel.barge
 
 import dev.murad.shipping.capability.StallingCapability
+import dev.murad.shipping.entity.custom.Stalling
 import dev.murad.shipping.entity.custom.vessel.VesselEntity
 import dev.murad.shipping.entity.custom.vessel.tug.AbstractTugEntity
 import dev.murad.shipping.util.Train
@@ -18,7 +19,7 @@ import java.util.*
 
 
 abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, world: Level) :
-    VesselEntity(type, world) {
+    VesselEntity(type, world), Stalling {
 
     constructor(
         type: EntityType<out AbstractBargeEntity>,
@@ -110,17 +111,18 @@ abstract class AbstractBargeEntity(type: EntityType<out AbstractBargeEntity>, wo
 
     val isDockable: Boolean
         // hack to disable hoppers
-        get() = getLinkingHandler()?.leader?.map { dom: VesselEntity? ->
-            this.distanceToSqr(
-                dom
-            ) < 1.1
-        }?.orElse(true) == true
+        get() = getLinkingHandler()?.leader?.map { dom: VesselEntity ->
+            this.distanceToSqr(dom) < 1.1 }?.orElse(true) == true
 
     override fun allowDockInterface(): Boolean {
         return isDockable
     }
 
-    private val capability: StallingCapability = object : StallingCapability {
+    override fun getStalling(): StallingCapability {
+        return stalling
+    }
+
+    private val stalling: StallingCapability = object : StallingCapability {
         override fun isDocked(): Boolean {
             return delegate().map { obj: StallingCapability -> obj.isDocked() }.orElse(false)
         }

@@ -71,9 +71,7 @@ abstract class AbstractWagonEntity : AbstractTrainCarEntity {
     val isDockable: Boolean
         // hack to disable hoppers
         get() = linkingHandler.leader.map { dom: AbstractTrainCarEntity? ->
-            this.distanceToSqr(
-                dom
-            ) < 1.05
+            this.distanceToSqr(dom) < 1.05
         }.orElse(true)
 
 
