@@ -4,19 +4,21 @@ import dev.murad.shipping.entity.custom.EnergyEngine
 import dev.murad.shipping.entity.custom.Engine
 import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.vehicle.Boat
+import net.minecraft.world.level.material.Fluids.WATER
+import net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 
-class SubmarineFloatBehaviourTest {
+class SubmarineMovementBehaviourTest {
 
     private val engine: Engine = EnergyEngine(mock())
-    private lateinit var behaviour: SubmarineFloatBehaviour
+    private lateinit var behaviour: SubmarineMovementBehaviour
 
     @BeforeEach
     fun setUp() {
-        behaviour = SubmarineFloatBehaviour(engine)
+        behaviour = SubmarineMovementBehaviour(engine)
     }
 
     @Test
@@ -59,19 +61,6 @@ class SubmarineFloatBehaviourTest {
     }
 
     @Test
-    fun `when engine is on and in water then undrown force is off`() {
-
-        //given
-        engine.setEngineOn(true)
-
-        //when
-        val force = behaviour.calculateUndrownForce(mock(), Boat.Status.IN_WATER, BlockPos(0, 0, 0))
-
-        //then
-        assertThat(force).isEqualTo(ENGINE_ON_SINK_SPEED)
-    }
-
-    @Test
     fun `when engine is off and in water then undrown force is off`() {
 
         //given
@@ -108,5 +97,18 @@ class SubmarineFloatBehaviourTest {
 
         //then
         assertThat(force).isEqualTo(0.0)
+    }
+
+    @Test
+    fun `is not falling in water`() {
+
+        //given
+        engine.setEngineOn(true)
+
+        //when
+        val isFalling = behaviour.isFallingIn(WATER)
+
+        //then
+        assertThat(isFalling).isFalse()
     }
 }

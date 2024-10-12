@@ -2,7 +2,6 @@ package dev.murad.shipping.entity.custom.vessel.submarine
 
 import dev.murad.shipping.entity.container.EnergyHeadVehicleContainer
 import dev.murad.shipping.entity.custom.EnergyEngine
-import dev.murad.shipping.entity.custom.vessel.SubmarineControl
 import dev.murad.shipping.entity.custom.vessel.tug.AbstractTugEntity
 import dev.murad.shipping.entity.models.RIDING_POSITION_Y_OFFSET
 import dev.murad.shipping.setup.ModEntityTypes
@@ -23,9 +22,10 @@ import net.minecraft.world.phys.Vec3
 class SubmarineEntity : AbstractTugEntity {
 
     init {
-        engine = EnergyEngine(saveStateCallback)
-        control = SubmarineControl
-        floatBehaviour = SubmarineFloatBehaviour(engine)
+        val engine = EnergyEngine(saveStateCallback)
+        setEngine(engine)
+        setControl(SubmarineControl())
+        movementBehaviour = SubmarineMovementBehaviour(engine)
     }
 
     constructor(type: EntityType<out WaterAnimal>, world: Level) : super(type, world)
@@ -79,7 +79,7 @@ class SubmarineEntity : AbstractTugEntity {
      */
     override fun handleAirSupply(airSupply: Int) {
 
-        if (this.isAlive && !this.isInWaterOrBubble && !engine.isLit()) {
+        if (this.isAlive && !this.isInWaterOrBubble && !getEngine().isLit()) {
             this.airSupply = airSupply - 1
             if (this.airSupply == -20) {
                 this.airSupply = 0

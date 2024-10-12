@@ -59,9 +59,22 @@ abstract class AbstractTugEntity :
             entityData[REMAINING_BURN_TIME] = remainingBurnTime
         }
     }
-    protected lateinit var engine: Engine
-    protected lateinit var control: VehicleControl
+    private lateinit var engine: Engine
+    protected fun setEngine(engine: Engine) {
+        this.engine = engine
+    }
+    protected fun getEngine() : Engine{
+        return engine
+    }
 
+    private lateinit var control: VehicleControl
+    protected fun setControl(control: VehicleControl) {
+        this.control = control
+    }
+
+    override fun getControl(): VehicleControl {
+        return control
+    }
 
     // CONTAINER STUFF
     private val routeItemHandler: ItemStackHandler = createRouteItemHandler()
@@ -133,7 +146,7 @@ abstract class AbstractTugEntity :
     }
 
     override fun owner(): String? {
-        return entityData.get(OWNER)
+        return entityData[OWNER]
     }
 
     override fun isPushedByFluid(): Boolean {

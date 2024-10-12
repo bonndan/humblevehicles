@@ -4,10 +4,11 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
-import net.neoforged.api.distmarker.Dist
-import net.neoforged.api.distmarker.OnlyIn
 
-object BoatFloatBehaviour : FloatBehaviour {
+/**
+ * This is the original code for tugs.
+ */
+object BoatMovementBehaviour : VesselMovementBehaviour {
 
     /**
      * Default for all regular boats.

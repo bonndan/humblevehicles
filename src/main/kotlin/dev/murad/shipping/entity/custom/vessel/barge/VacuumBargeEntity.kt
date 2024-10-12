@@ -65,7 +65,7 @@ class VacuumBargeEntity : AbstractBargeEntity {
                 searchBox
             ) { e: ItemEntity -> e.distanceToSqr(this) < (PICK_RADIUS * PICK_RADIUS) }
 
-        if (!items.isEmpty()) {
+        if (items.isNotEmpty()) {
             val inventoryProviders = getConnectedInventories()
             for (item in items) {
                 val initial = item.getItem()

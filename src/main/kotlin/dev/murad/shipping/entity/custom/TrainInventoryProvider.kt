@@ -10,7 +10,6 @@ import java.util.Optional
  */
 interface TrainInventoryProvider {
     // TODO: fluid provider
-    // TODO: energy provider
     fun getTrainInventoryHandler(): Optional<ItemStackHandler> {
         return Optional.empty<ItemStackHandler>()
     }

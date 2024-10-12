@@ -5,10 +5,7 @@ import dev.murad.shipping.block.rail.MultiShapeRail
 import dev.murad.shipping.block.rail.blockentity.LocomotiveDockTileEntity
 import dev.murad.shipping.capability.StallingCapability
 import dev.murad.shipping.entity.accessor.HeadVehicleDataAccessor
-import dev.murad.shipping.entity.custom.Engine
-import dev.murad.shipping.entity.custom.HeadVehicle
-import dev.murad.shipping.entity.custom.SaveStateCallback
-import dev.murad.shipping.entity.custom.Stalling
+import dev.murad.shipping.entity.custom.*
 import dev.murad.shipping.entity.custom.train.AbstractTrainCarEntity
 import dev.murad.shipping.entity.custom.vessel.tug.VehicleFrontPart
 import dev.murad.shipping.entity.navigation.LocomotiveNavigator
@@ -714,6 +711,10 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
     override fun canPlaceItemThroughFace(index: Int, itemStack: ItemStack, dir: Direction?): Boolean {
         return getStalling().isDocked()
+    }
+
+    override fun getControl(): VehicleControl {
+        return VehicleControl.IGNORED
     }
 
     companion object {

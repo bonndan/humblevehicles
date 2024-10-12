@@ -2,6 +2,7 @@ package dev.murad.shipping.entity.custom.vessel.tug
 
 import dev.murad.shipping.entity.container.EnergyHeadVehicleContainer
 import dev.murad.shipping.entity.custom.EnergyEngine
+import dev.murad.shipping.entity.custom.VehicleControl
 import dev.murad.shipping.entity.custom.vessel.TugControl
 import dev.murad.shipping.entity.models.PositionAdjustedEntity
 import dev.murad.shipping.entity.models.vessel.EnergyTugModel.Companion.MODEL_Y_OFFSET
@@ -25,9 +26,9 @@ import thedarkcolour.kotlinforforge.neoforge.forge.vectorutil.v3d.toVec3
 class EnergyTugEntity : AbstractTugEntity, PositionAdjustedEntity {
 
     init {
-        engine = EnergyEngine(saveStateCallback)
-        control = TugControl
-        boundingBox= AABB(0.0, 0.0, 0.0, 1.0, 2.0, 2.0)
+        setEngine(EnergyEngine(saveStateCallback))
+        setControl(TugControl)
+        boundingBox = AABB(0.0, 0.0, 0.0, 1.0, 2.0, 2.0)
     }
 
     constructor(type: EntityType<out WaterAnimal>, world: Level) : super(type, world)

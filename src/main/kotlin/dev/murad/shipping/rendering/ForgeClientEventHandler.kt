@@ -2,6 +2,7 @@ package dev.murad.shipping.rendering
 
 import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.ShippingConfig
+import dev.murad.shipping.entity.custom.VehicleControl
 import dev.murad.shipping.network.client.VehicleTrackerPacketHandler
 import dev.murad.shipping.setup.ModItems
 import net.minecraft.client.Minecraft
@@ -12,8 +13,10 @@ import net.minecraft.world.item.ItemStack
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.event.InputEvent
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent
 import net.neoforged.neoforge.event.level.LevelEvent
+import org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL
 
 /**
  * Forge-wide event bus
@@ -27,6 +30,11 @@ object ForgeClientEventHandler {
     @SubscribeEvent
     fun onWorldUnload(event: LevelEvent.Unload?) {
         VehicleTrackerPacketHandler.flush()
+    }
+
+    @SubscribeEvent
+    fun onKeyInputEvent(event: InputEvent.Key?) {
+        VehicleControl.handleKeyForVehicleControlDownForce(event, GLFW_KEY_LEFT_CONTROL, Minecraft.getInstance().player)
     }
 
     @SubscribeEvent

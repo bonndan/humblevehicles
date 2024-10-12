@@ -27,9 +27,9 @@ import thedarkcolour.kotlinforforge.neoforge.forge.vectorutil.v3d.toVec3
 class SteamTugEntity : AbstractTugEntity, PositionAdjustedEntity {
 
     init {
-        engine = FueledEngine(saveStateCallback)
-        control = TugControl
-        boundingBox= AABB(0.0, 0.0, 0.0, 1.0, 2.0, 2.0)
+        setEngine(FueledEngine(saveStateCallback))
+        setControl(TugControl)
+        boundingBox = AABB(0.0, 0.0, 0.0, 1.0, 2.0, 2.0)
     }
 
     constructor(type: EntityType<out WaterAnimal>, world: Level) : super(type, world)
@@ -56,7 +56,7 @@ class SteamTugEntity : AbstractTugEntity, PositionAdjustedEntity {
 
     override fun tick() {
         super.tick()
-        if (level().isClientSide && engine.isLit()) {
+        if (level().isClientSide && getEngine().isLit()) {
             //two above and a bit in the back
             val emitterPos = onPos.above().above().toVec3().add(Vec3(0.0, 0.0, 0.2))
             makeSmoke(level(), emitterPos, Vec3(x, y, z), Vec3(xOld, yOld, zOld))

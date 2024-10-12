@@ -1,5 +1,6 @@
 package dev.murad.shipping.entity.custom.vessel
 
+import dev.murad.shipping.entity.custom.VesselTravelBehaviour
 import net.minecraft.core.BlockPos
 import net.minecraft.core.BlockPos.MutableBlockPos
 import net.minecraft.util.Mth
@@ -7,13 +8,20 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.WaterlilyBlock
+import net.minecraft.world.level.material.Fluid
+import net.minecraft.world.level.material.FluidState
 import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.Vec3
 import net.minecraft.world.phys.shapes.BooleanOp
 import net.minecraft.world.phys.shapes.Shapes
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
+import java.util.concurrent.atomic.AtomicReference
 
-interface FloatBehaviour {
+/**
+ * This is for vessels which are actually water animals.
+ */
+interface VesselMovementBehaviour {
 
     fun calculateBuoyancy(status: Boat.Status?, waterLevel: Double, y: Double, bbHeight: Double): Double
 
@@ -79,5 +87,32 @@ interface FloatBehaviour {
             Boat.Status.IN_AIR -> { 0.9f }
             else -> 0.05f
         }
+    }
+
+    /**
+     *
+     */
+    fun travel(
+        relative: Vec3,
+        gravityValue: Double,
+        fluidState: FluidState,
+        entity: VesselEntity,
+        level: Level,
+        isAffectedByFluids: Boolean,
+        waterSlowDown: Float,
+        stuckCounter: AtomicReference<Int>
+    ) {
+        return VesselTravelBehaviour.calculateTravel(relative,
+            gravityValue,
+            fluidState,
+            entity,
+            level,
+            isAffectedByFluids,
+            waterSlowDown,
+            stuckCounter)
+    }
+
+    fun isFallingIn(fluid: Fluid): Boolean {
+        return true
     }
 }
