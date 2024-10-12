@@ -63,7 +63,8 @@ abstract class AbstractTugEntity :
     protected fun setEngine(engine: Engine) {
         this.engine = engine
     }
-    protected fun getEngine() : Engine{
+
+    protected fun getEngine(): Engine {
         return engine
     }
 
@@ -423,28 +424,24 @@ abstract class AbstractTugEntity :
 
     private fun followGuideRail() {
         // do not follow guide rail if stalled
-        val dockcap: Optional<StallingCapability> =
-            Optional.ofNullable(getCapability(StallingCapability.STALLING_CAPABILITY))
+        val dockcap = Optional.ofNullable(getCapability(StallingCapability.STALLING_CAPABILITY))
         if (dockcap.isPresent()) {
-            val cap: StallingCapability = dockcap.get()
-            if (cap.isDocked() || cap.isFrozen() || cap.isStalled()) return
+            val stallingCapability = dockcap.get()
+            if (stallingCapability.isDocked() || stallingCapability.isFrozen() || stallingCapability.isStalled()) return
         }
 
-        val belowList: List<BlockState> = Arrays.asList(
-            level().getBlockState(getOnPos().below()),
-            level().getBlockState(getOnPos().below().below())
+        val currentPos = onPos
+        val belowList: List<BlockState> = listOf(
+            level().getBlockState(currentPos.below()),
+            level().getBlockState(currentPos.below().below())
         )
-        val water: BlockState = level().getBlockState(getOnPos())
+        val water: BlockState = level().getBlockState(currentPos)
         for (below: BlockState in belowList) {
             if (below.`is`(ModBlocks.GUIDE_RAIL_TUG.get()) && water.`is`(Blocks.WATER)) {
                 val arrows: Direction = getArrowsDirection(below)
                 this.setYRot(arrows.toYRot())
                 val modifier = 0.03
-                this.setDeltaMovement(
-                    getDeltaMovement().add(
-                        Vec3(arrows.getStepX() * modifier, 0.0, arrows.getStepZ() * modifier)
-                    )
-                )
+                this.deltaMovement = deltaMovement.add(Vec3(arrows.stepX * modifier, 0.0, arrows.stepZ * modifier))
             }
         }
     }
