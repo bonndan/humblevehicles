@@ -2,6 +2,7 @@ package dev.murad.shipping.data
 
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.item.crafting.Ingredient.TagValue
+import net.minecraft.world.item.crafting.ShapedRecipe
 import net.minecraft.world.item.crafting.ShapedRecipePattern
 
 class RecipeMarkdown {
@@ -25,15 +26,25 @@ class RecipeMarkdown {
         ingredients.forEach {
             icons.copyIcon(it)
         }
+        val id = recipe.recipeId.toString()
+        val documentation: String? = tryLoadDescriptions(id)
 
-        stringBuilder.append("\n<a id=\"${stripPrefixes(recipe.recipeId.toString())}\"></a>\n")
+        stringBuilder.append("\n<a id=\"${stripPrefixes(id)}\"></a>\n")
         stringBuilder.append("\n## ${translated}\n")
+        documentation?.let { stringBuilder.append("\n${it}\n") }
         stringBuilder.append("\nRequires: ${extractRequirements(recipe)}\n")
         stringBuilder.append("\nType: ${recipe.recipe.type}\n")
         stringBuilder.append("\nIngredients: \n${ingredients.joinToString("") { "* $it\n" }}\n")
 
         recipe.pattern?.let { stringBuilder.append("\nPattern: ${extractPattern(it)}\n") }
     }
+
+    private fun tryLoadDescriptions(id: String): String? =
+        try {
+            PatchouliDescriptions.getDescriptions(stripPrefixes(id)).joinToString("\n\n")
+        } catch (e: Exception) {
+            null
+        }
 
     private fun extractRequirements(recipe: RecipeGraph.Node) =
         recipe.requirements

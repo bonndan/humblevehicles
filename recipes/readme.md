@@ -9,6 +9,8 @@
 
 ## Tug Dock
 
+
+
 Requires: [spring](#spring)
 
 Type: crafting
@@ -31,6 +33,8 @@ Pattern:
 <a id="barge_dock"></a>
 
 ## Barge Dock
+
+
 
 Requires: [spring](#spring)
 
@@ -55,6 +59,8 @@ Pattern:
 
 ## Vehicle Detector
 
+Emits a redstone signal when a vessel is within 3 blocks in a given direction. Needs a straight line of water.
+
 Requires: [spring](#spring)
 
 Type: crafting
@@ -77,6 +83,8 @@ Pattern:
 <a id="guide_rail_corner"></a>
 
 ## Vessel Corner Guide Rail
+
+
 
 Requires: [powered_rail](https://minecraft.wiki/w/powered_rail)
 
@@ -101,6 +109,8 @@ Pattern:
 
 ## Switch Rail
 
+
+
 Requires: [rail](https://minecraft.wiki/w/rail)
 
 Type: crafting
@@ -122,6 +132,8 @@ Pattern:
 
 ## T-Junction Rail
 
+
+
 Requires: [rail](https://minecraft.wiki/w/rail)
 
 Type: crafting
@@ -141,6 +153,8 @@ Pattern:
 <a id="junction_rail"></a>
 
 ## Junction Rail
+
+
 
 Requires: [rail](https://minecraft.wiki/w/rail)
 
@@ -162,6 +176,8 @@ Pattern:
 <a id="locomotive_dock_rail"></a>
 
 ## Locomotive Docking Rail
+
+
 
 Requires: [rail](https://minecraft.wiki/w/rail)
 
@@ -185,6 +201,8 @@ Pattern:
 
 ## Train Car Docking Rail
 
+
+
 Requires: [rail](https://minecraft.wiki/w/rail)
 
 Type: crafting
@@ -206,6 +224,8 @@ Pattern:
 <a id="guide_rail_tug"></a>
 
 ## Tug Guide Rail
+
+
 
 Requires: [powered_rail](https://minecraft.wiki/w/powered_rail)
 
@@ -230,6 +250,8 @@ Pattern:
 
 ## Fluid Hopper
 
+A hopper but for fluids, can import from the top and export from the sides. Can be loaded by right-clicking with buckets. Can be used to load/unload vessels and train cars
+
 Requires: [hopper](https://minecraft.wiki/w/hopper)
 
 Type: crafting
@@ -250,6 +272,8 @@ Pattern:
 <a id="vessel_charger"></a>
 
 ## Vehicle Charger
+
+A charger for Energy Tug and Energy Locomotive, connect to any forge energy cable to add power to the charger. Place on top of a dock to charge the vessel when docking, or beside the docking track for trains.
 
 Requires: [redstone](https://minecraft.wiki/w/redstone)
 
@@ -274,6 +298,8 @@ Pattern:
 
 ## Vehicle Chain
 
+Used to link vessels or train cars together. Right click vehicles in order to create a train. A train can only have one tugboat/locomotive and cannot have loops. Will break if vehicles are far apart.
+
 Requires: [string](https://minecraft.wiki/w/string)
 
 Type: crafting
@@ -294,6 +320,10 @@ Pattern:
 <a id="tug_route"></a>
 
 ## Tug Route
+
+This item stores a route for the tug. When the item is placed in the tug’s route slot, the tug will follow the route in order from node 0.
+
+Right click at any coordinate to add a node to the back of the tug route (cannot add to the middle). Right click at the location of any existing node to remove it. The nodes will be indicated with beams when the item is held in the main hand.
 
 Requires: [redstone](https://minecraft.wiki/w/redstone)
 
@@ -318,6 +348,8 @@ Pattern:
 
 ## Locomotive Route
 
+
+
 Requires: [redstone](https://minecraft.wiki/w/redstone)
 
 Type: crafting
@@ -340,6 +372,8 @@ Pattern:
 <a id="tug"></a>
 
 ## Steam Tug
+
+
 
 Requires: [piston](https://minecraft.wiki/w/piston)
 
@@ -364,6 +398,10 @@ Pattern:
 
 ## Energy Tug
 
+A tugboat powered by redstone. Charge it by placing redstone in the slot or by dokcing next to a hopper.
+
+
+
 Requires: [piston](https://minecraft.wiki/w/piston)
 
 Type: crafting
@@ -387,6 +425,8 @@ Pattern:
 
 ## Chest Barge
 
+
+
 Requires: [chest](https://minecraft.wiki/w/chest)
 
 Type: crafting
@@ -408,6 +448,8 @@ Pattern:
 <a id="barrel_barge"></a>
 
 ## Barrel Barge
+
+
 
 Requires: [barrel](https://minecraft.wiki/w/barrel)
 
@@ -431,6 +473,10 @@ Pattern:
 
 ## Item Collection Barge
 
+Automatically collects items in a radius
+
+Connect a Chest Barge behind the Item Collection Barge, as the Item Collection Barge does not provide an inventory of its own.
+
 Requires: [hopper](https://minecraft.wiki/w/hopper)
 
 Type: crafting
@@ -452,6 +498,10 @@ Pattern:
 <a id="seater_barge"></a>
 
 ## Seater Barge
+
+A simple barge that seats one player.
+
+
 
 Requires: [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
@@ -475,6 +525,10 @@ Pattern:
 
 ## Auto-Fishing Barge
 
+Performs fishing passively, uses vanilla fishing rod loot table.
+
+Needs to be in open water for nets to be deployed. Use on long routes in open oceans to avoid "shallow water" and "overfishing" penalties. Connect a Chest Barge behind the Auto-Fishing Barge, as the Auto-Fishing Barge does not provide an inventory of its own.
+
 Requires: [fishing_rod](https://minecraft.wiki/w/fishing_rod)
 
 Type: crafting
@@ -495,6 +549,10 @@ Pattern:
 <a id="fluid_barge"></a>
 
 ## Fluid Tank Barge
+
+Use this barge to transport fluids, can be loaded with a Fluid Hopper.
+
+
 
 Requires: [glass](https://minecraft.wiki/w/glass)
 
@@ -518,6 +576,8 @@ Pattern:
 
 ## Train Car
 
+
+
 Requires: [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 Type: crafting
@@ -538,6 +598,10 @@ Pattern:
 <a id="chest_car"></a>
 
 ## Chest Train Car
+
+A simple train car that holds items, similar to chest minecart.
+
+The car must be docked and part of a tug-train to interface with hoppers.
 
 Requires: [seater_car](#seater_car)
 
@@ -560,6 +624,8 @@ Pattern:
 
 ## Barrel Train Car
 
+
+
 Requires: [seater_car](#seater_car)
 
 Type: crafting
@@ -580,6 +646,10 @@ Pattern:
 <a id="fluid_car"></a>
 
 ## Fluid Tank Train Car
+
+Use this train car to transport fluids, can be loaded with a Fluid Hopper.
+
+
 
 Requires: [seater_car](#seater_car)
 
@@ -602,6 +672,10 @@ Pattern:
 <a id="energy_locomotive"></a>
 
 ## Energy Locomotive
+
+A locomotive powered by Forge Energy, can be charged when docked with a Vehicle Charger.
+
+The locomotive has an extra slot for an energy item, this is useful if the locomotive ran out of energy mid-way and needs to be recharged.
 
 Requires: [seater_car](#seater_car)
 
@@ -627,6 +701,10 @@ Pattern:
 
 ## Steam Locomotive
 
+A basic locomotive that can operate on any furnace fuel.
+
+Fuel can be loaded with hoppers placed beside docking rails
+
 Requires: [seater_car](#seater_car)
 
 Type: crafting
@@ -651,6 +729,8 @@ Pattern:
 
 ## Wireless Receiver Component
 
+
+
 Requires: [ender_eye](https://minecraft.wiki/w/ender_eye)
 
 Type: crafting
@@ -673,6 +753,8 @@ Pattern:
 <a id="transmitter_component"></a>
 
 ## Wireless Transmitter Component
+
+
 
 Requires: [ender_eye](https://minecraft.wiki/w/ender_eye)
 
@@ -697,6 +779,10 @@ Pattern:
 
 ## Conductor's Wrench
 
+Held in the hand, the Conductor's wrench will display the locations of currently registered locomotives and tugs.
+
+Right clicking any rails will cycle it through various rail shapes.
+
 Requires: [spring](#spring)
 
 Type: crafting
@@ -719,6 +805,10 @@ Pattern:
 <a id="submarine"></a>
 
 ## submarine
+
+This vehicle is powered by redstone and can dive underwater. Press left ctrl to give it downward thrust.
+
+
 
 Requires: [piston](https://minecraft.wiki/w/piston)
 

@@ -1,0 +1,18 @@
+{
+  "name": "Submarine",
+  "icon": "humblevehicles:submarine",
+  "category": "humblevehicles:vessels",
+  "pages": [
+    {
+      "type": "patchouli:entity",
+      "entity": "humblevehicles:submarine",
+      "scale": 0.6,
+      "offset": 0.5,
+      "text": "This vehicle is powered by redstone and can dive underwater. Press left ctrl to give it downward thrust."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "humblevehicles:submarine"
+    }
+  ]
+}
