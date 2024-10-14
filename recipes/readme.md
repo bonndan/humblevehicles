@@ -269,31 +269,6 @@ Pattern:
 | ![](./.png) | ![minecraft:glass](./glass.png) | ![](./.png) |
 
 
-<a id="vessel_charger"></a>
-
-## Vehicle Charger
-
-A charger for Energy Tug and Energy Locomotive, connect to any forge energy cable to add power to the charger. Place on top of a dock to charge the vessel when docking, or beside the docking track for trains.
-
-Requires: [redstone](https://minecraft.wiki/w/redstone)
-
-Type: crafting
-
-Ingredients: 
-* [gold_ingot](https://minecraft.wiki/w/gold_ingot)
-* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
-* [redstone_block](https://minecraft.wiki/w/redstone_block)
-
-
-Pattern: 
-
-| | | |
-| --- | --- | --- |
-| ![](./.png) | ![minecraft:gold_ingot](./gold_ingot.png) | ![](./.png) |
-| ![](./.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![](./.png) |
-| ![minecraft:redstone_block](./redstone_block.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:redstone_block](./redstone_block.png) |
-
-
 <a id="spring"></a>
 
 ## Vehicle Chain
@@ -398,7 +373,7 @@ Pattern:
 
 ## Energy Tug
 
-A tugboat powered by redstone. Charge it by placing redstone in the slot or by dokcing next to a hopper.
+A tugboat powered by redstone. Charge it by placing redstone in the slot or by docking next to a hopper.
 
 
 
@@ -407,17 +382,19 @@ Requires: [piston](https://minecraft.wiki/w/piston)
 Type: crafting
 
 Ingredients: 
-* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
+* [copper_ingot](https://minecraft.wiki/w/copper_ingot)
+* [redstone_torch](https://minecraft.wiki/w/redstone_torch)
+* [powered_rail](https://minecraft.wiki/w/powered_rail)
 * [piston](https://minecraft.wiki/w/piston)
-* [vessel_charger](#vessel_charger)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 
 Pattern: 
 
 | | | |
 | --- | --- | --- |
-| ![](./.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![](./.png) |
-| ![minecraft:piston](./piston.png) | ![humblevehicles:vessel_charger](./vessel_charger.png) | ![minecraft:piston](./piston.png) |
+| ![minecraft:copper_ingot](./copper_ingot.png) | ![minecraft:redstone_torch](./redstone_torch.png) | ![minecraft:copper_ingot](./copper_ingot.png) |
+| ![minecraft:copper_ingot](./copper_ingot.png) | ![minecraft:powered_rail](./powered_rail.png) | ![minecraft:piston](./piston.png) |
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
@@ -673,18 +650,20 @@ Pattern:
 
 ## Energy Locomotive
 
-A locomotive powered by Forge Energy, can be charged when docked with a Vehicle Charger.
+A locomotive powered by redstone. Charge it by placing redstone in the slot or by docking next to a hopper.
 
-The locomotive has an extra slot for an energy item, this is useful if the locomotive ran out of energy mid-way and needs to be recharged.
+
 
 Requires: [seater_car](#seater_car)
 
 Type: crafting
 
 Ingredients: 
-* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
+* [copper_ingot](https://minecraft.wiki/w/copper_ingot)
+* [redstone_torch](https://minecraft.wiki/w/redstone_torch)
+* [powered_rail](https://minecraft.wiki/w/powered_rail)
 * [piston](https://minecraft.wiki/w/piston)
-* [vessel_charger](#vessel_charger)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 * [seater_car](#seater_car)
 
 
@@ -692,8 +671,8 @@ Pattern:
 
 | | | |
 | --- | --- | --- |
-| ![](./.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![](./.png) |
-| ![minecraft:piston](./piston.png) | ![humblevehicles:vessel_charger](./vessel_charger.png) | ![minecraft:piston](./piston.png) |
+| ![minecraft:copper_ingot](./copper_ingot.png) | ![minecraft:redstone_torch](./redstone_torch.png) | ![minecraft:copper_ingot](./copper_ingot.png) |
+| ![minecraft:copper_ingot](./copper_ingot.png) | ![minecraft:powered_rail](./powered_rail.png) | ![minecraft:piston](./piston.png) |
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![humblevehicles:seater_car](./seater_car.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 
 
@@ -816,16 +795,18 @@ Type: crafting
 
 Ingredients: 
 * [glass](https://minecraft.wiki/w/glass)
-* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
+* [redstone_torch](https://minecraft.wiki/w/redstone_torch)
+* [copper_ingot](https://minecraft.wiki/w/copper_ingot)
+* [powered_rail](https://minecraft.wiki/w/powered_rail)
 * [piston](https://minecraft.wiki/w/piston)
-* [vessel_charger](#vessel_charger)
+* [iron_ingot](https://minecraft.wiki/w/iron_ingot)
 
 
 Pattern: 
 
 | | | |
 | --- | --- | --- |
-| ![minecraft:glass](./glass.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:glass](./glass.png) |
-| ![minecraft:piston](./piston.png) | ![humblevehicles:vessel_charger](./vessel_charger.png) | ![minecraft:piston](./piston.png) |
+| ![minecraft:glass](./glass.png) | ![minecraft:redstone_torch](./redstone_torch.png) | ![minecraft:glass](./glass.png) |
+| ![minecraft:copper_ingot](./copper_ingot.png) | ![minecraft:powered_rail](./powered_rail.png) | ![minecraft:piston](./piston.png) |
 | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) | ![minecraft:iron_ingot](./iron_ingot.png) |
 

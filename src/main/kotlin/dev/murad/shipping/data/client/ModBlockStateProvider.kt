@@ -2,7 +2,6 @@ package dev.murad.shipping.data.client
 
 import dev.murad.shipping.HumVeeMod
 import dev.murad.shipping.block.dock.DockingBlockStates
-import dev.murad.shipping.block.energy.VesselChargerBlock
 import dev.murad.shipping.block.fluid.FluidHopperBlock
 import dev.murad.shipping.block.guiderail.CornerGuideRailBlock
 import dev.murad.shipping.block.rail.AbstractDockingRail
@@ -135,18 +134,6 @@ class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper
                 )
                 .rotationY(
                     state.getValue(FluidHopperBlock.FACING).clockWise.toYRot().toInt()
-                )
-                .build()
-        }
-
-        getVariantBuilder(ModBlocks.VESSEL_CHARGER.get()).forAllStates { state: BlockState ->
-            ConfiguredModel.builder()
-                .modelFile(
-                    models()
-                        .withExistingParent("vessel_charger", modLoc("vessel_charger_parent_model"))
-                )
-                .rotationY(
-                    state.getValue(VesselChargerBlock.FACING).opposite.toYRot().toInt()
                 )
                 .build()
         }

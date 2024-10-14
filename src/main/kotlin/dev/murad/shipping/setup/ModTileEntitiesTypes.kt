@@ -2,7 +2,6 @@ package dev.murad.shipping.setup
 
 import dev.murad.shipping.block.dock.BargeDockTileEntity
 import dev.murad.shipping.block.dock.TugDockTileEntity
-import dev.murad.shipping.block.energy.VesselChargerTileEntity
 import dev.murad.shipping.block.fluid.FluidHopperTileEntity
 import dev.murad.shipping.block.rail.blockentity.LocomotiveDockTileEntity
 import dev.murad.shipping.block.rail.blockentity.TrainCarDockTileEntity
@@ -51,12 +50,6 @@ object ModTileEntitiesTypes {
         "fluid_hopper",
         { pos: BlockPos, state: BlockState -> FluidHopperTileEntity(pos, state) },
         ModBlocks.FLUID_HOPPER
-    )
-
-    val VESSEL_CHARGER: Supplier<BlockEntityType<VesselChargerTileEntity>> = register(
-        "vessel_charger",
-        { pos, state -> VesselChargerTileEntity(pos, state) },
-        ModBlocks.VESSEL_CHARGER
     )
 
     private fun <T : BlockEntity> register(

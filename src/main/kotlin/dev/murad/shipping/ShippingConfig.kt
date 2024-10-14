@@ -89,12 +89,6 @@ class ShippingConfig {
         var ENERGY_LOCO_BASE_ENERGY_USAGE: ModConfigSpec.ConfigValue<Int>? = null
         
         var ENERGY_LOCO_BASE_MAX_CHARGE_RATE: ModConfigSpec.ConfigValue<Int>? = null
-
-        
-        var VESSEL_CHARGER_BASE_CAPACITY: ModConfigSpec.ConfigValue<Int>? = null
-        
-        var VESSEL_CHARGER_BASE_MAX_TRANSFER: ModConfigSpec.ConfigValue<Int>? = null
-
         
         var TRAIN_EXEMPT_DAMAGE_SOURCES: ModConfigSpec.ConfigValue<List<String>>? = null
         
@@ -186,12 +180,6 @@ class ShippingConfig {
             BUILDER.push("dock")
             run {
                 BUILDER.push("charger")
-                VESSEL_CHARGER_BASE_CAPACITY =
-                    BUILDER.comment("Base max capacity of the Vessel Charger in FE, must be an integer >= 1. Default 10000.")
-                        .defineInRange("vesselChargerBaseCapacity", 10000, 1, Int.MAX_VALUE)
-                VESSEL_CHARGER_BASE_MAX_TRANSFER =
-                    BUILDER.comment("Base max transfer rate of the Vessel Charger in FE/tick, must be an integer >= 1. Default 100.")
-                        .defineInRange("vesselChargerBaseMaxTransfer", 100, 1, Int.MAX_VALUE)
                 BUILDER.pop()
             }
             BUILDER.pop()

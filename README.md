@@ -27,7 +27,7 @@ This is a NeoForge port of [LittleLogistics](https://littlelogistics.murad.dev/)
 
 - [Recipes](./recipes/readme.md) in markdown
 - rideable vehicles plus **submarine**
-- removed the rapid hopper
+- removed the rapid hopper and the vessel charger
 - simplified routes
 
 ## License

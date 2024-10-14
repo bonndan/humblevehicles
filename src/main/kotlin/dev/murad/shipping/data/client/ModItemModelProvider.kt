@@ -21,7 +21,6 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         withExistingParent("guide_rail_tug", modLoc("block/guide_rail_tug"))
         withExistingParent("fluid_hopper", modLoc("block/fluid_hopper"))
         withExistingParent("vessel_detector", modLoc("block/vessel_detector"))
-        withExistingParent("vessel_charger", modLoc("block/vessel_charger"))
 
         builder(itemGenerated, "barge")
         builder(itemGenerated, "barrel_barge")

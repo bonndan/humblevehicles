@@ -8,7 +8,7 @@
       "entity": "humblevehicles:energy_tug",
       "scale": 0.4,
       "offset": 0.5,
-      "text": "A tugboat powered by redstone. Charge it by placing redstone in the slot or by dokcing next to a hopper."
+      "text": "A tugboat powered by redstone. Charge it by placing redstone in the slot or by docking next to a hopper."
     },
     {
       "type": "patchouli:crafting",

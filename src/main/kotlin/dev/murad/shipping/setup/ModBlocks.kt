@@ -2,7 +2,6 @@ package dev.murad.shipping.setup
 
 import dev.murad.shipping.block.dock.BargeDockBlock
 import dev.murad.shipping.block.dock.TugDockBlock
-import dev.murad.shipping.block.energy.VesselChargerBlock
 import dev.murad.shipping.block.fluid.FluidHopperBlock
 import dev.murad.shipping.block.guiderail.CornerGuideRailBlock
 import dev.murad.shipping.block.guiderail.TugGuideRailBlock
@@ -71,12 +70,6 @@ object ModBlocks {
 
     val FLUID_HOPPER: Supplier<Block> = register(
         "fluid_hopper", { FluidHopperBlock(METAL_BLOCK_BEHAVIOUR) }, java.util.List.of(
-            CreativeModeTabs.TOOLS_AND_UTILITIES, CreativeModeTabs.REDSTONE_BLOCKS
-        )
-    )
-
-    val VESSEL_CHARGER: Supplier<Block> = register(
-        "vessel_charger", { VesselChargerBlock(METAL_BLOCK_BEHAVIOUR) }, java.util.List.of(
             CreativeModeTabs.TOOLS_AND_UTILITIES, CreativeModeTabs.REDSTONE_BLOCKS
         )
     )

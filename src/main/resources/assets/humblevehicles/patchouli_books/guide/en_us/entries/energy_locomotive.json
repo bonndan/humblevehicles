@@ -8,12 +8,12 @@
       "entity": "humblevehicles:energy_locomotive",
       "scale": 0.4,
       "offset": 0.5,
-      "text": "A locomotive powered by Forge Energy, can be charged when docked with a $(l:vessel_charger)Vehicle Charger$()."
+      "text": "A locomotive powered by redstone. Charge it by placing redstone in the slot or by docking next to a hopper."
     },
     {
       "type": "patchouli:crafting",
       "recipe": "humblevehicles:energy_locomotive",
-      "text": "The locomotive has an extra slot for an energy item, this is useful if the locomotive ran out of energy mid-way and needs to be recharged."
+      "text": ""
     }
   ]
 }
