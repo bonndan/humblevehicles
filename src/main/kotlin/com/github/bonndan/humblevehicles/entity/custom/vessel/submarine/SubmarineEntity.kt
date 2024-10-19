@@ -3,7 +3,9 @@ package com.github.bonndan.humblevehicles.entity.custom.vessel.submarine
 import com.github.bonndan.humblevehicles.entity.container.EnergyHeadVehicleContainer
 import com.github.bonndan.humblevehicles.entity.custom.EnergyEngine
 import com.github.bonndan.humblevehicles.entity.custom.vessel.tug.AbstractTugEntity
+import com.github.bonndan.humblevehicles.entity.models.PositionAdjustedEntity
 import com.github.bonndan.humblevehicles.entity.models.RIDING_POSITION_Y_OFFSET
+import com.github.bonndan.humblevehicles.entity.models.SubmarineModel.Companion.MODEL_Y_OFFSET
 import com.github.bonndan.humblevehicles.setup.ModEntityTypes
 import com.github.bonndan.humblevehicles.setup.ModItems
 import net.minecraft.network.chat.Component
@@ -19,7 +21,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 
 
-class SubmarineEntity : AbstractTugEntity {
+class SubmarineEntity : AbstractTugEntity, PositionAdjustedEntity {
 
     init {
         val engine = EnergyEngine(saveStateCallback)
@@ -88,6 +90,10 @@ class SubmarineEntity : AbstractTugEntity {
         } else {
             this.airSupply = 300
         }
+    }
+
+    override fun getModelYOffset(): Double {
+        return MODEL_Y_OFFSET
     }
 
 }
