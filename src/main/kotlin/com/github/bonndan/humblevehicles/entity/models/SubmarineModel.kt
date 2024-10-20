@@ -11,8 +11,10 @@ import net.minecraft.client.model.geom.builders.CubeDeformation
 import net.minecraft.client.model.geom.builders.CubeListBuilder
 import net.minecraft.client.model.geom.builders.LayerDefinition
 import net.minecraft.client.model.geom.builders.MeshDefinition
+import net.minecraft.client.renderer.LightTexture.*
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
+import java.awt.Color.white
 
 const val RIDING_POSITION_Y_OFFSET = -0.6
 
@@ -49,6 +51,7 @@ class SubmarineModel<T : Entity>(root: ModelPart) : EntityModel<T>(
         color: Int
     ) {
         u_boot.render(poseStack, vertexConsumer, packedLight, packedOverlay, color)
+        lampen.render(poseStack, vertexConsumer, FULL_BRIGHT, packedOverlay, white.rgb)
     }
 
     companion object {

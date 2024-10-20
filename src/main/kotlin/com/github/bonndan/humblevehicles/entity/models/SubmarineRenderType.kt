@@ -11,23 +11,29 @@ import java.util.function.Function
 
 object SubmarineRenderType {
 
-    fun unsortedTranslucent(textureLocation: ResourceLocation): RenderType {
-        val sortingEnabled = false
+    fun get(textureLocation: ResourceLocation): Function<ResourceLocation, RenderType> {
+        return Util.memoize { obj -> unsortedTranslucent(textureLocation) }
+    }
+
+    private fun unsortedTranslucent(textureLocation: ResourceLocation): RenderType {
+
         val renderState = CompositeState.builder()
             .setShaderState(RenderType.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
             .setTextureState(TextureStateShard(textureLocation, false, false))
             .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
-            .setCullState(RenderType.NO_CULL)
+            .setCullState(RenderType.CULL)
             .setLightmapState(RenderType.LIGHTMAP)
             .setOverlayState(RenderType.OVERLAY)
             .createCompositeState(true)
+
         return RenderType.create(
             "neoforge_entity_unsorted_translucent_submarine",
-            DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, sortingEnabled, renderState
+            DefaultVertexFormat.NEW_ENTITY,
+            VertexFormat.Mode.QUADS,
+            256,
+            false,
+            false,
+            renderState
         )
-    }
-
-    fun get(textureLocation: ResourceLocation): Function<ResourceLocation, RenderType> {
-        return  Util.memoize { obj -> unsortedTranslucent(textureLocation) }
     }
 }

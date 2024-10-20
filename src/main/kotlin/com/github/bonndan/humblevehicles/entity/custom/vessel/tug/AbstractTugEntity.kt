@@ -59,12 +59,14 @@ abstract class AbstractTugEntity :
             entityData[REMAINING_BURN_TIME] = remainingBurnTime
         }
     }
+
     private lateinit var engine: Engine
+
     protected fun setEngine(engine: Engine) {
         this.engine = engine
     }
 
-    protected fun getEngine(): Engine {
+    fun getEngine(): Engine {
         return engine
     }
 

@@ -18,6 +18,7 @@ import com.github.bonndan.humblevehicles.entity.models.vessel.base.TrimBargeMode
 import com.github.bonndan.humblevehicles.entity.render.barge.FishingBargeRenderer
 import com.github.bonndan.humblevehicles.entity.render.barge.FluidTankBargeRenderer
 import com.github.bonndan.humblevehicles.entity.render.barge.MultipartVesselRenderer
+import com.github.bonndan.humblevehicles.entity.render.submarine.SubmarineRenderer
 import com.github.bonndan.humblevehicles.entity.render.train.FluidTankCarRenderer
 import com.github.bonndan.humblevehicles.entity.render.train.MultipartCarRenderer
 import com.github.bonndan.humblevehicles.entity.render.train.TrainCarRenderer
@@ -357,7 +358,7 @@ object ModClientEventHandler {
 
         //SUBMARINE
         event.registerEntityRenderer(ModEntityTypes.SUBMARINE.get()) { ctx: EntityRendererProvider.Context ->
-            MultipartVesselRenderer.Builder<VesselEntity>(ctx)
+            SubmarineRenderer.Builder(ctx)
                 .baseModel(
                     { root -> SubmarineModel(root) },
                     SubmarineModel.LAYER_LOCATION,
