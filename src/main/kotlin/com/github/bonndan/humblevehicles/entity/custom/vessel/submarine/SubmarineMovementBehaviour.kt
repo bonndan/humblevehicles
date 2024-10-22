@@ -1,6 +1,6 @@
 package com.github.bonndan.humblevehicles.entity.custom.vessel.submarine
 
-import com.github.bonndan.humblevehicles.entity.custom.Engine
+import com.github.bonndan.humblevehicles.entity.custom.engine.Engine
 import com.github.bonndan.humblevehicles.entity.custom.vessel.VesselMovementBehaviour
 import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.vehicle.Boat

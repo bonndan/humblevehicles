@@ -1,8 +1,11 @@
-package com.github.bonndan.humblevehicles.entity.custom
+package com.github.bonndan.humblevehicles.entity.custom.engine
+
 
 import net.minecraft.core.RegistryAccess
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.Level
+import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.items.ItemStackHandler
 
 /**
@@ -106,6 +109,16 @@ abstract class Engine(private var saveStateCallback: SaveStateCallback) : ItemSt
     fun setRemainingBurnTime(remainingBurnTime: Int) {
         this.remainingBurnTime = remainingBurnTime
     }
+
+    fun makeEmissions(level: Level, emitterPos: Vec3, entityPos: Vec3, oldEntityPos: Vec3) {
+
+        if (!level.isClientSide) return
+        if (!isLit()) return
+
+        getEmissions().makeEmissions(level, emitterPos, entityPos, oldEntityPos)
+    }
+
+    protected abstract fun getEmissions(): Emissions
 
     private fun saveState(engineOn: Boolean, remainingBurnTime: Int) {
         saveStateCallback.saveState(engineOn, remainingBurnTime)

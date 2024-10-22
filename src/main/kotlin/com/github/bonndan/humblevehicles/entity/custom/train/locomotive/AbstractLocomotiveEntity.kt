@@ -6,6 +6,8 @@ import com.github.bonndan.humblevehicles.block.rail.blockentity.LocomotiveDockTi
 import com.github.bonndan.humblevehicles.capability.StallingCapability
 import com.github.bonndan.humblevehicles.entity.accessor.HeadVehicleDataAccessor
 import com.github.bonndan.humblevehicles.entity.custom.*
+import com.github.bonndan.humblevehicles.entity.custom.engine.Engine
+import com.github.bonndan.humblevehicles.entity.custom.engine.SaveStateCallback
 import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
 import com.github.bonndan.humblevehicles.entity.custom.vessel.tug.VehicleFrontPart
 import com.github.bonndan.humblevehicles.entity.navigation.LocomotiveNavigator

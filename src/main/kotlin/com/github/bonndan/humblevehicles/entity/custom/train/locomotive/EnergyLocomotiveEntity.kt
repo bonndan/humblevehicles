@@ -1,7 +1,7 @@
 package com.github.bonndan.humblevehicles.entity.custom.train.locomotive
 
 import com.github.bonndan.humblevehicles.entity.container.EnergyHeadVehicleContainer
-import com.github.bonndan.humblevehicles.entity.custom.EnergyEngine
+import com.github.bonndan.humblevehicles.entity.custom.engine.EnergyEngine
 import com.github.bonndan.humblevehicles.setup.ModEntityTypes
 import com.github.bonndan.humblevehicles.setup.ModItems
 import com.github.bonndan.humblevehicles.util.ItemHandlerVanillaContainerWrapper

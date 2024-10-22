@@ -1,4 +1,4 @@
-package com.github.bonndan.humblevehicles.entity.custom
+package com.github.bonndan.humblevehicles.entity.custom.engine
 
 interface SaveStateCallback {
 

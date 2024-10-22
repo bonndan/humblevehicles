@@ -1,8 +1,7 @@
 package com.github.bonndan.humblevehicles.entity.custom.vessel.tug
 
 import com.github.bonndan.humblevehicles.entity.container.EnergyHeadVehicleContainer
-import com.github.bonndan.humblevehicles.entity.custom.EnergyEngine
-import com.github.bonndan.humblevehicles.entity.custom.VehicleControl
+import com.github.bonndan.humblevehicles.entity.custom.engine.EnergyEngine
 import com.github.bonndan.humblevehicles.entity.custom.vessel.TugControl
 import com.github.bonndan.humblevehicles.entity.models.PositionAdjustedEntity
 import com.github.bonndan.humblevehicles.entity.models.vessel.EnergyTugModel.Companion.MODEL_Y_OFFSET
@@ -21,7 +20,6 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
-import thedarkcolour.kotlinforforge.neoforge.forge.vectorutil.v3d.toVec3
 
 class EnergyTugEntity : AbstractTugEntity, PositionAdjustedEntity {
 

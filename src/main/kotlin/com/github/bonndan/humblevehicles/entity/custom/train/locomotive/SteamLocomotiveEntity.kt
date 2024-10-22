@@ -1,8 +1,7 @@
 package com.github.bonndan.humblevehicles.entity.custom.train.locomotive
 
 import com.github.bonndan.humblevehicles.entity.container.SteamHeadVehicleContainer
-import com.github.bonndan.humblevehicles.entity.custom.FueledEngine
-import com.github.bonndan.humblevehicles.entity.custom.SmokeGenerator.makeSmoke
+import com.github.bonndan.humblevehicles.entity.custom.engine.FueledEngine
 import com.github.bonndan.humblevehicles.setup.ModEntityTypes
 import com.github.bonndan.humblevehicles.setup.ModItems
 import com.github.bonndan.humblevehicles.setup.ModSounds
@@ -56,9 +55,7 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
     }
 
     override fun doMovementEffect() {
-        if (engine.isLit()) {
-            makeSmoke(level(), onPos.above().above().toVec3(), Vec3(x, y, z), Vec3(xOld, yOld, zOld))
-        }
+        engine.makeEmissions(level(), onPos.above().above().toVec3(), Vec3(x, y, z), Vec3(xOld, yOld, zOld))
     }
 
     override fun remove(r: RemovalReason) {

@@ -1,4 +1,4 @@
-package com.github.bonndan.humblevehicles.entity.custom
+package com.github.bonndan.humblevehicles.entity.custom.engine
 
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity
@@ -13,6 +13,10 @@ class FueledEngine(saveStateCallback: SaveStateCallback) : Engine(saveStateCallb
         }
 
         return stack.item.getBurnTime(stack, null)
+    }
+
+    override fun getEmissions(): Emissions {
+        return SmokeGenerator
     }
 
     override fun isItemValid(slot: Int, stack: ItemStack): Boolean {

@@ -1,4 +1,4 @@
-package com.github.bonndan.humblevehicles.entity.custom
+package com.github.bonndan.humblevehicles.entity.custom.engine
 
 import com.github.bonndan.humblevehicles.ShippingConfig
 import net.minecraft.core.particles.ParticleTypes
@@ -8,13 +8,11 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import java.util.function.Supplier
 
-object SmokeGenerator {
+object SmokeGenerator : Emissions {
 
     private val smokeChance = ShippingConfig.Client.TUG_SMOKE_MODIFIER.get()
 
-    fun makeSmoke(level: Level, emitterPos: Vec3, entityPos: Vec3, oldEntityPos: Vec3) {
-
-        if (!level.isClientSide) return
+    override fun makeEmissions(level: Level, emitterPos: Vec3, entityPos: Vec3, oldEntityPos: Vec3) {
 
         val random: RandomSource = level.random
 

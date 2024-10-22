@@ -1,7 +1,8 @@
 package com.github.bonndan.humblevehicles.entity.custom.vessel.submarine
 
 import com.github.bonndan.humblevehicles.entity.container.EnergyHeadVehicleContainer
-import com.github.bonndan.humblevehicles.entity.custom.EnergyEngine
+import com.github.bonndan.humblevehicles.entity.custom.engine.EnergyEngine
+import com.github.bonndan.humblevehicles.entity.custom.engine.SubmarineEmissions
 import com.github.bonndan.humblevehicles.entity.custom.vessel.tug.AbstractTugEntity
 import com.github.bonndan.humblevehicles.entity.models.PositionAdjustedEntity
 import com.github.bonndan.humblevehicles.entity.models.RIDING_POSITION_Y_OFFSET
@@ -10,6 +11,7 @@ import com.github.bonndan.humblevehicles.setup.ModEntityTypes
 import com.github.bonndan.humblevehicles.setup.ModItems
 import net.minecraft.network.chat.Component
 import net.minecraft.world.MenuProvider
+import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.animal.WaterAnimal
@@ -19,11 +21,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
+import thedarkcolour.kotlinforforge.neoforge.forge.vectorutil.v3d.toVec3
 
 class SubmarineEntity : AbstractTugEntity, PositionAdjustedEntity {
 
+    private val light = Light(level())
+
     init {
-        val engine = EnergyEngine(saveStateCallback)
+        val engine = EnergyEngine(saveStateCallback, emissions = SubmarineEmissions)
         setEngine(engine)
         setControl(SubmarineControl())
         movementBehaviour = SubmarineMovementBehaviour(engine)
@@ -95,4 +100,19 @@ class SubmarineEntity : AbstractTugEntity, PositionAdjustedEntity {
         return MODEL_Y_OFFSET
     }
 
+    override fun tick() {
+        super.tick()
+
+        if (!level().isClientSide) {
+            light.update(onPos.above(), getEngine().isLit())
+        }
+
+        val emitterPos = onPos.above().above().toVec3()
+        getEngine().makeEmissions(level(), emitterPos, Vec3(x, y, z), Vec3(xOld, yOld, zOld))
+    }
+
+    override fun die(damageSource: DamageSource) {
+        light.turnOff()
+        super.die(damageSource)
+    }
 }

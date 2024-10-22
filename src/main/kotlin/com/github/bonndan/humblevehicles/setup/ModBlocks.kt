@@ -7,6 +7,7 @@ import com.github.bonndan.humblevehicles.block.guiderail.CornerGuideRailBlock
 import com.github.bonndan.humblevehicles.block.guiderail.TugGuideRailBlock
 import com.github.bonndan.humblevehicles.block.rail.*
 import com.github.bonndan.humblevehicles.block.vesseldetector.VesselDetectorBlock
+import com.github.bonndan.humblevehicles.entity.custom.vessel.submarine.LightBlock
 import com.github.bonndan.humblevehicles.setup.Registration.BLOCKS
 import com.github.bonndan.humblevehicles.setup.Registration.ITEMS
 import com.github.bonndan.humblevehicles.util.MultiMap
@@ -116,6 +117,12 @@ object ModBlocks {
         "locomotive_dock_rail", { LocomotiveDockingRail(RAIL_BLOCK_BEHAVIOUR) }, listOf(
             CreativeModeTabs.TOOLS_AND_UTILITIES, CreativeModeTabs.REDSTONE_BLOCKS
         )
+    )
+
+    val LIGHT_BLOCK: Supplier<Block> = register(
+        "light_block",
+        { LightBlock(LightBlock.behaviour) },
+        listOf()
     )
 
     fun buildCreativeTab(event: BuildCreativeModeTabContentsEvent) {

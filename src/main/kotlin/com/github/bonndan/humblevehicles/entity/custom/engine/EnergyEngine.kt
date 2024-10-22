@@ -1,9 +1,12 @@
-package com.github.bonndan.humblevehicles.entity.custom
+package com.github.bonndan.humblevehicles.entity.custom.engine
 
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
-class EnergyEngine(saveStateCallback: SaveStateCallback) : Engine(saveStateCallback) {
+class EnergyEngine(
+    saveStateCallback: SaveStateCallback,
+    private val emissions: Emissions = EnergyEngineEmissions
+) : Engine(saveStateCallback) {
 
     override fun isItemValid(slot: Int, stack: ItemStack): Boolean {
         return stack.item == Items.REDSTONE || stack.item == Items.REDSTONE_BLOCK
@@ -21,6 +24,8 @@ class EnergyEngine(saveStateCallback: SaveStateCallback) : Engine(saveStateCallb
 
         return REDSTONE_BURN_TIME_TICKS
     }
+
+    override fun getEmissions(): Emissions = emissions
 
     companion object {
         const val REDSTONE_BURN_TIME_TICKS = 2000

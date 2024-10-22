@@ -5,6 +5,8 @@ import com.github.bonndan.humblevehicles.block.guiderail.TugGuideRailBlock.Compa
 import com.github.bonndan.humblevehicles.capability.StallingCapability
 import com.github.bonndan.humblevehicles.entity.accessor.HeadVehicleDataAccessor
 import com.github.bonndan.humblevehicles.entity.custom.*
+import com.github.bonndan.humblevehicles.entity.custom.engine.Engine
+import com.github.bonndan.humblevehicles.entity.custom.engine.SaveStateCallback
 import com.github.bonndan.humblevehicles.entity.custom.vessel.VesselEntity
 import com.github.bonndan.humblevehicles.entity.navigation.TugPathNavigator
 import com.github.bonndan.humblevehicles.item.TugRouteItem
