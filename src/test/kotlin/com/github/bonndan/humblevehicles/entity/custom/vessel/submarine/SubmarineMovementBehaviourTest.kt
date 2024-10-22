@@ -1,11 +1,13 @@
 package com.github.bonndan.humblevehicles.entity.custom.vessel.submarine
 
-import com.github.bonndan.humblevehicles.entity.custom.EnergyEngine
-import com.github.bonndan.humblevehicles.entity.custom.Engine
+import com.github.bonndan.humblevehicles.entity.custom.engine.EnergyEngine
+import com.github.bonndan.humblevehicles.entity.custom.engine.Engine
+import net.minecraft.DetectedVersion.BUILT_IN
+import net.minecraft.SharedConstants
 import net.minecraft.core.BlockPos
+import net.minecraft.server.Bootstrap
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.material.Fluids.WATER
-import net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -18,6 +20,8 @@ class SubmarineMovementBehaviourTest {
 
     @BeforeEach
     fun setUp() {
+        SharedConstants.setVersion(BUILT_IN)
+        Bootstrap.bootStrap()
         behaviour = SubmarineMovementBehaviour(engine)
     }
 

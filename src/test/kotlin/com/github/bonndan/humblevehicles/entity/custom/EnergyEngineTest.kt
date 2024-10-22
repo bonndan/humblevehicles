@@ -1,11 +1,16 @@
 package com.github.bonndan.humblevehicles.entity.custom
 
-import com.github.bonndan.humblevehicles.entity.custom.Engine.Companion.BURN
-import com.github.bonndan.humblevehicles.entity.custom.Engine.Companion.ENGINE_ON
-import com.github.bonndan.humblevehicles.entity.custom.Engine.Companion.FUEL_ITEMS
-import com.github.bonndan.humblevehicles.entity.custom.Engine.Companion.TOTAL_BURN_CAPACITY
+import com.github.bonndan.humblevehicles.entity.custom.engine.EnergyEngine
+import com.github.bonndan.humblevehicles.entity.custom.engine.Engine.Companion.BURN
+import com.github.bonndan.humblevehicles.entity.custom.engine.Engine.Companion.ENGINE_ON
+import com.github.bonndan.humblevehicles.entity.custom.engine.Engine.Companion.FUEL_ITEMS
+import com.github.bonndan.humblevehicles.entity.custom.engine.Engine.Companion.TOTAL_BURN_CAPACITY
+import com.github.bonndan.humblevehicles.entity.custom.engine.SaveStateCallback
+import net.minecraft.DetectedVersion.BUILT_IN
+import net.minecraft.SharedConstants
 import net.minecraft.core.RegistryAccess
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.server.Bootstrap
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import org.assertj.core.api.Assertions.assertThat
@@ -29,6 +34,8 @@ class EnergyEngineTest {
 
     @BeforeEach
     fun setup() {
+        SharedConstants.setVersion(BUILT_IN)
+        Bootstrap.bootStrap()
         engineStateUpdate = false
         remainingBurnTimeUpdate = 0
         energyEngine = EnergyEngine(saveStateCallback)
