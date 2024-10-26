@@ -5,8 +5,8 @@ import com.github.bonndan.humblevehicles.entity.custom.engine.EnergyEngine
 import com.github.bonndan.humblevehicles.entity.custom.engine.SubmarineEmissions
 import com.github.bonndan.humblevehicles.entity.custom.vessel.tug.AbstractTugEntity
 import com.github.bonndan.humblevehicles.entity.models.PositionAdjustedEntity
-import com.github.bonndan.humblevehicles.entity.models.RIDING_POSITION_Y_OFFSET
-import com.github.bonndan.humblevehicles.entity.models.SubmarineModel.Companion.MODEL_Y_OFFSET
+import com.github.bonndan.humblevehicles.entity.models.submarine.RIDING_POSITION_Y_OFFSET
+import com.github.bonndan.humblevehicles.entity.models.submarine.SubmarineBaseModel.Companion.MODEL_Y_OFFSET
 import com.github.bonndan.humblevehicles.setup.ModEntityTypes
 import com.github.bonndan.humblevehicles.setup.ModItems
 import net.minecraft.network.chat.Component

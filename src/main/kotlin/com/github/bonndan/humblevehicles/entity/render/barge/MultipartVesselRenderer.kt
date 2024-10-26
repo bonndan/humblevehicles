@@ -1,11 +1,11 @@
 package com.github.bonndan.humblevehicles.entity.render.barge
 
-import com.mojang.blaze3d.vertex.PoseStack
-import com.github.bonndan.humblevehicles.HumVeeMod.Companion.entityTexture
+import com.github.bonndan.humblevehicles.HumVeeMod.Companion.MOD_ID
 import com.github.bonndan.humblevehicles.entity.custom.vessel.VesselEntity
 import com.github.bonndan.humblevehicles.entity.models.vessel.EmptyModel
 import com.github.bonndan.humblevehicles.entity.render.ModelPack
 import com.github.bonndan.humblevehicles.entity.render.ModelSupplier
+import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.model.EntityModel
 import net.minecraft.client.model.geom.ModelLayerLocation
 import net.minecraft.client.renderer.MultiBufferSource
@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.LivingEntityRenderer
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.DyeColor
-import java.awt.Color
 
 open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
     context: EntityRendererProvider.Context,
@@ -178,7 +177,11 @@ open class MultipartVesselRenderer<T : VesselEntity> protected constructor(
         }
 
         fun emptyInsert(): Builder<T> {
-            insertModel({ root -> EmptyModel(root) }, EmptyModel.LAYER_LOCATION, entityTexture("emptytexture.png"))
+            insertModel(
+                { root -> EmptyModel(root) },
+                EmptyModel.LAYER_LOCATION,
+                ResourceLocation.fromNamespaceAndPath(MOD_ID, String.format("textures/entity/%s", "emptytexture.png"))
+            )
             return this
         }
 

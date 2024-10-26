@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.datafixers.util.Pair
 import com.mojang.math.Axis
 import com.github.bonndan.humblevehicles.HumVeeMod
-import com.github.bonndan.humblevehicles.HumVeeMod.Companion.entityTexture
+import com.github.bonndan.humblevehicles.HumVeeMod.Companion.MOD_ID
 import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
 import com.github.bonndan.humblevehicles.entity.models.train.ChainModel
 import com.github.bonndan.humblevehicles.entity.models.vessel.EmptyModel
@@ -327,7 +327,11 @@ open class MultipartCarRenderer<T : AbstractTrainCarEntity> protected constructo
         }
 
         fun emptyInsert(): Builder<T> {
-            insertModel({ root -> EmptyModel(root) }, EmptyModel.LAYER_LOCATION, entityTexture("emptytexture.png"))
+            insertModel(
+                { root -> EmptyModel(root) },
+                EmptyModel.LAYER_LOCATION,
+                ResourceLocation.fromNamespaceAndPath(MOD_ID, String.format("textures/entity/%s", "emptytexture.png"))
+            )
             return this
         }
 

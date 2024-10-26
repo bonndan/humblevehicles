@@ -42,13 +42,13 @@ class FishingBargeRenderer<T : FishingBargeEntity> protected constructor(
         packedLight: Int,
         overlay: Int
     ) {
-        val model: EntityModel<T> = when (vesselEntity.getStatus()!!) {
+        val model: EntityModel<T> = when (vesselEntity.getStatus()) {
             FishingBargeEntity.Status.STASHED -> getInsertModel()
             FishingBargeEntity.Status.DEPLOYED -> deployedInsertModel
             FishingBargeEntity.Status.TRANSITION -> transitionInsertModel
         }
 
-        val texture: ResourceLocation = when (vesselEntity.getStatus()!!) {
+        val texture: ResourceLocation = when (vesselEntity.getStatus()) {
             FishingBargeEntity.Status.STASHED -> getInsertTextureLocation()
             FishingBargeEntity.Status.DEPLOYED -> deployedInsertTextureLocation
             FishingBargeEntity.Status.TRANSITION -> transitionInsertTextureLocation

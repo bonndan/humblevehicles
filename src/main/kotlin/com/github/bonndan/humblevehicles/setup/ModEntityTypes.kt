@@ -12,7 +12,7 @@ import com.github.bonndan.humblevehicles.entity.custom.train.wagon.SeaterCarEnti
 import com.github.bonndan.humblevehicles.entity.custom.vessel.barge.*
 import com.github.bonndan.humblevehicles.entity.custom.vessel.tug.EnergyTugEntity
 import com.github.bonndan.humblevehicles.entity.custom.vessel.tug.SteamTugEntity
-import com.github.bonndan.humblevehicles.entity.models.SubmarineModel
+import com.github.bonndan.humblevehicles.entity.models.submarine.SubmarineBaseModel
 import com.github.bonndan.humblevehicles.setup.Registration.ENTITIES
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.EntityType
@@ -25,21 +25,19 @@ object ModEntityTypes {
     fun register() {
     }
 
-
-    val CHEST_BARGE: Supplier<EntityType<com.github.bonndan.humblevehicles.entity.custom.vessel.barge.ChestBargeEntity>> =
-        ENTITIES.register("barge", Supplier<EntityType<com.github.bonndan.humblevehicles.entity.custom.vessel.barge.ChestBargeEntity>> {
-            EntityType.Builder.of({ type: EntityType<com.github.bonndan.humblevehicles.entity.custom.vessel.barge.ChestBargeEntity>, world: Level ->
-                com.github.bonndan.humblevehicles.entity.custom.vessel.barge.ChestBargeEntity(type, world)
+    val CHEST_BARGE: Supplier<EntityType<ChestBargeEntity>> =
+        ENTITIES.register("barge", Supplier<EntityType<ChestBargeEntity>> {
+            EntityType.Builder.of({ type: EntityType<ChestBargeEntity>, world: Level ->
+                ChestBargeEntity(type, world)
             }, MobCategory.MISC).sized(0.6f, 0.9f).clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "barge").toString())
         })
 
-
-    val BARREL_BARGE: Supplier<EntityType<com.github.bonndan.humblevehicles.entity.custom.vessel.barge.ChestBargeEntity>> =
-        ENTITIES.register("barrel_barge", Supplier<EntityType<com.github.bonndan.humblevehicles.entity.custom.vessel.barge.ChestBargeEntity>> {
+    val BARREL_BARGE: Supplier<EntityType<ChestBargeEntity>> =
+        ENTITIES.register("barrel_barge", Supplier<EntityType<ChestBargeEntity>> {
             EntityType.Builder.of(
-                { type: EntityType<com.github.bonndan.humblevehicles.entity.custom.vessel.barge.ChestBargeEntity>, world: Level ->
-                    com.github.bonndan.humblevehicles.entity.custom.vessel.barge.ChestBargeEntity(
+                { type: EntityType<ChestBargeEntity>, world: Level ->
+                    ChestBargeEntity(
                         type,
                         world
                     )
@@ -48,7 +46,6 @@ object ModEntityTypes {
             ).sized(0.6f, 0.9f).clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "barrel_barge").toString())
         })
-
 
     val CHUNK_LOADER_BARGE: Supplier<EntityType<ChunkLoaderBargeEntity>> =
         ENTITIES.register("chunk_loader_barge", Supplier<EntityType<ChunkLoaderBargeEntity>> {
@@ -178,7 +175,6 @@ object ModEntityTypes {
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "steam_locomotive").toString())
         })
 
-
     val ENERGY_LOCOMOTIVE: Supplier<EntityType<AbstractLocomotiveEntity>> = ENTITIES.register(
         "energy_locomotive", Supplier<EntityType<AbstractLocomotiveEntity>> {
             EntityType.Builder.of(
@@ -196,7 +192,7 @@ object ModEntityTypes {
                 { type: EntityType<SubmarineEntity>, world -> SubmarineEntity(type, world) },
                 MobCategory.MISC
             )
-                .sized(SubmarineModel.WIDTH, SubmarineModel.HEIGHT)
+                .sized(SubmarineBaseModel.WIDTH, SubmarineBaseModel.HEIGHT)
                 .clientTrackingRange(8)
                 .build(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "submarine").toString())
         }

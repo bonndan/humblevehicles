@@ -47,7 +47,7 @@ object ModItems {
         "barge",
         {
             VesselItem(Item.Properties()) { level, x, y, z ->
-                com.github.bonndan.humblevehicles.entity.custom.vessel.barge.ChestBargeEntity(
+                ChestBargeEntity(
                     ModEntityTypes.CHEST_BARGE.get(),
                     level,
                     x,
@@ -63,7 +63,7 @@ object ModItems {
         "barrel_barge",
         {
             VesselItem(Item.Properties()) { level, x, y, z ->
-                com.github.bonndan.humblevehicles.entity.custom.vessel.barge.ChestBargeEntity(
+                ChestBargeEntity(
                     ModEntityTypes.BARREL_BARGE.get(),
                     level,
                     x,
