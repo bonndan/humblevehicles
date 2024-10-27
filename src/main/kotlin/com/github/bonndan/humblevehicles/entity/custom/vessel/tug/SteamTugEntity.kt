@@ -57,7 +57,8 @@ class SteamTugEntity : AbstractTugEntity, PositionAdjustedEntity {
         super.tick()
 
         //two above and a bit in the back
-        val emitterPos = onPos.above().above().toVec3().add(Vec3(0.0, 0.0, 0.2))
+        val emitterPos = onPos.above().above().toVec3().add(Vec3(0.0, 0.0, -0.2))
+            .add(transformPoint(Vec3(0.0, -0.1, -0.2), yRot))
         getEngine().makeEmissions(level(), emitterPos, Vec3(x, y, z), Vec3(xOld, yOld, zOld))
     }
 
