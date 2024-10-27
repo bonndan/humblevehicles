@@ -5,6 +5,7 @@ import com.github.bonndan.humblevehicles.entity.models.SubmarineRenderType
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.model.EntityModel
+import net.minecraft.client.model.WaterPatchModel
 import net.minecraft.client.model.geom.ModelLayerLocation
 import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.client.model.geom.PartPose
@@ -12,11 +13,17 @@ import net.minecraft.client.model.geom.builders.*
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 
+const val WATER_PATCH = "water_patch"
+
 class SubmarineTrimModel<T : Entity>(private val root: ModelPart) : EntityModel<T>(
     SubmarineRenderType.get(
         ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/entity/submarine_trim.png")
     )
-) {
+), WaterPatchModel {
+
+    override fun waterPatch(): ModelPart {
+        return root.getChild(WATER_PATCH)
+    }
 
     override fun setupAnim(
         entity: T,
@@ -304,7 +311,18 @@ class SubmarineTrimModel<T : Entity>(private val root: ModelPart) : EntityModel<
                 PartPose.offsetAndRotation(3.35f, -13.9475f, -64.3377f, 0.0f, -1.5708f, 0.0f)
             )
 
+            addWaterPatch(partdefinition)
+
             return LayerDefinition.create(meshdefinition, 256, 256)
+        }
+
+        private fun addWaterPatch(partDefinition: PartDefinition) {
+
+            partDefinition.addOrReplaceChild(
+                WATER_PATCH,
+                CubeListBuilder.create().texOffs(0, 0).addBox(-14.0f, -9.0f, -3.0f, 15.0f, 3.0f, 25.0f),
+                PartPose.offsetAndRotation(0.25f, 15f, -14.343f, 0.0f, 0.0f, 0.0f)
+            )
         }
     }
 }

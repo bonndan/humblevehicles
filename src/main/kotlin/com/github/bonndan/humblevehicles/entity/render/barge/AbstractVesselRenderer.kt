@@ -66,7 +66,7 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         getModel(vesselEntity).renderToBuffer(matrixStack, ivertexbuilder, packedLight, overlay, white)
     }
 
-    private fun getModelYOffset(vesselEntity: T): Double {
+    protected fun getModelYOffset(vesselEntity: T): Double {
         if (vesselEntity is PositionAdjustedEntity) {
             return vesselEntity.getModelYOffset()
         }
@@ -77,7 +77,7 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         return 90.0f
     }
 
-    private fun getAndRenderChain(
+    protected fun getAndRenderChain(
         bargeEntity: T?,
         matrixStack: PoseStack,
         buffer: MultiBufferSource,
@@ -101,7 +101,7 @@ abstract class AbstractVesselRenderer<T : VesselEntity>(context: EntityRendererP
         matrixStack.popPose()
     }
 
-    private fun getAndRenderLeash(
+    protected fun getAndRenderLeash(
         bargeEntity: T,
         p_225623_2_: Float,
         p_225623_3_: Float,

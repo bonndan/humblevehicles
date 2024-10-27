@@ -362,7 +362,7 @@ object ModClientEventHandler {
         event.registerEntityRenderer(ModEntityTypes.SUBMARINE.get()) { ctx ->
             SubmarineRenderer.Builder(ctx)
                 .baseModel(
-                    { root -> SubmarineBaseModel(root) },
+                    { root -> SubmarineBaseModel(root,) },
                     SubmarineBaseModel.LAYER_LOCATION,
                     entityTexture("submarine.png")
                 )

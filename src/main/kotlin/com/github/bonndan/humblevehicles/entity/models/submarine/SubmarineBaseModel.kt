@@ -9,7 +9,7 @@ import net.minecraft.client.model.geom.ModelLayerLocation
 import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.client.model.geom.PartPose
 import net.minecraft.client.model.geom.builders.*
-import net.minecraft.client.renderer.LightTexture.*
+import net.minecraft.client.renderer.LightTexture.FULL_BRIGHT
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
@@ -31,6 +31,7 @@ class SubmarineBaseModel<T : Entity>(private val root: ModelPart) : EntityModel<
         netHeadYaw: Float,
         headPitch: Float
     ) {
+        //deprecated
     }
 
     override fun renderToBuffer(
@@ -44,7 +45,7 @@ class SubmarineBaseModel<T : Entity>(private val root: ModelPart) : EntityModel<
         u_boot.render(poseStack, vertexConsumer, packedLight, packedOverlay, color)
 
         val lampHeads = u_boot.getChild("lampen").getChild("lampendieleuchtensollen")
-        renderLights(poseStack, lampHeads, vertexConsumer, packedOverlay, Vec3(0.0,1.42,-0.5))
+        renderLights(poseStack, lampHeads, vertexConsumer, packedOverlay, Vec3(0.0, 1.42, -0.5))
     }
 
     private fun renderLights(
