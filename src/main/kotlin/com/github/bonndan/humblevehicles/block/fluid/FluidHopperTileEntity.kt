@@ -2,6 +2,7 @@ package com.github.bonndan.humblevehicles.block.fluid
 
 import com.github.bonndan.humblevehicles.block.IVesselLoader
 import com.github.bonndan.humblevehicles.setup.ModTileEntitiesTypes
+import com.github.bonndan.humblevehicles.setup.Registration
 import com.github.bonndan.humblevehicles.util.FluidDisplayUtil
 import com.github.bonndan.humblevehicles.util.LinkableEntity
 import net.minecraft.core.BlockPos

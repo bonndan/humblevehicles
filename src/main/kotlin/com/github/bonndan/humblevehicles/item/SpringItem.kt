@@ -1,12 +1,12 @@
 package com.github.bonndan.humblevehicles.item
 
-import com.github.bonndan.humblevehicles.entity.custom.vessel.tug.VehicleFrontPart
+import com.github.bonndan.humblevehicles.entity.custom.train.VehicleFrontPart
 import com.github.bonndan.humblevehicles.item.ItemStackUtil.getCompoundTag
 import com.github.bonndan.humblevehicles.util.LinkableEntity
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
@@ -98,7 +98,7 @@ class SpringItem(properties: Properties) : Item(properties) {
         getCompoundTag(itemstack)?.remove(LINKED)
     }
 
-    override fun use(worldIn: Level, playerIn: Player, handIn: InteractionHand): InteractionResultHolder<ItemStack> {
+    override fun use(worldIn: Level, playerIn: Player, handIn: InteractionHand): InteractionResult {
         resetLinked(playerIn.getItemInHand(handIn))
         return super.use(worldIn, playerIn, handIn)
     }

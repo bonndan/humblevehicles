@@ -2,6 +2,7 @@ package com.github.bonndan.humblevehicles.block.rail
 
 import com.github.bonndan.humblevehicles.block.dock.DockingBlockStates.fixHopperPos
 import com.github.bonndan.humblevehicles.setup.ModBlocks
+import com.github.bonndan.humblevehicles.setup.ModBlocks.FLUID_HOPPER
 import com.github.bonndan.humblevehicles.util.RailShapeUtil
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -18,6 +19,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty
 import net.minecraft.world.level.block.state.properties.Property
 import net.minecraft.world.level.block.state.properties.RailShape
 import net.minecraft.world.level.material.Fluids
+import net.minecraft.world.level.redstone.Orientation
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
 
@@ -61,19 +63,20 @@ protected constructor(pProperties: Properties) : BaseRailBlock(true, pProperties
     }
 
     public override fun canSurvive(pState: BlockState, pLevel: LevelReader, pPos: BlockPos): Boolean {
-        return if (pLevel.getBlockState(pPos.below()).`is`(ModBlocks.FLUID_HOPPER.get())) {
+        return if (pLevel.getBlockState(pPos.below()).`is`(FLUID_HOPPER.get())) {
             true
         } else super.canSurvive(pState, pLevel, pPos)
     }
 
-    public override fun neighborChanged(
+    override fun neighborChanged(
         pState: BlockState,
         pLevel: Level,
         pPos: BlockPos,
         pBlock: Block,
-        pFromPos: BlockPos,
+        pOrientation: Orientation?,
         pIsMoving: Boolean
     ) {
+        super.neighborChanged(pState, pLevel, pPos, pBlock, pOrientation, pIsMoving)
         if (!pLevel.isClientSide && pLevel.getBlockState(pPos).`is`(this)) {
             if (!canSurvive(pState, pLevel, pPos)) {
                 dropResources(pState, pLevel, pPos)

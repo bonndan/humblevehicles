@@ -19,14 +19,5 @@ object ModCapabilities {
             event.registerEntity(STALLING_CAPABILITY, ModEntityTypes.ENERGY_LOCOMOTIVE.get())
             { entity, _ -> entity.getStalling() }
         }
-
-        eventBus.addListener { event: RegisterCapabilitiesEvent ->
-            event.registerEntity(STALLING_CAPABILITY, ModEntityTypes.STEAM_TUG.get())
-            { entity, _ -> entity.getStalling() }
-        }
-        eventBus.addListener { event: RegisterCapabilitiesEvent ->
-            event.registerEntity(STALLING_CAPABILITY, ModEntityTypes.ENERGY_TUG.get())
-            { entity, _ -> entity.getStalling() }
-        }
     }
 }

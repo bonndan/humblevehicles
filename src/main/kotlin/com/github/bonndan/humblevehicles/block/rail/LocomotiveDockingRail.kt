@@ -2,7 +2,9 @@ package com.github.bonndan.humblevehicles.block.rail
 
 import com.mojang.serialization.MapCodec
 import com.github.bonndan.humblevehicles.block.dock.DockingBlockStates
+import com.github.bonndan.humblevehicles.setup.ModBlocks
 import com.github.bonndan.humblevehicles.setup.ModTileEntitiesTypes
+import com.github.bonndan.humblevehicles.setup.Registration
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.item.context.BlockPlaceContext
@@ -13,6 +15,7 @@ import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
+import net.minecraft.world.level.redstone.Orientation
 
 class LocomotiveDockingRail(pProperties: Properties) : AbstractDockingRail(pProperties) {
 
@@ -32,18 +35,18 @@ class LocomotiveDockingRail(pProperties: Properties) : AbstractDockingRail(pProp
     }
 
     override fun neighborChanged(
-        state: BlockState,
-        world: Level,
-        pos: BlockPos,
-        p_220069_4_: Block,
-        p_220069_5_: BlockPos,
-        p_220069_6_: Boolean
+        pState: BlockState,
+        pLevel: Level,
+        pPos: BlockPos,
+        pBlock: Block,
+        pOrientation: Orientation?,
+        pIsMoving: Boolean
     ) {
-        super.neighborChanged(state, world, pos, p_220069_4_, p_220069_5_, p_220069_6_)
-        if (!world.isClientSide) {
-            val flag = state.getValue(DockingBlockStates.POWERED)
-            if (flag != world.hasNeighborSignal(pos)) {
-                world.setBlock(pos, state.cycle(DockingBlockStates.POWERED), 2)
+        super.neighborChanged(pState, pLevel, pPos, pBlock, pOrientation, pIsMoving)
+        if (!pLevel.isClientSide) {
+            val flag = pState.getValue(DockingBlockStates.POWERED)
+            if (flag != pLevel.hasNeighborSignal(pPos)) {
+                pLevel.setBlock(pPos, pState.cycle(DockingBlockStates.POWERED), 2)
             }
         }
     }

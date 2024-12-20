@@ -4,6 +4,7 @@ import com.github.bonndan.humblevehicles.block.dock.AbstractHeadDockTileEntity
 import com.github.bonndan.humblevehicles.block.dock.DockingBlockStates
 import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
 import com.github.bonndan.humblevehicles.setup.ModTileEntitiesTypes
+import com.github.bonndan.humblevehicles.setup.Registration
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.level.block.state.BlockState

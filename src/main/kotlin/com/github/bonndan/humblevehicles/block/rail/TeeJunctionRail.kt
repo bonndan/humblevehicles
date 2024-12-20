@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.*
 import net.minecraft.world.level.material.Fluids
+import net.minecraft.world.level.redstone.Orientation
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
 
@@ -111,10 +112,10 @@ class TeeJunctionRail : BaseRailBlock, MultiShapeRail {
         val possibilities = getPossibleOutputDirections(state, `in`)
 
         if (!isAutomaticSwitching) {
-            return possibilities!!.contains(out)
+            return possibilities.contains(out)
         }
 
-        if (!possibilities!!.contains(out)) return false
+        if (!possibilities.contains(out)) return false
 
         if (`in` == c.rootDirection) {
             if (out == c.poweredDirection) {
@@ -172,15 +173,15 @@ class TeeJunctionRail : BaseRailBlock, MultiShapeRail {
         pBuilder.add(WATERLOGGED, FACING, RAIL_SHAPE, POWERED)
     }
 
-    public override fun neighborChanged(
+    override fun neighborChanged(
         state: BlockState,
         world: Level,
         pos: BlockPos,
-        p_220069_4_: Block,
-        p_220069_5_: BlockPos,
-        p_220069_6_: Boolean
+        p_49380_: Block,
+        p_361387_: Orientation?,
+        p_49382_: Boolean
     ) {
-        super.neighborChanged(state, world, pos, p_220069_4_, p_220069_5_, p_220069_6_)
+        super.neighborChanged(state, world, pos, p_49380_, p_361387_, p_49382_)
         if (isAutomaticSwitching) return
 
         if (!world.isClientSide) {

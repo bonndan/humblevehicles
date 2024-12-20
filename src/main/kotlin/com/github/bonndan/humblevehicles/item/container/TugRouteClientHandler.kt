@@ -8,6 +8,8 @@ import com.github.bonndan.humblevehicles.util.RouteNode
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.ObjectSelectionList
+import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.RenderType.guiTextured
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
 import java.util.*
@@ -107,10 +109,6 @@ class TugRouteClientHandler(
             return screen.xSize - 40
         }
 
-        override fun getScrollbarPosition(): Int {
-            return (this.width + rowWidth) / 2 + 5
-        }
-
         inner class Entry(private val node: RouteNode, private var index: Int) : ObjectSelectionList.Entry<Entry>() {
 
             override fun render(
@@ -128,13 +126,16 @@ class TugRouteClientHandler(
                 val s = node.getDisplayName(index) + ": " + node.getDisplayCoords()
 
                 graphics.blit(
+                    RenderType::guiTextured,
                     RouteScreen.GUI,
                     rowLeft,
                     rowTop,
-                    0,
-                    if (hovered) 216 else 236,
+                    0f,
+                    if (hovered) 216f else 236f,
                     width - 3,
-                    height
+                    height,
+                    256,
+                    256
                 )
                 graphics.drawString(screen.getFont(), s, rowLeft + 3, rowTop + 4, 16777215)
             }

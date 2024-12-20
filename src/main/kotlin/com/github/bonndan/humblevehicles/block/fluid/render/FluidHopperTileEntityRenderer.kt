@@ -12,6 +12,7 @@ import net.minecraft.core.Direction
 
 class FluidHopperTileEntityRenderer(context: BlockEntityRendererProvider.Context?) :
     BlockEntityRenderer<FluidHopperTileEntity> {
+
     override fun render(
         fluidHopperTileEntity: FluidHopperTileEntity,
         p_225616_2_: Float,

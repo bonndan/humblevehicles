@@ -5,14 +5,14 @@ import com.github.bonndan.humblevehicles.block.rail.MultiShapeRail
 import com.github.bonndan.humblevehicles.block.rail.blockentity.LocomotiveDockTileEntity
 import com.github.bonndan.humblevehicles.capability.StallingCapability
 import com.github.bonndan.humblevehicles.entity.accessor.HeadVehicleDataAccessor
-import com.github.bonndan.humblevehicles.entity.custom.*
+import com.github.bonndan.humblevehicles.entity.custom.HeadVehicle
+import com.github.bonndan.humblevehicles.entity.custom.Stalling
 import com.github.bonndan.humblevehicles.entity.custom.engine.Engine
 import com.github.bonndan.humblevehicles.entity.custom.engine.SaveStateCallback
 import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
-import com.github.bonndan.humblevehicles.entity.custom.vessel.tug.VehicleFrontPart
-import com.github.bonndan.humblevehicles.entity.navigation.LocomotiveNavigator
+import com.github.bonndan.humblevehicles.entity.custom.train.VehicleFrontPart
 import com.github.bonndan.humblevehicles.item.LocoRouteItem
-import com.github.bonndan.humblevehicles.setup.ModBlocks
+import com.github.bonndan.humblevehicles.setup.ModBlocks.LOCOMOTIVE_DOCK_RAIL
 import com.github.bonndan.humblevehicles.setup.ModItems
 import com.github.bonndan.humblevehicles.setup.ModSounds
 import com.github.bonndan.humblevehicles.util.*
@@ -24,6 +24,7 @@ import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.Mth
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -106,7 +107,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
     override fun remove(r: RemovalReason) {
         if (!level().isClientSide) {
-            this.spawnAtLocation(routeItemHandler.getStackInSlot(0))
+            this.spawnAtLocation(level() as ServerLevel, routeItemHandler.getStackInSlot(0))
         }
         super.remove(r)
     }
@@ -245,10 +246,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
                 currentHorizontalBlockPos = getBlockPos()
             }
         }
-    }
-
-    override fun getMaxCartSpeedOnRail(): Float {
-        return (ShippingConfig.Server.TRAIN_MAX_SPEED!!.get() * 0.9).toFloat()
     }
 
     fun flip() {
@@ -409,11 +406,11 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
 
     protected fun onDock() {
-        this.playSound(ModSounds.TUG_DOCKING.get(), 0.6f, 1.0f)
+        this.playSound(ModSounds.DOCKING.get(), 0.6f, 1.0f)
     }
 
     protected open fun onUndock() {
-        this.playSound(ModSounds.TUG_UNDOCKING.get(), 0.6f, 1.5f)
+        this.playSound(ModSounds.UNDOCKING.get(), 0.6f, 1.5f)
     }
 
     private fun tickDockCheck() {
@@ -509,7 +506,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
                         val shape = railHelper.getShape(railoc.get())
                         val block = level().getBlockState(railoc.get())
                         !(shape == RailShape.EAST_WEST || shape == RailShape.NORTH_SOUTH)
-                                || block.`is`(ModBlocks.LOCOMOTIVE_DOCK_RAIL.get())
+                                || block.`is`(LOCOMOTIVE_DOCK_RAIL.get())
                                 || block.block is MultiShapeRail
                     },
                     12
@@ -699,10 +696,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         this.clampRotation(p_184190_1_)
     }
 
-    override fun getMinecartType(): Type {
-        return Type.RIDEABLE
-    }
-
     override fun canTakeItemThroughFace(index: Int, itemStack: ItemStack, dir: Direction): Boolean {
         return false
     }
@@ -713,10 +706,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
     override fun canPlaceItemThroughFace(index: Int, itemStack: ItemStack, dir: Direction?): Boolean {
         return getStalling().isDocked()
-    }
-
-    override fun getControl(): VehicleControl {
-        return VehicleControl.IGNORED
     }
 
     companion object {

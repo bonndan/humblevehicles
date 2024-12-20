@@ -20,7 +20,7 @@ object Registration {
     val BLOCKS: DeferredRegister<Block> = DeferredRegister.createBlocks(HumVeeMod.MOD_ID);
     val CONTAINERS: DeferredRegister<MenuType<*>> = createRegister(BuiltInRegistries.MENU)
     val ENTITIES: DeferredRegister<EntityType<*>> = createRegister(BuiltInRegistries.ENTITY_TYPE)
-    val ITEMS : DeferredRegister.Items = DeferredRegister.createItems(HumVeeMod.MOD_ID);
+    val ITEMS: DeferredRegister.Items = DeferredRegister.createItems(HumVeeMod.MOD_ID);
     val RECIPE_SERIALIZERS: DeferredRegister<RecipeSerializer<*>> = createRegister(BuiltInRegistries.RECIPE_SERIALIZER)
     val TILE_ENTITIES: DeferredRegister<BlockEntityType<*>> = createRegister(BuiltInRegistries.BLOCK_ENTITY_TYPE)
     val SOUND_EVENTS: DeferredRegister<SoundEvent> = createRegister(BuiltInRegistries.SOUND_EVENT)
@@ -41,8 +41,8 @@ object Registration {
 
         //TODO static calls used to ensure correct loading sequence
         ModDataComponents.initialise(eventBus)
+        ModBlocks.register() //register blocks before items
         ModItems.register()
-        ModBlocks.register()
         ModEntityTypes.register()
         ModTileEntitiesTypes.register()
         ModRecipeSerializers.register()

@@ -1,17 +1,14 @@
-package com.github.bonndan.humblevehicles.entity.custom.vessel.tug
+package com.github.bonndan.humblevehicles.entity.custom.train
 
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.SynchedEntityData
-import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResult
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityDimensions
 import net.minecraft.world.entity.Pose
-import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.LeadItem
 import net.neoforged.neoforge.entity.PartEntity
 
 class VehicleFrontPart(parent: Entity) : PartEntity<Entity>(parent) {
@@ -19,10 +16,14 @@ class VehicleFrontPart(parent: Entity) : PartEntity<Entity>(parent) {
         this.refreshDimensions()
     }
 
-    override fun hurt(pSource: DamageSource, pAmount: Float): Boolean {
-        return if (this.isInvulnerableTo(pSource)) false
-        else parent.hurt(pSource, pAmount) == true
+    override fun hurtServer(level: ServerLevel, pSource: DamageSource, pAmount: Float): Boolean {
+        return if (this.isInvulnerableToBase(pSource)) {
+            false
+        } else {
+            parent.hurtServer(level, pSource, pAmount) == true
+        }
     }
+
 
     override fun `is`(pEntity: Entity): Boolean {
         return this === pEntity || parent === pEntity
@@ -44,8 +45,10 @@ class VehicleFrontPart(parent: Entity) : PartEntity<Entity>(parent) {
         val oldX: Double = this.getX()
         val oldY: Double = this.getY()
         val oldZ: Double = this.getZ()
-        val x: Double = tugEntity.getX() + tugEntity.getDirection().getStepX() * getParent()!!.getBoundingBox().getXsize()
-        val z: Double = tugEntity.getZ() + tugEntity.getDirection().getStepZ() * getParent()!!.getBoundingBox().getXsize()
+        val x: Double =
+            tugEntity.getX() + tugEntity.getDirection().getStepX() * getParent()!!.getBoundingBox().getXsize()
+        val z: Double =
+            tugEntity.getZ() + tugEntity.getDirection().getStepZ() * getParent()!!.getBoundingBox().getXsize()
         val y: Double = tugEntity.getY()
         this.setPos(x, y, z)
         this.zOld = oldZ
@@ -64,18 +67,6 @@ class VehicleFrontPart(parent: Entity) : PartEntity<Entity>(parent) {
         get() {
             return getOnPos()
         }
-
-    override fun interact(player: Player, hand: InteractionHand): InteractionResult {
-        if (parent is AbstractTugEntity) {
-            val tugEntity = parent as AbstractTugEntity
-            if (player.getItemInHand(hand).getItem() is LeadItem || tugEntity.getLeashHolder() == player) {
-                return tugEntity.interact(player, hand)
-            }
-            return tugEntity.mobInteract(player, hand)
-        }
-
-        return parent!!.interact(player, hand)
-    }
 
     override fun defineSynchedData(pBuilder: SynchedEntityData.Builder) {
     }

@@ -4,7 +4,6 @@ import com.github.bonndan.humblevehicles.entity.custom.TrainInventoryProvider
 import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
-import net.neoforged.neoforge.items.ItemStackHandler
 import java.util.*
 import java.util.function.Function
 import java.util.stream.Stream

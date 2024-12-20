@@ -6,6 +6,8 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.RenderType.guiTextured
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import org.apache.logging.log4j.LogManager
@@ -64,7 +66,7 @@ class StringInputScreen(node: RouteNode, index: Int, private val callback: Consu
         val h = 65
         val i = (this.width - w) / 2
         val j = (this.height - h) / 2
-        graphics.blit(GUI, i, j, 0, 0, w, h)
+        graphics.blit(RenderType::guiTextured, GUI, i, j, 0f, 0f, w, h, 256, 256)
     }
 
     companion object {

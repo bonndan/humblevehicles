@@ -2,7 +2,7 @@ package com.github.bonndan.humblevehicles.event
 
 import com.github.bonndan.humblevehicles.ShippingConfig
 import com.github.bonndan.humblevehicles.HumVeeMod
-import com.github.bonndan.humblevehicles.entity.custom.vessel.tug.VehicleFrontPart
+import com.github.bonndan.humblevehicles.entity.custom.train.VehicleFrontPart
 import com.github.bonndan.humblevehicles.global.PlayerTrainChunkManager
 import com.github.bonndan.humblevehicles.global.TrainChunkManagerManager
 import com.github.bonndan.humblevehicles.item.SpringItem

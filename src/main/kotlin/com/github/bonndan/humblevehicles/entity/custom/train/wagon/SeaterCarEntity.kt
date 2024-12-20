@@ -91,8 +91,4 @@ class SeaterCarEntity : AbstractWagonEntity {
     override fun onPassengerTurned(p_184190_1_: Entity) {
         this.clampRotation(p_184190_1_)
     }
-
-    override fun getMinecartType(): Type {
-        return Type.RIDEABLE
-    }
 }

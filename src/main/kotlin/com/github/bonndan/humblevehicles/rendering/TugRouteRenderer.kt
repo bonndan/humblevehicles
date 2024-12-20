@@ -1,18 +1,15 @@
 package com.github.bonndan.humblevehicles.rendering
 
-import com.mojang.blaze3d.vertex.ByteBufferBuilder
 import com.github.bonndan.humblevehicles.rendering.RenderUtil.calculatePlayerDir
 import com.github.bonndan.humblevehicles.rendering.RenderUtil.renderLabel
 import com.github.bonndan.humblevehicles.util.Route
-import com.github.bonndan.humblevehicles.util.RouteNode
+import com.mojang.blaze3d.vertex.ByteBufferBuilder
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent
-import org.joml.Vector2d
 
 class TugRouteRenderer {
 
@@ -47,8 +44,6 @@ class TugRouteRenderer {
         }
         renderTypeBuffer.endBatch()
     }
-
-
 
 
 }

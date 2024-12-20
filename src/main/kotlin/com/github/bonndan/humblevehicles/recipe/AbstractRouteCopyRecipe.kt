@@ -15,7 +15,7 @@ abstract class AbstractRouteCopyRecipe(cat: CraftingBookCategory, private val it
 
     abstract fun stackHasNodes(stack: ItemStack): Boolean
 
-    abstract override fun getSerializer(): RecipeSerializer<*>
+    abstract override fun getSerializer(): RecipeSerializer<AbstractRouteCopyRecipe>
 
     /**
      * If hasNodes is set, return if stack has nodes,
@@ -82,9 +82,5 @@ abstract class AbstractRouteCopyRecipe(cat: CraftingBookCategory, private val it
             output.count = num + 1
             return output
         }
-    }
-
-    override fun canCraftInDimensions(x: Int, y: Int): Boolean {
-        return x * y >= 2
     }
 }

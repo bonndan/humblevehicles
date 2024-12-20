@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult
 import com.mojang.serialization.DynamicOps
 import com.github.bonndan.humblevehicles.HumVeeMod
 import net.minecraft.core.component.DataComponentType
+import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.codec.ByteBufCodecs
@@ -24,11 +25,11 @@ import java.util.function.Supplier
  */
 object ModDataComponents {
 
-    private val DATA_COMPONENT_TYPES = DeferredRegister.createDataComponents(HumVeeMod.MOD_ID)
+    private val DATA_COMPONENT_TYPES = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, HumVeeMod.MOD_ID)
 
     private var isInitialised = false
 
-    private var TAG_PROPERTIES: Supplier<DataComponentType<CompoundTag>>? = null
+     var TAG_PROPERTIES: Supplier<DataComponentType<CompoundTag>>? = null
 
     private var ENERGY: Supplier<DataComponentType<EnergyStorage>>? = null
 
@@ -50,6 +51,7 @@ object ModDataComponents {
                 .networkSynchronized(COMPOUND_TAG)
                 .cacheEncoding()
         }
+
 
         ENERGY = DATA_COMPONENT_TYPES.registerComponentType("energy") { builder ->
             builder.persistent(EnergyProperties.CODEC)

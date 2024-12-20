@@ -77,8 +77,7 @@ class ShippingConfig {
         var ENERGY_TUG_BASE_MAX_CHARGE_RATE: ModConfigSpec.ConfigValue<Int>? = null
 
         
-        var TRAIN_MAX_SPEED: ModConfigSpec.ConfigValue<Double>? = null
-        
+
         var LOCO_BASE_SPEED: ModConfigSpec.ConfigValue<Double>? = null
 
         
@@ -186,9 +185,7 @@ class ShippingConfig {
             BUILDER.push("train")
             run {
                 BUILDER.push("general")
-                TRAIN_MAX_SPEED =
-                    BUILDER.comment("Max speed that trains can be accelerated to. High speed may cause chunk loading lag or issues, not advised for servers or packs. Default 0.25, max is 1")
-                        .defineInRange("trainMaxSpeed", 0.6, 0.01, 1.0)
+
 
                 TRAIN_EXEMPT_DAMAGE_SOURCES = BUILDER.comment("Damage sources that trains are invulnerable to")
                     .defineList(

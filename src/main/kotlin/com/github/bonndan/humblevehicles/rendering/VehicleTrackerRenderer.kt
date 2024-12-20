@@ -25,8 +25,6 @@ class VehicleTrackerRenderer {
     init {
         entityItemMap[ModEntityTypes.ENERGY_LOCOMOTIVE.get().toString()] = ModItems.ENERGY_LOCOMOTIVE.get()
         entityItemMap[ModEntityTypes.STEAM_LOCOMOTIVE.get().toString()] = ModItems.STEAM_LOCOMOTIVE.get()
-        entityItemMap[ModEntityTypes.ENERGY_TUG.get().toString()] = ModItems.ENERGY_TUG.get()
-        entityItemMap[ModEntityTypes.STEAM_TUG.get().toString()] = ModItems.STEAM_TUG.get()
     }
 
     fun render(event: RenderLevelStageEvent, player: Player) {

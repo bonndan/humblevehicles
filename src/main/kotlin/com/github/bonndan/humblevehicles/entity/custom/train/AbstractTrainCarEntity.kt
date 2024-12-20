@@ -1,8 +1,5 @@
 package com.github.bonndan.humblevehicles.entity.custom.train
 
-import com.google.common.collect.Maps
-import com.mojang.datafixers.util.Pair
-import com.github.bonndan.humblevehicles.ShippingConfig
 import com.github.bonndan.humblevehicles.capability.StallingCapability
 import com.github.bonndan.humblevehicles.entity.Colorable
 import com.github.bonndan.humblevehicles.entity.custom.train.locomotive.AbstractLocomotiveEntity
@@ -11,6 +8,8 @@ import com.github.bonndan.humblevehicles.util.LinkableEntity
 import com.github.bonndan.humblevehicles.util.LinkingHandler
 import com.github.bonndan.humblevehicles.util.RailHelper
 import com.github.bonndan.humblevehicles.util.Train
+import com.google.common.collect.Maps
+import com.mojang.datafixers.util.Pair
 import net.minecraft.Util
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -22,7 +21,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
-import net.minecraft.tags.BlockTags
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.Mth
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -40,13 +39,14 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseRailBlock
 import net.minecraft.world.level.block.state.properties.RailShape
 import net.minecraft.world.phys.Vec3
-import net.neoforged.neoforge.common.extensions.IAbstractMinecartExtension
 import java.util.*
 import java.util.function.Consumer
 import java.util.stream.Stream
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.floor
+import kotlin.math.sqrt
 
-abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExtension,
+abstract class AbstractTrainCarEntity : AbstractMinecart,
     LinkableEntity<AbstractTrainCarEntity>, Colorable {
 
     protected val linkingHandler: LinkingHandler<AbstractTrainCarEntity> = LinkingHandler(
@@ -121,7 +121,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
                 getEntityData()[COLOR_DATA] = color.id
             }
             // don't interact *and* use current item
-            return InteractionResult.sidedSuccess(level().isClientSide)
+            return InteractionResult.SUCCESS
         }
 
         return InteractionResult.PASS
@@ -173,10 +173,6 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
         }
     }
 
-    override fun getMaxCartSpeedOnRail(): Float {
-        return (ShippingConfig.Server.TRAIN_MAX_SPEED!!.get() * 1f).toFloat()
-    }
-
     protected fun enforceMaxVelocity(maxSpeed: Double) {
         var vel = this.deltaMovement
         val normal = vel.normalize()
@@ -187,6 +183,10 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
         if (abs(vel.z) > maxSpeed) {
             this.setDeltaMovement(vel.x, vel.y, normal.z * maxSpeed)
         }
+    }
+
+    open fun isPoweredCart(): Boolean {
+        return false
     }
 
     override fun push(pEntity: Entity) {
@@ -217,7 +217,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
                         d1 *= 0.1
                         d0 *= 0.5
                         d1 *= 0.5
-                        if (pEntity is AbstractMinecart) {
+                        if (pEntity is AbstractTrainCarEntity) {
                             val d4 = pEntity.getX() - this.x
                             val d5 = pEntity.getZ() - this.z
                             val vec3 = (Vec3(d4, 0.0, d5)).normalize()
@@ -233,11 +233,11 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
 
                             val vec32 = this.deltaMovement
                             val vec33 = pEntity.getDeltaMovement()
-                            if (pEntity.isPoweredCart && !this.isPoweredCart) {
+                            if (pEntity.isPoweredCart() && !this.isPoweredCart()) {
                                 this.deltaMovement = vec32.multiply(0.2, 1.0, 0.2)
                                 this.push(vec33.x - d0, 0.0, vec33.z - d1)
                                 pEntity.setDeltaMovement(vec33.multiply(0.95, 1.0, 0.95))
-                            } else if (!pEntity.isPoweredCart && this.isPoweredCart) {
+                            } else if (!pEntity.isPoweredCart() && this.isPoweredCart()) {
                                 pEntity.setDeltaMovement(vec33.multiply(0.2, 1.0, 0.2))
                                 pEntity.push(vec32.x + d0, 0.0, vec32.z + d1)
                                 this.deltaMovement = vec32.multiply(0.95, 1.0, 0.95)
@@ -328,95 +328,19 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
         return yrot
     }
 
-    private fun yawHelper(directionIntPair: Pair<Direction, Int>, e: Entity): Direction {
+    private fun yawHelper(directionIntPair: Pair<Direction, Int>, other: Entity): Direction {
         var hordir: Direction? = null
         if (directionIntPair.second == 0) {
-            val dirvec = Vec3(e.xo - this.xo, 0.0, e.zo - this.zo)
-            hordir = Direction.fromDelta(dirvec.normalize().x.toInt(), 0, dirvec.normalize().z.toInt()) // may fail
+            val dirvec = Vec3(other.xo - this.xo, 0.0, other.zo - this.zo)
+
+            hordir = Direction.getNearest(dirvec.normalize().x.toInt(), 0, dirvec.normalize().z.toInt(), null) //todo see below
+            //Direction.fromDelta(dirvec.normalize().x.toInt(), 0, dirvec.normalize().z.toInt()) // may fail
         }
         // if still null
         if (hordir == null) {
             return directionIntPair.first
         }
         return hordir
-    }
-
-
-    override fun isInvulnerableTo(pSource: DamageSource): Boolean {
-        if (ShippingConfig.Server.TRAIN_EXEMPT_DAMAGE_SOURCES!!.get().contains(pSource.msgId)) {
-            return true
-        }
-        return super.isInvulnerableTo(pSource)
-    }
-
-    /**
-     * This method returns the specific position on the track at
-     * pOffset blocks from the current position. This overridden
-     * method takes into account of the minecart's yRot, which
-     * the vanilla code does not (leading to lots of flipping)
-     */
-    override fun getPosOffs(pX: Double, pY: Double, pZ: Double, pOffset: Double): Vec3? {
-        var x = pX
-        var y = pY
-        var z = pZ
-        val i = Mth.floor(x)
-        var j = Mth.floor(y)
-        val k = Mth.floor(z)
-        if (level().getBlockState(BlockPos(i, j - 1, k)).`is`(BlockTags.RAILS)) {
-            --j
-        }
-
-        val blockstate = level().getBlockState(BlockPos(i, j, k))
-        if (BaseRailBlock.isRail(blockstate)) {
-            val railshape = (blockstate.block as BaseRailBlock).getRailDirection(
-                blockstate,
-                this.level(), BlockPos(i, j, k),
-                this
-            )
-            y = j.toDouble()
-            if (railshape.isAscending) {
-                y = (j + 1).toDouble()
-            }
-
-            val pair = exits(railshape)
-            var exit1 = pair.first
-            var exit2 = pair.second
-
-            // check if need to swap end points to make calculation correct
-            val yawX = -sin(Math.toRadians(yRot.toDouble()))
-            val yawZ = cos(Math.toRadians(yRot.toDouble()))
-            if (Vec3(yawX, 0.0, yawZ).dot(
-                    Vec3(
-                        (exit2.x - exit1.x).toDouble(),
-                        (exit2.y - exit1.y).toDouble(),
-                        (exit2.z - exit1.z).toDouble()
-                    )
-                ) <= 0
-            ) {
-                val temp = exit1
-                exit1 = exit2
-                exit2 = temp
-            }
-
-            // get direction from e1 to e2
-            var xDiff = (exit2.x - exit1.x).toDouble()
-            var zDiff = (exit2.z - exit1.z).toDouble()
-            // normalize x and z diff
-            val dist = sqrt(xDiff * xDiff + zDiff * zDiff)
-            xDiff /= dist
-            zDiff /= dist
-            x += xDiff * pOffset
-            z += zDiff * pOffset
-            if (exit1.y != 0 && Mth.floor(x) - i == exit1.x && Mth.floor(z) - k == exit1.z) {
-                y += exit1.y.toDouble()
-            } else if (exit2.y != 0 && Mth.floor(x) - i == exit2.x && Mth.floor(z) - k == exit2.z) {
-                y += exit2.y.toDouble()
-            }
-
-            return this.getPos(x, y, z)
-        } else {
-            return null
-        }
     }
 
     // force render since we delegate rendering to the head of the train
@@ -441,19 +365,19 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
         super.remove(r)
     }
 
-    public override fun destroy(pSource: DamageSource) {
+    public override fun destroy(level: ServerLevel, pSource: DamageSource) {
         val i = Stream.of(linkingHandler.leader, linkingHandler.follower)
             .filter { obj: Optional<AbstractTrainCarEntity> -> obj.isPresent }.count().toInt()
         this.remove(RemovalReason.KILLED)
-        if (level().gameRules.getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+        if (level.gameRules.getBoolean(GameRules.RULE_DOENTITYDROPS)) {
             val stack = this.pickResult
 
             if (this.hasCustomName()) {
                 stack[DataComponents.CUSTOM_NAME] = customName;
             }
 
-            this.spawnAtLocation(stack)
-            for (j in 0 until i) {
+            this.spawnAtLocation(level, stack)
+            (0 until i).forEach { j ->
                 spawnChain()
             }
         }
@@ -494,7 +418,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
                 val euclideanDir = parent.position().subtract(position()).normalize()
                 val parentDirection = railDirDis
                     .map { obj: Pair<Direction, Int> -> obj.first }
-                    .map { obj: Direction -> obj.normal }
+                    .map { obj: Direction -> obj.unitVec3i }
                     .map { pToCopy -> Vec3.atLowerCornerOf(pToCopy) }
                     .orElse(euclideanDir)
                     .normalize()
@@ -522,11 +446,6 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
         }
     }
 
-    override fun getMinecartType(): Type {
-        // Why does this even exist
-        return Type.CHEST
-    }
-
     override fun getFollower(): Optional<AbstractTrainCarEntity> {
         return linkingHandler.follower
     }
@@ -537,7 +456,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
 
     private fun spawnChain() {
         val stack = ItemStack(ModItems.SPRING.get())
-        this.spawnAtLocation(stack)
+        this.spawnAtLocation(level() as ServerLevel, stack)
     }
 
     override fun handleShearsCut() {
@@ -693,13 +612,13 @@ abstract class AbstractTrainCarEntity : AbstractMinecart, IAbstractMinecartExten
         val DOMINATED_ID: EntityDataAccessor<Int> = SynchedEntityData.defineId(
             AbstractTrainCarEntity::class.java, EntityDataSerializers.INT
         )
-        protected var TRAIN_SPEED: Double = ShippingConfig.Server.TRAIN_MAX_SPEED!!.get()
+
         private val EXITS: Map<RailShape?, Pair<Vec3i, Vec3i>> = Util.make(Maps.newEnumMap(RailShape::class.java))
         { enumMap: EnumMap<RailShape?, Pair<Vec3i, Vec3i>> ->
-            val west = Direction.WEST.normal
-            val east = Direction.EAST.normal
-            val north = Direction.NORTH.normal
-            val south = Direction.SOUTH.normal
+            val west = Direction.WEST.unitVec3i
+            val east = Direction.EAST.unitVec3i
+            val north = Direction.NORTH.unitVec3i
+            val south = Direction.SOUTH.unitVec3i
             val westUnder = west.below()
             val eastUnder = east.below()
             val northUnder = north.below()

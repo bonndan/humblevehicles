@@ -1,22 +1,17 @@
 package com.github.bonndan.humblevehicles
 
 import com.github.bonndan.humblevehicles.entity.container.EnergyHeadVehicleScreen
-import com.github.bonndan.humblevehicles.entity.container.FishingBargeScreen
 import com.github.bonndan.humblevehicles.entity.container.SteamHeadVehicleScreen
 import com.github.bonndan.humblevehicles.item.container.RouteScreen
 import com.github.bonndan.humblevehicles.setup.ModItemModelProperties
 import com.github.bonndan.humblevehicles.setup.ModMenuTypes
 import com.github.bonndan.humblevehicles.setup.Registration
-import net.minecraft.core.registries.Registries
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.item.CreativeModeTab
 import net.neoforged.bus.api.IEventBus
 import net.neoforged.fml.ModContainer
 import net.neoforged.fml.common.Mod
 import net.neoforged.fml.config.ModConfig
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent
-import net.neoforged.neoforge.registries.DeferredRegister
 
 @Mod(HumVeeMod.MOD_ID)
 class HumVeeMod(modBus: IEventBus, container: ModContainer) {
@@ -43,12 +38,8 @@ class HumVeeMod(modBus: IEventBus, container: ModContainer) {
 
     private fun registerScreens(event: RegisterMenuScreensEvent) {
 
-        event.register(ModMenuTypes.TUG_CONTAINER.get(), ::SteamHeadVehicleScreen)
         event.register(ModMenuTypes.STEAM_LOCOMOTIVE_CONTAINER.get(), ::SteamHeadVehicleScreen)
-        event.register(ModMenuTypes.ENERGY_TUG_CONTAINER.get(), ::EnergyHeadVehicleScreen)
         event.register(ModMenuTypes.ENERGY_HEAD_CONTAINER.get(), ::EnergyHeadVehicleScreen)
-        event.register(ModMenuTypes.SUBMARINE_CONTAINER.get(), ::EnergyHeadVehicleScreen)
-        event.register(ModMenuTypes.FISHING_BARGE_CONTAINER.get(), ::FishingBargeScreen)
         event.register(ModMenuTypes.TUG_ROUTE_CONTAINER.get(), ::RouteScreen)
     }
 

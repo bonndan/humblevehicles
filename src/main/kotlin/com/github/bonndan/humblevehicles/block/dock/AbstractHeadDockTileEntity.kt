@@ -67,7 +67,7 @@ abstract class AbstractHeadDockTileEntity<T>(t: BlockEntityType<*>, pos: BlockPo
 
     private fun getTailDockPairs(tug: T): List<Pair<T, AbstractTailDockTileEntity<T>>> {
 
-        val barges = tug.getTrain()?.asListOfTugged() ?: emptyList()
+        val barges = tug.getTrain().asListOfTugged() ?: emptyList()
         val docks = tailDocks
 
         return IntStream.range(

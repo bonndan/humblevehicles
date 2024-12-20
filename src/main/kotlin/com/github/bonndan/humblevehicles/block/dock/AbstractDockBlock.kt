@@ -10,21 +10,22 @@ import net.minecraft.world.level.block.Mirror
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
+import net.minecraft.world.level.redstone.Orientation
 
 abstract class AbstractDockBlock(properties: Properties) : Block(properties), EntityBlock {
-    @Deprecated("")
-    public override fun neighborChanged(
+
+    override fun neighborChanged(
         state: BlockState,
         world: Level,
-        p_220069_3_: BlockPos,
-        p_220069_4_: Block,
-        p_220069_5_: BlockPos,
-        p_220069_6_: Boolean
+        p_60511_: BlockPos,
+        p_60512_: Block,
+        p_365159_: Orientation?,
+        p_60514_: Boolean
     ) {
-        super.neighborChanged(state, world, p_220069_3_, p_220069_4_, p_220069_5_, p_220069_6_)
+        super.neighborChanged(state, world, p_60511_, p_60512_, p_365159_, p_60514_)
         DockingBlockStates.fixHopperPos(
             world,
-            p_220069_3_,
+            p_60511_,
             Direction.UP,
             state.getValue(DockingBlockStates.FACING)
         )

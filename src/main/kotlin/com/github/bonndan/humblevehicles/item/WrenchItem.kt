@@ -29,7 +29,7 @@ class WrenchItem(pProperties: Properties) : Item(pProperties) {
         val state = pContext.level.getBlockState(pContext.clickedPos)
         if (state.`is`(Blocks.RAIL)) {
             val shape = state.getValue(RailBlock.SHAPE)
-            if (shape.isAscending) {
+            if (shape.isSlope) {
                 return InteractionResult.PASS
             }
             if (!pContext.level.isClientSide()) {

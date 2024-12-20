@@ -3,10 +3,8 @@ package com.github.bonndan.humblevehicles.data.client
 import com.github.bonndan.humblevehicles.HumVeeMod
 import com.github.bonndan.humblevehicles.block.dock.DockingBlockStates
 import com.github.bonndan.humblevehicles.block.fluid.FluidHopperBlock
-import com.github.bonndan.humblevehicles.block.guiderail.CornerGuideRailBlock
 import com.github.bonndan.humblevehicles.block.rail.AbstractDockingRail
 import com.github.bonndan.humblevehicles.block.rail.SwitchRail
-import com.github.bonndan.humblevehicles.block.vesseldetector.VesselDetectorBlock
 import com.github.bonndan.humblevehicles.setup.ModBlocks
 import net.minecraft.core.Direction
 import net.minecraft.data.PackOutput
@@ -21,110 +19,8 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper
 class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper) :
     BlockStateProvider(output, HumVeeMod.MOD_ID, exFileHelper) {
 
-    private fun getTugDockModel(state: BlockState): ModelFile {
-        val inv = if (state.getValue(DockingBlockStates.INVERTED)) "_inv" else ""
-        val powered = if (state.getValue(DockingBlockStates.POWERED)) "_powered" else ""
-        return models().orientable(
-            "tug_dock$inv$powered",
-            getBlTx("tug_dock"),
-            getBlTx("tug_dock_front$powered"),
-            getBlTx("tug_dock_top$inv")
-        )
-    }
-
-    private fun getCornerGuideRailModel(state: BlockState): ModelFile {
-        val inv = if (state.getValue(CornerGuideRailBlock.INVERTED)) "_inv" else ""
-        return models().orientable(
-            "guide_rail_corner$inv",
-            getBlTx("guide_rail_side"),
-            getBlTx("guide_rail_front$inv"),
-            getBlTx("guide_rail_top$inv")
-        )
-    }
-
-    private fun getTugGuideRailModel(state: BlockState): ModelFile {
-        return models().orientable(
-            "guide_rail_tug",
-            getBlTx("guide_rail_side"),
-            getBlTx("guide_rail_side"),
-            getBlTx("guide_rail_front")
-        )
-    }
-
-    private fun getVesselDetectorModel(state: BlockState): ModelFile {
-        val powered = if (state.getValue(VesselDetectorBlock.POWERED)) "_powered" else ""
-
-        return models().withExistingParent("vessel_detector$powered", modLoc("orientable_with_back"))
-            .texture("side", getBlTx("vessel_detector_side"))
-            .texture("front", getBlTx("vessel_detector_front"))
-            .texture("back", getBlTx("vessel_detector_back$powered"))
-    }
-
-    private fun getBargeDockModel(state: BlockState): ModelFile {
-        val inv = if (state.getValue(DockingBlockStates.INVERTED)) "_extract" else ""
-        return models().orientable(
-            "barge_dock$inv",
-            getBlTx("barge_dock"),
-            getBlTx("barge_dock_front$inv"),
-            getBlTx("barge_dock_top")
-        )
-    }
-
-    private fun xRotFromDir(direction: Direction): Int {
-        return when (direction) {
-            Direction.DOWN -> 270
-            Direction.UP -> 90
-            else -> 0
-        }
-    }
-
 
     override fun registerStatesAndModels() {
-        getVariantBuilder(ModBlocks.TUG_DOCK.get()).forAllStates { state: BlockState ->
-            ConfiguredModel.builder()
-                .modelFile(getTugDockModel(state))
-                .rotationY(
-                    state.getValue(DockingBlockStates.FACING).opposite.toYRot().toInt()
-                )
-                .build()
-        }
-
-        getVariantBuilder(ModBlocks.BARGE_DOCK.get()).forAllStates { state: BlockState ->
-            ConfiguredModel.builder()
-                .modelFile(getBargeDockModel(state))
-                .rotationY(
-                    state.getValue(DockingBlockStates.FACING).opposite.toYRot().toInt()
-                )
-                .build()
-        }
-
-        getVariantBuilder(ModBlocks.GUIDE_RAIL_CORNER.get()).forAllStates { state: BlockState ->
-            ConfiguredModel.builder()
-                .modelFile(getCornerGuideRailModel(state))
-                .rotationY(
-                    state.getValue(CornerGuideRailBlock.FACING).opposite.toYRot().toInt()
-                )
-                .build()
-        }
-
-        getVariantBuilder(ModBlocks.VESSEL_DETECTOR.get()).forAllStates { state: BlockState ->
-            ConfiguredModel.builder()
-                .modelFile(getVesselDetectorModel(state))
-                .rotationY(
-                    state.getValue(VesselDetectorBlock.FACING).opposite.toYRot().toInt()
-                )
-                .rotationX(xRotFromDir(state.getValue(VesselDetectorBlock.FACING).opposite))
-                .build()
-        }
-
-        getVariantBuilder(ModBlocks.GUIDE_RAIL_TUG.get()).forAllStates { state: BlockState ->
-            ConfiguredModel.builder()
-                .modelFile(getTugGuideRailModel(state))
-                .rotationY(
-                    state.getValue(CornerGuideRailBlock.FACING).clockWise.toYRot().toInt()
-                )
-                .build()
-        }
 
         getVariantBuilder(ModBlocks.FLUID_HOPPER.get()).forAllStates { state: BlockState ->
             ConfiguredModel.builder()

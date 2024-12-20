@@ -1,8 +1,6 @@
 package com.github.bonndan.humblevehicles.data
 
 import net.minecraft.world.item.crafting.Ingredient
-import net.minecraft.world.item.crafting.Ingredient.TagValue
-import net.minecraft.world.item.crafting.ShapedRecipe
 import net.minecraft.world.item.crafting.ShapedRecipePattern
 
 class RecipeMarkdown {
@@ -27,24 +25,15 @@ class RecipeMarkdown {
             icons.copyIcon(it)
         }
         val id = recipe.recipeId.toString()
-        val documentation: String? = tryLoadDescriptions(id)
 
         stringBuilder.append("\n<a id=\"${stripPrefixes(id)}\"></a>\n")
         stringBuilder.append("\n## ${translated}\n")
-        documentation?.let { stringBuilder.append("\n${it}\n") }
         stringBuilder.append("\nRequires: ${extractRequirements(recipe)}\n")
         stringBuilder.append("\nType: ${recipe.recipe.type}\n")
         stringBuilder.append("\nIngredients: \n${ingredients.joinToString("") { "* $it\n" }}\n")
 
         recipe.pattern?.let { stringBuilder.append("\nPattern: ${extractPattern(it)}\n") }
     }
-
-    private fun tryLoadDescriptions(id: String): String? =
-        try {
-            PatchouliDescriptions.getDescriptions(stripPrefixes(id)).joinToString("\n\n")
-        } catch (e: Exception) {
-            null
-        }
 
     private fun extractRequirements(recipe: RecipeGraph.Node) =
         recipe.requirements
@@ -53,10 +42,12 @@ class RecipeMarkdown {
             .joinToString(" and ")
 
     private fun extractIngredients(recipe: RecipeGraph.Node): Set<String> {
-        return recipe.recipe.ingredients
-            .map { ingredientAsString(it) }
-            .filter { it.isNotBlank() }
-            .toSet()
+        return setOf()
+
+//        return recipe.recipe.ingredients
+//            .map { ingredientAsString(it) }
+//            .filter { it.isNotBlank() }
+//            .toSet()
     }
 
     private fun asLink(ingredient: String): String {
@@ -85,7 +76,7 @@ class RecipeMarkdown {
             for (column in 0 until pattern.width()) {
                 val ingredient = pattern.ingredients()[index]
                 index++
-                stringBuilder.append(" " + ingredientAsIcon(ingredient) + " ")
+                stringBuilder.append(" " + ingredientAsIcon(ingredient.get()) + " ")
                 stringBuilder.append("|")
             }
             stringBuilder.append("\n")
@@ -128,10 +119,11 @@ class RecipeMarkdown {
 
     private fun ingredientAsString(ingredient: Ingredient, link: Boolean = true): String {
         return ingredient.values
-            .map { value ->
-                when (value) {
-                    is TagValue -> value.tag.location.toString()
-                    else -> value.items.first()?.item.toString()
+            .map { it.value() }
+            .map { item ->
+                when (item) {
+                    //is TagValue -> item.tag.location.toString()
+                    else -> item.toString()
                 }
             }
             .filter { it.isNotBlank() }

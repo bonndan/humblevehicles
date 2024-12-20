@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.util.StringRepresentable
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.ItemInteractionResult
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.AbstractMinecart
 import net.minecraft.world.item.ItemStack
@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.*
 import net.minecraft.world.level.material.Fluids
+import net.minecraft.world.level.redstone.Orientation
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
@@ -211,12 +212,12 @@ class SwitchRail : BaseRailBlock, MultiShapeRail {
         pPlayer: Player,
         pHand: InteractionHand,
         pHitResult: BlockHitResult
-    ): ItemInteractionResult {
+    ): InteractionResult {
         if (InteractionUtil.doConfigure(pPlayer, pHand)) {
             pLevel.setBlockAndUpdate(pPos, this.mirror(pState, Mirror.LEFT_RIGHT))
-            return ItemInteractionResult.SUCCESS
+            return InteractionResult.SUCCESS
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+        return InteractionResult.PASS // return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
     }
 
 
@@ -225,15 +226,15 @@ class SwitchRail : BaseRailBlock, MultiShapeRail {
         pBuilder.add(WATERLOGGED, FACING, RAIL_SHAPE, OUT_DIRECTION, POWERED)
     }
 
-    public override fun neighborChanged(
+    override fun neighborChanged(
         state: BlockState,
         world: Level,
         pos: BlockPos,
-        p_220069_4_: Block,
-        p_220069_5_: BlockPos,
-        p_220069_6_: Boolean
+        p_49380_: Block,
+        p_361387_: Orientation?,
+        p_49382_: Boolean
     ) {
-        super.neighborChanged(state, world, pos, p_220069_4_, p_220069_5_, p_220069_6_)
+        super.neighborChanged(state, world, pos, p_49380_, p_361387_, p_49382_)
         if (isAutomaticSwitching) return
 
         if (!world.isClientSide) {
@@ -243,6 +244,7 @@ class SwitchRail : BaseRailBlock, MultiShapeRail {
             }
         }
     }
+
 
     override fun canConnectRedstone(state: BlockState, world: BlockGetter, pos: BlockPos, side: Direction?): Boolean {
         return true

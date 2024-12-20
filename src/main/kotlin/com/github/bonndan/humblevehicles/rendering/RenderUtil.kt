@@ -40,7 +40,7 @@ object RenderUtil {
             event.partialTick.gameTimeDeltaTicks,
             1f,
             player.level().gameTime,
-            player.level().minBuildHeight + 1,
+            player.level().minY + 1,
             1024,
             color,
             0.1f,

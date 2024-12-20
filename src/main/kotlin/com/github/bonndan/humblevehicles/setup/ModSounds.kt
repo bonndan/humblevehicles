@@ -7,7 +7,7 @@ import java.util.function.Supplier
 
 object ModSounds {
     
-    val STEAM_TUG_WHISTLE: Supplier<SoundEvent> = Registration.SOUND_EVENTS.register("steam_tug_whistle",
+    val STEAM_WHISTLE: Supplier<SoundEvent> = Registration.SOUND_EVENTS.register("steam_tug_whistle",
         Supplier {
             SoundEvent.createFixedRangeEvent(
                 ResourceLocation.fromNamespaceAndPath(
@@ -18,7 +18,7 @@ object ModSounds {
         })
 
     
-    val TUG_DOCKING: Supplier<SoundEvent> = Registration.SOUND_EVENTS.register("tug_docking",
+    val DOCKING: Supplier<SoundEvent> = Registration.SOUND_EVENTS.register("tug_docking",
         Supplier {
             SoundEvent.createFixedRangeEvent(
                 ResourceLocation.fromNamespaceAndPath(
@@ -29,7 +29,7 @@ object ModSounds {
         })
 
     
-    val TUG_UNDOCKING: Supplier<SoundEvent> = Registration.SOUND_EVENTS.register("tug_undocking",
+    val UNDOCKING: Supplier<SoundEvent> = Registration.SOUND_EVENTS.register("tug_undocking",
         Supplier {
             SoundEvent.createFixedRangeEvent(
                 ResourceLocation.fromNamespaceAndPath(

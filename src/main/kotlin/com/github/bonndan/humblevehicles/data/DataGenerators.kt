@@ -25,11 +25,8 @@ object DataGenerators {
         gen.addProvider(true, ModItemTagsProvider(pack, lookupProvider, blockTags.contentsGetter(), existingFileHelper))
         gen.addProvider(true, ModLootTableProvider(pack, lookupProvider))
 
-        val modRecipeProvider = ModRecipeProvider(pack, lookupProvider)
-        gen.addProvider(true, modRecipeProvider)
-        if (gatherDataEvent.includeDev()) {
-            val graph = RecipeGraph(modRecipeProvider)
-            graph.build()
+        gatherDataEvent.createProvider(gatherDataEvent.includeServer()) {
+            ModRecipeProvider.Runner(pack, lookupProvider)
         }
     }
 }

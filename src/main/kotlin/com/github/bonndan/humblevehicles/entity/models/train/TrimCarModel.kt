@@ -1,9 +1,7 @@
 package com.github.bonndan.humblevehicles.entity.models.train
 
-import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.VertexConsumer
 import com.github.bonndan.humblevehicles.HumVeeMod
-import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
+import com.github.bonndan.humblevehicles.entity.models.VesselRenderState
 import net.minecraft.client.model.EntityModel
 import net.minecraft.client.model.geom.ModelLayerLocation
 import net.minecraft.client.model.geom.ModelPart
@@ -13,32 +11,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition
 import net.minecraft.client.model.geom.builders.MeshDefinition
 import net.minecraft.resources.ResourceLocation
 
-class TrimCarModel<T : AbstractTrainCarEntity>(root: ModelPart) : EntityModel<T>() {
-    private val bb_main: ModelPart
-
-    init {
-        this.bb_main = root.getChild("bb_main")
-    }
-
-    override fun setupAnim(
-        entity: T,
-        limbSwing: Float,
-        limbSwingAmount: Float,
-        ageInTicks: Float,
-        netHeadYaw: Float,
-        headPitch: Float
-    ) {
-    }
-
-    override fun renderToBuffer(
-        pPoseStack: PoseStack,
-        pBuffer: VertexConsumer,
-        pPackedLight: Int,
-        pPackedOverlay: Int,
-        pColor: Int
-    ) {
-        bb_main.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pColor)
-    }
+class TrimCarModel(root: ModelPart) : EntityModel<VesselRenderState>(root.getChild("bb_main")) {
 
     companion object {
         // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor

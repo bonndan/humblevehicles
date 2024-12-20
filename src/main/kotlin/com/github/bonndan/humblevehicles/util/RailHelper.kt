@@ -261,10 +261,10 @@ class RailHelper(private val minecart: AbstractMinecart) {
     companion object {
         val EXITS: Map<RailShape, Pair<Vec3i, Vec3i>> =
             Util.make(Maps.newEnumMap(RailShape::class.java)) { map: EnumMap<RailShape, Pair<Vec3i, Vec3i>> ->
-                val west = Direction.WEST.normal
-                val east = Direction.EAST.normal
-                val north = Direction.NORTH.normal
-                val south = Direction.SOUTH.normal
+                val west = Direction.WEST.unitVec3i
+                val east = Direction.EAST.unitVec3i
+                val north = Direction.NORTH.unitVec3i
+                val south = Direction.SOUTH.unitVec3i
                 val westb = west.below()
                 val eastb = east.below()
                 val nothb = north.below()
@@ -333,8 +333,8 @@ class RailHelper(private val minecart: AbstractMinecart) {
 
         fun getDirectionToOtherExit(direction: Direction, shape: RailShape): Optional<Vec3i> {
             return getOtherExit(direction, shape).map { other: RailDir ->
-                direction.normal.subtract(
-                    other.horizontal.normal
+                direction.unitVec3i.subtract(
+                    other.horizontal.unitVec3i
                 )
             }
         }

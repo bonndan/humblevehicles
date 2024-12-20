@@ -2,26 +2,10 @@ package com.github.bonndan.humblevehicles.event
 
 import com.github.bonndan.humblevehicles.HumVeeMod.Companion.MOD_ID
 import com.github.bonndan.humblevehicles.block.fluid.render.FluidHopperTileEntityRenderer
-import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
-import com.github.bonndan.humblevehicles.entity.custom.train.wagon.FluidTankCarEntity
-import com.github.bonndan.humblevehicles.entity.custom.vessel.VesselEntity
-import com.github.bonndan.humblevehicles.entity.custom.vessel.barge.FishingBargeEntity
-import com.github.bonndan.humblevehicles.entity.custom.vessel.barge.FluidTankBargeEntity
+import com.github.bonndan.humblevehicles.entity.models.EmptyModel
 import com.github.bonndan.humblevehicles.entity.models.insert.*
-import com.github.bonndan.humblevehicles.entity.models.submarine.SubmarineBaseModel
-import com.github.bonndan.humblevehicles.entity.models.submarine.SubmarineTrimModel
 import com.github.bonndan.humblevehicles.entity.models.train.*
-import com.github.bonndan.humblevehicles.entity.models.vessel.EmptyModel
-import com.github.bonndan.humblevehicles.entity.models.vessel.EnergyTugModel
-import com.github.bonndan.humblevehicles.entity.models.vessel.SteamTugModel
-import com.github.bonndan.humblevehicles.entity.models.vessel.base.BaseBargeModel
-import com.github.bonndan.humblevehicles.entity.models.vessel.base.TrimBargeModel
-import com.github.bonndan.humblevehicles.entity.render.barge.FishingBargeRenderer
-import com.github.bonndan.humblevehicles.entity.render.barge.FluidTankBargeRenderer
-import com.github.bonndan.humblevehicles.entity.render.barge.MultipartVesselRenderer
-import com.github.bonndan.humblevehicles.entity.render.submarine.SubmarineRenderer
-import com.github.bonndan.humblevehicles.entity.render.train.FluidTankCarRenderer
-import com.github.bonndan.humblevehicles.entity.render.train.MultipartCarRenderer
+import com.github.bonndan.humblevehicles.entity.render.TrainRenderer
 import com.github.bonndan.humblevehicles.entity.render.train.TrainCarRenderer
 import com.github.bonndan.humblevehicles.setup.ModBlocks
 import com.github.bonndan.humblevehicles.setup.ModBlocks.buildCreativeTab
@@ -62,318 +46,132 @@ object ModClientEventHandler {
 
     @SubscribeEvent
     fun onRegisterEntityRenderers(event: EntityRenderersEvent.RegisterRenderers) {
-        // Barges
-        event.registerEntityRenderer(
-            ModEntityTypes.CHEST_BARGE.get()
-        ) { ctx: EntityRendererProvider.Context ->
-            MultipartVesselRenderer.Builder<VesselEntity>(ctx)
-                .baseModel(
-                    { root -> BaseBargeModel(root) }, BaseBargeModel.CLOSED_LOCATION,
-                    entityTexture("barge/base.png")
-                )
-                .insertModel(
-                    { root -> CubeInsertBargeModel(root) }, CubeInsertBargeModel.LAYER_LOCATION,
-                    entityTexture("barge/chest_insert.png")
-                )
-                .trimModel(
-                    { root -> TrimBargeModel(root) }, TrimBargeModel.CLOSED_LOCATION,
-                    entityTexture("barge/trim.png")
-                )
-                .build()
-        }
-
-        event.registerEntityRenderer(
-            ModEntityTypes.BARREL_BARGE.get()
-        ) { ctx: EntityRendererProvider.Context ->
-            MultipartVesselRenderer.Builder<VesselEntity>(ctx)
-                .baseModel(
-                    { root -> BaseBargeModel(root) }, BaseBargeModel.CLOSED_LOCATION,
-                    entityTexture("barge/base.png")
-                )
-                .insertModel(
-                    { root -> CubeInsertBargeModel(root) }, CubeInsertBargeModel.LAYER_LOCATION,
-                    entityTexture("barge/barrel_insert.png")
-                )
-                .trimModel(
-                    { root -> TrimBargeModel(root) }, TrimBargeModel.CLOSED_LOCATION,
-                    entityTexture("barge/trim.png")
-                )
-                .build()
-        }
-
-        event.registerEntityRenderer(
-            ModEntityTypes.CHUNK_LOADER_BARGE.get()
-        ) { ctx: EntityRendererProvider.Context ->
-            MultipartVesselRenderer.Builder<VesselEntity>(ctx)
-                .baseModel(
-                    { root -> BaseBargeModel(root) }, BaseBargeModel.CLOSED_LOCATION,
-                    entityTexture("barge/base.png")
-                )
-                .insertModel(
-                    { root -> RingsInsertBargeModel(root) }, RingsInsertBargeModel.LAYER_LOCATION,
-                    entityTexture("barge/chunk_loader_insert.png")
-                )
-                .trimModel(
-                    { root -> TrimBargeModel(root) }, TrimBargeModel.CLOSED_LOCATION,
-                    entityTexture("barge/trim.png")
-                )
-                .build()
-        }
-
-        event.registerEntityRenderer(
-            ModEntityTypes.SEATER_BARGE.get()
-        ) { ctx: EntityRendererProvider.Context ->
-            MultipartVesselRenderer.Builder<VesselEntity>(ctx)
-                .baseModel(
-                    { root -> BaseBargeModel(root) }, BaseBargeModel.OPEN_FRONT_LOCATION,
-                    entityTexture("barge/base.png")
-                )
-                .insertModel(
-                    { root -> SeaterInsertBargeModel(root) }, SeaterInsertBargeModel.LAYER_LOCATION,
-                    entityTexture("barge/seater_insert.png")
-                )
-                .trimModel(
-                    { root -> TrimBargeModel(root) }, TrimBargeModel.OPEN_FRONT_LOCATION,
-                    entityTexture("barge/trim.png")
-                )
-                .build()
-        }
-
-        event.registerEntityRenderer(
-            ModEntityTypes.VACUUM_BARGE.get()
-        ) { ctx: EntityRendererProvider.Context ->
-            MultipartVesselRenderer.Builder<VesselEntity>(ctx)
-                .baseModel(
-                    { root -> BaseBargeModel(root) }, BaseBargeModel.CLOSED_LOCATION,
-                    entityTexture("barge/base.png")
-                )
-                .insertModel(
-                    { root -> RingsInsertBargeModel(root) }, RingsInsertBargeModel.LAYER_LOCATION,
-                    entityTexture("barge/vacuum_insert.png")
-                )
-                .trimModel(
-                    { root -> TrimBargeModel(root) }, TrimBargeModel.CLOSED_LOCATION,
-                    entityTexture("barge/trim.png")
-                )
-                .build()
-        }
-
-        event.registerEntityRenderer(
-            ModEntityTypes.FLUID_TANK_BARGE.get()
-        ) { ctx: EntityRendererProvider.Context ->
-            FluidTankBargeRenderer.Builder<FluidTankBargeEntity>(ctx)
-                .baseModel(
-                    { root -> BaseBargeModel(root) }, BaseBargeModel.CLOSED_LOCATION,
-                    entityTexture("barge/base.png")
-                )
-                .insertModel(
-                    { root -> FluidTankInsertBargeModel(root) }, FluidTankInsertBargeModel.LAYER_LOCATION,
-                    entityTexture("barge/fluid_tank_insert.png")
-                )
-                .trimModel(
-                    { root -> TrimBargeModel(root) }, TrimBargeModel.CLOSED_LOCATION,
-                    entityTexture("barge/trim.png")
-                )
-                .build()
-        }
-
-        event.registerEntityRenderer(
-            ModEntityTypes.FISHING_BARGE.get()
-        ) { ctx: EntityRendererProvider.Context ->
-            FishingBargeRenderer.Builder<FishingBargeEntity>(ctx)
-                .transitionInsertModel(
-                    { root -> FishingInsertBargeModel(root) }, FishingInsertBargeModel.TRANSITION_LOCATION,
-                    entityTexture("barge/fishing_insert.png")
-                )
-                .deployedInsertModel(
-                    { root -> FishingInsertBargeModel(root) }, FishingInsertBargeModel.DEPLOYED_LOCATION,
-                    entityTexture("barge/fishing_insert.png")
-                )
-                .baseModel(
-                    { root -> BaseBargeModel(root) }, BaseBargeModel.OPEN_SIDES_LOCATION,
-                    entityTexture("barge/base.png")
-                )
-                .insertModel(
-                    { root -> FishingInsertBargeModel(root) }, FishingInsertBargeModel.STASHED_LOCATION,
-                    entityTexture("barge/fishing_insert.png")
-                )
-                .trimModel(
-                    { root -> TrimBargeModel(root) }, TrimBargeModel.OPEN_SIDES_LOCATION,
-                    entityTexture("barge/trim.png")
-                )
-                .build()
-        }
-
-        // Tugs
-        event.registerEntityRenderer(
-            ModEntityTypes.ENERGY_TUG.get()
-        ) { ctx: EntityRendererProvider.Context ->
-            MultipartVesselRenderer.Builder<VesselEntity>(ctx)
-                .baseModel(
-                    { root -> EnergyTugModel(root) }, EnergyTugModel.LAYER_LOCATION,
-                    entityTexture("barge/energy_tug_base.png")
-                )
-                .emptyInsert()
-                .trimModel(
-                    { root -> EnergyTugModel(root) }, EnergyTugModel.LAYER_LOCATION,
-                    entityTexture("barge/energy_tug_trim.png")
-                )
-                .build() // TODO: this is a hack
-                .derotate()
-        }
-
-        event.registerEntityRenderer(ModEntityTypes.STEAM_TUG.get()) { ctx ->
-            MultipartVesselRenderer.Builder<VesselEntity>(ctx)
-                .baseModel(
-                    { root -> SteamTugModel(root) }, SteamTugModel.LAYER_LOCATION,
-                    entityTexture("barge/steam_tug_texture.png")
-                )
-                .emptyInsert()
-                .trimModel(
-                    { root -> SteamTugModel(root) }, SteamTugModel.LAYER_LOCATION,
-                    entityTexture("barge/steam_tug_trim.png")
-                )
-                .build()
-                .derotate()
-        }
 
         event.registerEntityRenderer(ModEntityTypes.STEAM_LOCOMOTIVE.get()) { ctx: EntityRendererProvider.Context ->
-            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
-                .baseModel(
-                    { root -> SteamLocomotiveModel(root) },
-                    SteamLocomotiveModel.LAYER_LOCATION,
-                    entityTexture("car/steam_locomotive_base.png")
-                )
-                .trimModel(
-                    { root -> SteamLocomotiveModel(root) },
-                    SteamLocomotiveModel.LAYER_LOCATION,
-                    entityTexture("car/steam_locomotive_trim.png")
-                )
-                .emptyInsert()
-                .build()
+            TrainRenderer(ctx, SteamLocomotiveModel.LAYER_LOCATION,)
+//            TrainCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
+//                .baseModel(
+//                    { root -> SteamLocomotiveModel(root) },
+//                    SteamLocomotiveModel.LAYER_LOCATION,
+//                    entityTexture("car/steam_locomotive_base.png")
+//                )
+//                .trimModel(
+//                    { root -> SteamLocomotiveModel(root) },
+//                    SteamLocomotiveModel.LAYER_LOCATION,
+//                    entityTexture("car/steam_locomotive_trim.png")
+//                )
+//                .emptyInsert()
+//                .build()
         }
 
         event.registerEntityRenderer(ModEntityTypes.ENERGY_LOCOMOTIVE.get()) { ctx: EntityRendererProvider.Context ->
-            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
-                .baseModel(
-                    { root -> EnergyLocomotiveModel(root) },
-                    EnergyLocomotiveModel.LAYER_LOCATION,
-                    entityTexture("car/energy_locomotive_base.png")
-                )
-                .trimModel(
-                    { root -> EnergyLocomotiveModel(root) },
-                    EnergyLocomotiveModel.LAYER_LOCATION,
-                    entityTexture("car/energy_locomotive_trim.png")
-                )
-                .emptyInsert()
-                .build()
+            TrainRenderer(ctx, EnergyLocomotiveModel.LAYER_LOCATION)
+//            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
+//                .baseModel(
+//                    { root -> EnergyLocomotiveModel(root) },
+//                    EnergyLocomotiveModel.LAYER_LOCATION,
+//                    entityTexture("car/energy_locomotive_base.png")
+//                )
+//                .trimModel(
+//                    { root -> EnergyLocomotiveModel(root) },
+//                    EnergyLocomotiveModel.LAYER_LOCATION,
+//                    entityTexture("car/energy_locomotive_trim.png")
+//                )
+//                .emptyInsert()
+//                .build()
         }
 
         event.registerEntityRenderer(ModEntityTypes.CHEST_CAR.get()) { ctx: EntityRendererProvider.Context ->
-            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
-                .baseModel(
-                    { root -> BaseCarModel(root) },
-                    BaseCarModel.LAYER_LOCATION,
-                    entityTexture("car/base.png")
-                )
-                .trimModel(
-                    { root -> TrimCarModel(root) },
-                    TrimCarModel.LAYER_LOCATION,
-                    entityTexture("car/trim.png")
-                )
-                .insertModel(
-                    { root -> CubeInsertCarModel(root) },
-                    CubeInsertCarModel.LAYER_LOCATION,
-                    entityTexture("car/chest_insert.png")
-                )
-                .build()
+            TrainRenderer(ctx, BaseCarModel.LAYER_LOCATION)
+//            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
+//                .baseModel(
+//                    { root -> BaseCarModel(root) },
+//                    BaseCarModel.LAYER_LOCATION,
+//                    entityTexture("car/base.png")
+//                )
+//                .trimModel(
+//                    { root -> TrimCarModel(root) },
+//                    TrimCarModel.LAYER_LOCATION,
+//                    entityTexture("car/trim.png")
+//                )
+//                .insertModel(
+//                    { root -> CubeInsertCarModel(root) },
+//                    CubeInsertCarModel.LAYER_LOCATION,
+//                    entityTexture("car/chest_insert.png")
+//                )
+//                .build()
         }
 
         event.registerEntityRenderer(ModEntityTypes.BARREL_CAR.get()) { ctx: EntityRendererProvider.Context ->
-            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
-                .baseModel(
-                    { root -> BaseCarModel(root) },
-                    BaseCarModel.LAYER_LOCATION,
-                    entityTexture("car/base.png")
-                )
-                .trimModel(
-                    { root -> TrimCarModel(root) },
-                    TrimCarModel.LAYER_LOCATION,
-                    entityTexture("car/trim.png")
-                )
-                .insertModel(
-                    { root -> CubeInsertCarModel(root) },
-                    CubeInsertCarModel.LAYER_LOCATION,
-                    entityTexture("car/barrel_insert.png")
-                )
-                .build()
+            TrainRenderer(ctx, BaseCarModel.LAYER_LOCATION)
+//            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
+//                .baseModel(
+//                    { root -> BaseCarModel(root) },
+//                    BaseCarModel.LAYER_LOCATION,
+//                    entityTexture("car/base.png")
+//                )
+//                .trimModel(
+//                    { root -> TrimCarModel(root) },
+//                    TrimCarModel.LAYER_LOCATION,
+//                    entityTexture("car/trim.png")
+//                )
+//                .insertModel(
+//                    { root -> CubeInsertCarModel(root) },
+//                    CubeInsertCarModel.LAYER_LOCATION,
+//                    entityTexture("car/barrel_insert.png")
+//                )
+//                .build()
         }
 
         event.registerEntityRenderer(ModEntityTypes.FLUID_CAR.get()) { ctx: EntityRendererProvider.Context ->
-            FluidTankCarRenderer.Builder<FluidTankCarEntity>(ctx)
-                .baseModel(
-                    { root -> BaseCarModel(root) },
-                    BaseCarModel.LAYER_LOCATION,
-                    entityTexture("car/base.png")
-                )
-                .trimModel(
-                    { root -> TrimCarModel(root) },
-                    TrimCarModel.LAYER_LOCATION,
-                    entityTexture("car/trim.png")
-                )
-                .insertModel(
-                    { root -> FluidTankInsertCarModel(root) },
-                    FluidTankInsertCarModel.LAYER_LOCATION,
-                    entityTexture("car/fluid_tank_insert.png")
-                )
-                .build()
+            TrainRenderer(ctx, FluidTankInsertCarModel.LAYER_LOCATION)
+//            FluidTankCarRenderer.Builder<FluidTankCarEntity>(ctx)
+//                .baseModel(
+//                    { root -> BaseCarModel(root) },
+//                    BaseCarModel.LAYER_LOCATION,
+//                    entityTexture("car/base.png")
+//                )
+//                .trimModel(
+//                    { root -> TrimCarModel(root) },
+//                    TrimCarModel.LAYER_LOCATION,
+//                    entityTexture("car/trim.png")
+//                )
+//                .insertModel(
+//                    { root -> FluidTankInsertCarModel(root) },
+//                    FluidTankInsertCarModel.LAYER_LOCATION,
+//                    entityTexture("car/fluid_tank_insert.png")
+//                )
+//                .build()
         }
 
         event.registerEntityRenderer(ModEntityTypes.CHUNK_LOADER_CAR.get()) { ctx: EntityRendererProvider.Context ->
             TrainCarRenderer(
                 ctx,
-                { root -> ChunkLoaderCarModel(root!!) },
+                { root -> ChunkLoaderCarModel(root) },
                 ChunkLoaderCarModel.LAYER_LOCATION,
                 "textures/entity/chunk_loader_car.png"
             )
         }
 
         event.registerEntityRenderer(ModEntityTypes.SEATER_CAR.get()) { ctx: EntityRendererProvider.Context ->
-            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
-                .baseModel(
-                    { root -> BaseCarModel(root) },
-                    BaseCarModel.LAYER_LOCATION,
-                    entityTexture("car/base.png")
-                )
-                .trimModel(
-                    { root -> TrimCarModel(root) },
-                    TrimCarModel.LAYER_LOCATION,
-                    entityTexture("car/trim.png")
-                )
-                .emptyInsert()
-                .build()
+            TrainRenderer(ctx, BaseCarModel.LAYER_LOCATION)
+//            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
+//                .baseModel(
+//                    { root -> BaseCarModel(root) },
+//                    BaseCarModel.LAYER_LOCATION,
+//                    entityTexture("car/base.png")
+//                )
+//                .trimModel(
+//                    { root -> TrimCarModel(root) },
+//                    TrimCarModel.LAYER_LOCATION,
+//                    entityTexture("car/trim.png")
+//                )
+//                .emptyInsert()
+//                .build()
         }
 
         event.registerBlockEntityRenderer(ModTileEntitiesTypes.FLUID_HOPPER.get()) { context ->
             FluidHopperTileEntityRenderer(context)
-        }
-
-        //SUBMARINE
-        event.registerEntityRenderer(ModEntityTypes.SUBMARINE.get()) { ctx ->
-            SubmarineRenderer.Builder(ctx)
-                .baseModel(
-                    { root -> SubmarineBaseModel(root,) },
-                    SubmarineBaseModel.LAYER_LOCATION,
-                    entityTexture("submarine.png")
-                )
-                .emptyInsert()
-                .trimModel(
-                    { root -> SubmarineTrimModel(root) },
-                    SubmarineTrimModel.LAYER_LOCATION,
-                    entityTexture("submarine_trim.png")
-                )
-                .build()
-                .derotate()
         }
     }
 
@@ -386,60 +184,7 @@ object ModClientEventHandler {
 
         event.registerLayerDefinition(EmptyModel.LAYER_LOCATION) { EmptyModel.createBodyLayer() }
 
-        event.registerLayerDefinition(CubeInsertBargeModel.LAYER_LOCATION) { CubeInsertBargeModel.createBodyLayer() }
         event.registerLayerDefinition(CubeInsertCarModel.LAYER_LOCATION) { CubeInsertCarModel.createBodyLayer() }
-
-        // VESSEL
-        event.registerLayerDefinition(BaseBargeModel.CLOSED_LOCATION) { BaseBargeModel.createBodyLayer(true, true) }
-        event.registerLayerDefinition(BaseBargeModel.OPEN_FRONT_LOCATION) {
-            BaseBargeModel.createBodyLayer(
-                false,
-                true
-            )
-        }
-        event.registerLayerDefinition(BaseBargeModel.OPEN_SIDES_LOCATION) {
-            BaseBargeModel.createBodyLayer(
-                true,
-                false
-            )
-        }
-
-        event.registerLayerDefinition(TrimBargeModel.CLOSED_LOCATION) { TrimBargeModel.createBodyLayer(true, true) }
-        event.registerLayerDefinition(TrimBargeModel.OPEN_FRONT_LOCATION) {
-            TrimBargeModel.createBodyLayer(
-                false,
-                true
-            )
-        }
-        event.registerLayerDefinition(TrimBargeModel.OPEN_SIDES_LOCATION) {
-            TrimBargeModel.createBodyLayer(
-                true,
-                false
-            )
-        }
-
-        event.registerLayerDefinition(RingsInsertBargeModel.LAYER_LOCATION) { RingsInsertBargeModel.createBodyLayer() }
-        event.registerLayerDefinition(SeaterInsertBargeModel.LAYER_LOCATION) { SeaterInsertBargeModel.createBodyLayer() }
-        event.registerLayerDefinition(FluidTankInsertBargeModel.LAYER_LOCATION) { FluidTankInsertBargeModel.createBodyLayer() }
-
-        event.registerLayerDefinition(FishingInsertBargeModel.STASHED_LOCATION) {
-            FishingInsertBargeModel.createBodyLayer(
-                FishingBargeEntity.Status.STASHED
-            )
-        }
-        event.registerLayerDefinition(FishingInsertBargeModel.TRANSITION_LOCATION) {
-            FishingInsertBargeModel.createBodyLayer(
-                FishingBargeEntity.Status.TRANSITION
-            )
-        }
-        event.registerLayerDefinition(FishingInsertBargeModel.DEPLOYED_LOCATION) {
-            FishingInsertBargeModel.createBodyLayer(
-                FishingBargeEntity.Status.DEPLOYED
-            )
-        }
-
-        event.registerLayerDefinition(EnergyTugModel.LAYER_LOCATION) { EnergyTugModel.createBodyLayer() }
-        event.registerLayerDefinition(SteamTugModel.LAYER_LOCATION) { SteamTugModel.createBodyLayer() }
 
         // CAR
         event.registerLayerDefinition(TrimCarModel.LAYER_LOCATION) { TrimCarModel.createBodyLayer() }
@@ -451,10 +196,6 @@ object ModClientEventHandler {
 
         // LEGACY
         event.registerLayerDefinition(ChunkLoaderCarModel.LAYER_LOCATION) { ChunkLoaderCarModel.createBodyLayer() }
-
-        //SUBMARINE
-        event.registerLayerDefinition(SubmarineTrimModel.LAYER_LOCATION) { SubmarineTrimModel.createBodyLayer() }
-        event.registerLayerDefinition(SubmarineBaseModel.LAYER_LOCATION) { SubmarineBaseModel.createBodyLayer() }
     }
 
     /**

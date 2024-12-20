@@ -2,7 +2,6 @@ package com.github.bonndan.humblevehicles.rendering
 
 import com.github.bonndan.humblevehicles.HumVeeMod
 import com.github.bonndan.humblevehicles.ShippingConfig
-import com.github.bonndan.humblevehicles.entity.custom.VehicleControl
 import com.github.bonndan.humblevehicles.network.client.VehicleTrackerPacketHandler
 import com.github.bonndan.humblevehicles.setup.ModItems
 import net.minecraft.client.Minecraft
@@ -13,10 +12,8 @@ import net.minecraft.world.item.ItemStack
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
-import net.neoforged.neoforge.client.event.InputEvent
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent
 import net.neoforged.neoforge.event.level.LevelEvent
-import org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL
 
 /**
  * Forge-wide event bus
@@ -30,11 +27,6 @@ object ForgeClientEventHandler {
     @SubscribeEvent
     fun onWorldUnload(event: LevelEvent.Unload?) {
         VehicleTrackerPacketHandler.flush()
-    }
-
-    @SubscribeEvent
-    fun onKeyInputEvent(event: InputEvent.Key?) {
-        VehicleControl.handleKeyForVehicleControlDownForce(event, GLFW_KEY_LEFT_CONTROL, Minecraft.getInstance().player)
     }
 
     @SubscribeEvent

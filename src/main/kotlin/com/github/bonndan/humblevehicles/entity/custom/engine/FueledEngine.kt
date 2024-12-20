@@ -1,10 +1,9 @@
 package com.github.bonndan.humblevehicles.entity.custom.engine
 
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.block.entity.FurnaceBlockEntity
+import net.minecraft.world.level.block.entity.FuelValues
 
-
-class FueledEngine(saveStateCallback: SaveStateCallback) : Engine(saveStateCallback) {
+class FueledEngine(saveStateCallback: SaveStateCallback, val fuelValues: FuelValues) : Engine(saveStateCallback) {
 
     override fun calculateBurnTimeOfNextItem(stack: ItemStack): Int {
 
@@ -12,7 +11,7 @@ class FueledEngine(saveStateCallback: SaveStateCallback) : Engine(saveStateCallb
             return 0
         }
 
-        return stack.item.getBurnTime(stack, null)
+        return stack.item.getBurnTime(stack, null, fuelValues)
     }
 
     override fun getEmissions(): Emissions {
@@ -20,6 +19,7 @@ class FueledEngine(saveStateCallback: SaveStateCallback) : Engine(saveStateCallb
     }
 
     override fun isItemValid(slot: Int, stack: ItemStack): Boolean {
-        return FurnaceBlockEntity.isFuel(stack)
+
+        return fuelValues.isFuel(stack)
     }
 }

@@ -26,12 +26,7 @@ class ModLootTableProvider(output: PackOutput, lookupProvider: CompletableFuture
     class ModBlockLootTables internal constructor(provider: HolderLookup.Provider) :
         BlockLootSubProvider(setOf(), FeatureFlags.REGISTRY.allFlags(), provider) {
         override fun generate() {
-            dropSelf(ModBlocks.TUG_DOCK.get())
-            dropSelf(ModBlocks.BARGE_DOCK.get())
-            dropSelf(ModBlocks.GUIDE_RAIL_CORNER.get())
-            dropSelf(ModBlocks.GUIDE_RAIL_TUG.get())
             dropSelf(ModBlocks.FLUID_HOPPER.get())
-            dropSelf(ModBlocks.VESSEL_DETECTOR.get())
             dropSelf(ModBlocks.SWITCH_RAIL.get())
             dropSelf(ModBlocks.AUTOMATIC_SWITCH_RAIL.get())
             dropSelf(ModBlocks.TEE_JUNCTION_RAIL.get())

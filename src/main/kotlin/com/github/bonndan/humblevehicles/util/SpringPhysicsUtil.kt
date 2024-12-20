@@ -23,7 +23,6 @@ SOFTWARE.
  */
 package com.github.bonndan.humblevehicles.util
 
-import com.github.bonndan.humblevehicles.entity.custom.vessel.tug.AbstractTugEntity
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 import java.util.*
@@ -55,7 +54,7 @@ object SpringPhysicsUtil {
         }
 
         val distSq = dominant!!.distanceToSqr(dominated)
-        val maxDstSq = dominant.getTrain().tug.map { tug: T -> if ((tug as AbstractTugEntity).isDocked()) 1.0 else 1.2 }
+        val maxDstSq = dominant.getTrain().tug.map { tug: T ->  1.2 }
             .orElse(1.2)
 
         val frontAnchor = dominant.position()
@@ -69,7 +68,7 @@ object SpringPhysicsUtil {
 
         val targetYaw = computeTargetYaw(dominated.yRot, frontAnchor, backAnchor)
         dominated.yRot = ((alpha * dominated.yRot + targetYaw * (1f - alpha)) % 360).toFloat()
-        val k = if (dominant is AbstractTugEntity) 0.3 else 0.4
+        val k =  0.4
         val l0 = maxDstSq
         dominated.setDeltaMovement(k * (dist - l0) * dx, k * (dist - l0) * dy, k * (dist - l0) * dz)
     }

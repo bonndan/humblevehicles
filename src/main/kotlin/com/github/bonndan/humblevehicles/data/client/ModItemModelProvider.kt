@@ -11,27 +11,11 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper
 
 class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileHelper) :
     ItemModelProvider(output, HumVeeMod.MOD_ID, existingFileHelper) {
+
     override fun registerModels() {
 
         val itemGenerated: ModelFile = getExistingFile(mcLoc("item/generated"))
 
-        withExistingParent("tug_dock", modLoc("block/tug_dock"))
-        withExistingParent("barge_dock", modLoc("block/barge_dock"))
-        withExistingParent("guide_rail_corner", modLoc("block/guide_rail_corner"))
-        withExistingParent("guide_rail_tug", modLoc("block/guide_rail_tug"))
-        withExistingParent("fluid_hopper", modLoc("block/fluid_hopper"))
-        withExistingParent("vessel_detector", modLoc("block/vessel_detector"))
-
-        builder(itemGenerated, "barge")
-        builder(itemGenerated, "barrel_barge")
-        builder(itemGenerated, "vacuum_barge")
-        builder(itemGenerated, "chunk_loader_barge")
-        builder(itemGenerated, "fishing_barge")
-        builder(itemGenerated, "fluid_barge")
-        builder(itemGenerated, "seater_barge")
-        builder(itemGenerated, "tug")
-        builder(itemGenerated, "energy_tug")
-        builder(itemGenerated, "submarine")
         builder(itemGenerated, "steam_locomotive")
         builder(itemGenerated, "energy_locomotive")
         builder(itemGenerated, "chest_car")
@@ -39,11 +23,6 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         builder(itemGenerated, "chunk_loader_car")
         builder(itemGenerated, "fluid_car")
         builder(itemGenerated, "seater_car")
-        builder(itemGenerated, "book")
-        builder(itemGenerated, "tug_route")
-            .override()
-            .model(builder(itemGenerated, "tug_route_empty"))
-            .predicate(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "routestate"), 1f).end()
 
         builder(itemGenerated, "spring")
             .override()

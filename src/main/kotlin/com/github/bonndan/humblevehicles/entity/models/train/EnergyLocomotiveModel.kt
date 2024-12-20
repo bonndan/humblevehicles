@@ -1,9 +1,7 @@
 package com.github.bonndan.humblevehicles.entity.models.train
 
-import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.VertexConsumer
 import com.github.bonndan.humblevehicles.HumVeeMod
-import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
+import com.github.bonndan.humblevehicles.entity.models.VesselRenderState
 import net.minecraft.client.model.EntityModel
 import net.minecraft.client.model.geom.ModelLayerLocation
 import net.minecraft.client.model.geom.ModelPart
@@ -14,49 +12,30 @@ import net.minecraft.client.model.geom.builders.LayerDefinition
 import net.minecraft.client.model.geom.builders.MeshDefinition
 import net.minecraft.resources.ResourceLocation
 
-// Made with Blockbench 4.1.1
-// Exported for Minecraft version 1.17 with Mojang mappings
-// Paste this class into your mod and generate all required imports
+class EnergyLocomotiveModel(root: ModelPart) : EntityModel<VesselRenderState>(root) {
+
+//    init {
+//        this.bone = root.getChild("bone")
+//        this.bone2 = root.getChild("bone2")
+//        this.bone3 = root.getChild("bone3")
+//        this.bone4 = root.getChild("bone4")
+//        this.bb_main = root.getChild("bb_main")
+//    }
 
 
-class EnergyLocomotiveModel<T : AbstractTrainCarEntity>(root: ModelPart) : EntityModel<T>() {
-    private val bone: ModelPart
-    private val bone2: ModelPart
-    private val bone3: ModelPart
-    private val bone4: ModelPart
-    private val bb_main: ModelPart
-
-    init {
-        this.bone = root.getChild("bone")
-        this.bone2 = root.getChild("bone2")
-        this.bone3 = root.getChild("bone3")
-        this.bone4 = root.getChild("bone4")
-        this.bb_main = root.getChild("bb_main")
-    }
-
-    override fun setupAnim(
-        entity: T?,
-        limbSwing: Float,
-        limbSwingAmount: Float,
-        ageInTicks: Float,
-        netHeadYaw: Float,
-        headPitch: Float
-    ) {
-    }
-
-    override fun renderToBuffer(
-        poseStack: PoseStack?,
-        buffer: VertexConsumer?,
-        packedLight: Int,
-        packedOverlay: Int,
-        pColor: Int
-    ) {
-        bone.render(poseStack, buffer, packedLight, packedOverlay, pColor)
-        bone2.render(poseStack, buffer, packedLight, packedOverlay, pColor)
-        bone3.render(poseStack, buffer, packedLight, packedOverlay, pColor)
-        bone4.render(poseStack, buffer, packedLight, packedOverlay, pColor)
-        bb_main.render(poseStack, buffer, packedLight, packedOverlay, pColor)
-    }
+//    override fun renderToBuffer(
+//        poseStack: PoseStack?,
+//        buffer: VertexConsumer?,
+//        packedLight: Int,
+//        packedOverlay: Int,
+//        pColor: Int
+//    ) {
+//        bone.render(poseStack, buffer, packedLight, packedOverlay, pColor)
+//        bone2.render(poseStack, buffer, packedLight, packedOverlay, pColor)
+//        bone3.render(poseStack, buffer, packedLight, packedOverlay, pColor)
+//        bone4.render(poseStack, buffer, packedLight, packedOverlay, pColor)
+//        bb_main.render(poseStack, buffer, packedLight, packedOverlay, pColor)
+//    }
 
     companion object {
         // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor

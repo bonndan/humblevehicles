@@ -3,7 +3,9 @@ package com.github.bonndan.humblevehicles.block.rail.blockentity
 import com.github.bonndan.humblevehicles.block.dock.AbstractTailDockTileEntity
 import com.github.bonndan.humblevehicles.block.rail.AbstractDockingRail
 import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
+import com.github.bonndan.humblevehicles.setup.ModBlocks
 import com.github.bonndan.humblevehicles.setup.ModTileEntitiesTypes
+import com.github.bonndan.humblevehicles.setup.Registration
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.level.block.state.BlockState

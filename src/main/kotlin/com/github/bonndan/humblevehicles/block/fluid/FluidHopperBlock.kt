@@ -1,11 +1,12 @@
 package com.github.bonndan.humblevehicles.block.fluid
 
 import com.github.bonndan.humblevehicles.setup.ModTileEntitiesTypes
+import com.github.bonndan.humblevehicles.setup.Registration
 import com.github.bonndan.humblevehicles.util.TickerUtil
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.ItemInteractionResult
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.BlockPlaceContext
@@ -17,7 +18,6 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
-import net.minecraft.world.level.block.state.properties.DirectionProperty
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.shapes.BooleanOp
 import net.minecraft.world.phys.shapes.CollisionContext
@@ -154,16 +154,14 @@ class FluidHopperBlock(p_i48440_1_: Properties) : Block(p_i48440_1_),
         player: Player,
         hand: InteractionHand,
         pHitResult: BlockHitResult
-    ): ItemInteractionResult {
+    ): InteractionResult {
         if (!world.isClientSide) {
             val entity = world.getBlockEntity(pos)
-            if (entity is FluidHopperTileEntity) {
-                if (entity.use(player, hand)) {
-                    return ItemInteractionResult.CONSUME
-                }
+            if (entity is FluidHopperTileEntity && entity.use(player, hand)) {
+                return InteractionResult.CONSUME
             }
         }
-        return ItemInteractionResult.SUCCESS
+        return InteractionResult.SUCCESS
     }
 
     override fun newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity? {
@@ -188,8 +186,9 @@ class FluidHopperBlock(p_i48440_1_: Properties) : Block(p_i48440_1_),
         }
     }
 
+
     companion object {
         
-        val FACING: DirectionProperty = HorizontalDirectionalBlock.FACING
+        val FACING = HorizontalDirectionalBlock.FACING
     }
 }

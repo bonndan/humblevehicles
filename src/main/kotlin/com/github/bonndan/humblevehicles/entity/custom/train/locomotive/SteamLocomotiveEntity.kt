@@ -22,7 +22,7 @@ import thedarkcolour.kotlinforforge.neoforge.forge.vectorutil.v3d.toVec3
 class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContainerWrapper, WorldlyContainer {
 
     init {
-        engine = FueledEngine(saveStateCallback)
+        engine = FueledEngine(saveStateCallback, level().fuelValues())
     }
 
     constructor(type: EntityType<*>, level: Level) : super(type, level)
@@ -33,7 +33,7 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
 
     override fun onUndock() {
         super.onUndock()
-        this.playSound(ModSounds.STEAM_TUG_WHISTLE.get(), 1f, (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f)
+        this.playSound(ModSounds.STEAM_WHISTLE.get(), 1f, (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f)
     }
 
     override fun createContainerProvider(): MenuProvider {

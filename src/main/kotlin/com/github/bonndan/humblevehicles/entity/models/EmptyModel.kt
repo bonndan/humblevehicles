@@ -1,7 +1,5 @@
-package com.github.bonndan.humblevehicles.entity.models.vessel
+package com.github.bonndan.humblevehicles.entity.models
 
-import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.VertexConsumer
 import com.github.bonndan.humblevehicles.HumVeeMod
 import com.github.bonndan.humblevehicles.entity.Colorable
 import net.minecraft.client.model.EntityModel
@@ -14,36 +12,13 @@ import net.minecraft.client.model.geom.builders.MeshDefinition
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 
-class EmptyModel<T>(root: ModelPart) : EntityModel<T>() where T : Entity, T : Colorable {
-    private val bb_main: ModelPart
+class EmptyModel<T>(root: ModelPart) : EntityModel<VesselRenderState>( root.getChild("bb_main")) where T : Entity, T : Colorable {
 
-    init {
-        this.bb_main = root.getChild("bb_main")
-    }
-
-    override fun setupAnim(
-        entity: T?,
-        limbSwing: Float,
-        limbSwingAmount: Float,
-        ageInTicks: Float,
-        netHeadYaw: Float,
-        headPitch: Float
-    ) {
-    }
-
-    override fun renderToBuffer(
-        pPoseStack: PoseStack?,
-        pBuffer: VertexConsumer?,
-        pPackedLight: Int,
-        pPackedOverlay: Int,
-        pColor: Int
-    ) {
-    }
 
     companion object {
         // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
         val LAYER_LOCATION: ModelLayerLocation =
-            ModelLayerLocation(ResourceLocation.tryBuild(HumVeeMod.MOD_ID, "base_barge_model_closed"), "main")
+            ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(HumVeeMod.Companion.MOD_ID, "base_barge_model_closed"), "main")
 
         fun createBodyLayer(): LayerDefinition {
             val meshdefinition = MeshDefinition()

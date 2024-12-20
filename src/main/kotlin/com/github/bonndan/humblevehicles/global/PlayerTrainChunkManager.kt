@@ -259,20 +259,22 @@ class PlayerTrainChunkManager : SavedData {
                 val registered: Int =
                     TrainChunkManagerManager.Companion.get(manager.level.server).countVehicles(uuid) + 1
                 if (registered > max) {
-                    player.sendSystemMessage(
+                    player.displayClientMessage(
                         Component.translatable(
                             "global.humblevehicles.locomotive.register_success",
                             max
-                        )
+                        ),
+                        true
                     )
                     return false
                 } else {
-                    player.sendSystemMessage(
+                    player.displayClientMessage(
                         Component.translatable(
                             "global.humblevehicles.locomotive.register_fail",
                             registered,
                             max
-                        )
+                        ),
+                        true
                     )
                     manager.enrolled.add(entity)
                     manager.changed = true

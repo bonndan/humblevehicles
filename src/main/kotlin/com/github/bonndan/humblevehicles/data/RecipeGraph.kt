@@ -6,6 +6,7 @@ import net.minecraft.advancements.Criterion
 import net.minecraft.advancements.critereon.InventoryChangeTrigger
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger
 import net.minecraft.data.recipes.RecipeOutput
+import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.crafting.Recipe
 import net.minecraft.world.item.crafting.ShapedRecipe
@@ -16,12 +17,11 @@ import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 import kotlin.io.path.Path
 
-class RecipeGraph(private val modRecipeProvider: ModRecipeProvider) : RecipeOutput {
+class RecipeGraph() : RecipeOutput {
 
     private val recipes: MutableMap<ResourceLocation, Node> = mutableMapOf()
 
     fun build() {
-        modRecipeProvider.build(this)
 
         val recipeMarkdown = RecipeMarkdown()
         recipeMarkdown.write(recipes.values)
@@ -37,7 +37,7 @@ class RecipeGraph(private val modRecipeProvider: ModRecipeProvider) : RecipeOutp
     }
 
     override fun accept(
-        id: ResourceLocation,
+        key: ResourceKey<Recipe<*>?>,
         recipe: Recipe<*>,
         advancement: AdvancementHolder?,
         vararg conditions: ICondition?
@@ -46,7 +46,7 @@ class RecipeGraph(private val modRecipeProvider: ModRecipeProvider) : RecipeOutp
             is ShapedRecipe -> recipe.pattern
             else -> return
         }
-        recipes[id] = Node(id, recipe, asRequirements(advancement?.value?.criteria), pattern)
+        recipes[key.location()] = Node(key.location(), recipe, asRequirements(advancement?.value?.criteria), pattern)
     }
 
     private fun asRequirements(criteria: Map<String, Criterion<*>>?): Map<String, ResourceLocation> {
@@ -70,7 +70,7 @@ class RecipeGraph(private val modRecipeProvider: ModRecipeProvider) : RecipeOutp
 
         if (k == "has_the_recipe") {
             if (v.triggerInstance is RecipeUnlockedTrigger.TriggerInstance) {
-                return (v.triggerInstance as RecipeUnlockedTrigger.TriggerInstance).recipe
+                return (v.triggerInstance as RecipeUnlockedTrigger.TriggerInstance).recipe.location()
             }
         }
 
@@ -79,6 +79,9 @@ class RecipeGraph(private val modRecipeProvider: ModRecipeProvider) : RecipeOutp
 
     override fun advancement(): Advancement.Builder {
         return Advancement.Builder.recipeAdvancement()
+    }
+
+    override fun includeRootAdvancement() {
     }
 
     data class Node(

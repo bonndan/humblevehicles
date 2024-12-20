@@ -3,6 +3,8 @@ package com.github.bonndan.humblevehicles.entity.container
 import com.github.bonndan.humblevehicles.HumVeeMod
 import com.github.bonndan.humblevehicles.entity.custom.HeadVehicle
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.RenderType.guiTextured
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
@@ -22,10 +24,10 @@ class SteamHeadVehicleScreen<T>(menu: SteamHeadVehicleContainer<T>, inventory: I
         val i = this.guiLeft
         val j = this.guiTop
 
-        graphics.blit(GUI, i, j, 0, 0, this.xSize, this.ySize)
+        graphics.blit(RenderType::guiTextured, GUI, i, j, 0f, 0f, this.xSize, this.ySize, 256, 256)
         if (menu.isLit) {
             val k = menu.getBurnProgress()
-            graphics.blit(GUI, i + 43, j + 23 + 12 - k, 176, 12 - k, 14, k + 1)
+            graphics.blit(RenderType::guiTextured, GUI, i + 43, j + 23 + 12 - k, 176f, 12f - k, 14, k + 1, 256,256)
         }
     }
 

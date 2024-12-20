@@ -20,6 +20,4 @@ interface HeadVehicle {
     fun enroll(uuid: UUID)
 
     fun owner(): String?
-
-    fun getControl(): VehicleControl
 }

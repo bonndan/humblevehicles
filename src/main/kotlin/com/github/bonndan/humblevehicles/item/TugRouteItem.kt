@@ -1,31 +1,26 @@
 package com.github.bonndan.humblevehicles.item
 
-import com.github.bonndan.humblevehicles.item.container.RouteContainer
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
-import net.minecraft.world.MenuProvider
-import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.inventory.AbstractContainerMenu
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import kotlin.math.floor
 
 class TugRouteItem(properties: Properties) : RouteItem(properties) {
 
-    override fun use(world: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
+    override fun use(world: Level, player: Player, hand: InteractionHand): InteractionResult{
 
         val itemstack = player.getItemInHand(hand)
 
         if (player.level().isClientSide) {
-            return InteractionResultHolder.pass(itemstack)
+            return InteractionResult.PASS
         }
 
         if (player.isShiftKeyDown) {
             player.openMenu(createContainerProvider(hand), getDataAccessor(player, hand)::write)
-            return InteractionResultHolder.pass(itemstack)
+            return InteractionResult.PASS
         }
 
         val route = getRoute(itemstack)
@@ -45,6 +40,6 @@ class TugRouteItem(properties: Properties) : RouteItem(properties) {
 
         route.save(itemstack)
         updateOnClient(route, hand, player as ServerPlayer)
-        return InteractionResultHolder.pass(itemstack)
+        return InteractionResult.PASS
     }
 }

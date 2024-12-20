@@ -2,11 +2,13 @@ package com.github.bonndan.humblevehicles.block.rail
 
 import com.mojang.serialization.MapCodec
 import com.github.bonndan.humblevehicles.block.dock.DockingBlockStates
+import com.github.bonndan.humblevehicles.setup.ModBlocks
 import com.github.bonndan.humblevehicles.setup.ModTileEntitiesTypes
+import com.github.bonndan.humblevehicles.setup.Registration
 import com.github.bonndan.humblevehicles.util.InteractionUtil
 import net.minecraft.core.BlockPos
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.ItemInteractionResult
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
@@ -27,16 +29,16 @@ class TrainCarDockingRail(pProperties: Properties) : AbstractDockingRail(pProper
         pPlayer: Player,
         pHand: InteractionHand,
         pHitResult: BlockHitResult
-    ): ItemInteractionResult {
+    ): InteractionResult {
         if (InteractionUtil.doConfigure(pPlayer, pHand)) {
             pLevel.setBlockAndUpdate(
                 pPos,
                 pState.setValue(DockingBlockStates.INVERTED, !pState.getValue(DockingBlockStates.INVERTED))
             )
             fixHopperPos(pState, pLevel, pPos)
-            return ItemInteractionResult.SUCCESS
+            return InteractionResult.SUCCESS
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+        return InteractionResult.PASS //.PASS_TO_DEFAULT_BLOCK_INTERACTION
     }
 
     override fun createBlockStateDefinition(pBuilder: StateDefinition.Builder<Block, BlockState>) {

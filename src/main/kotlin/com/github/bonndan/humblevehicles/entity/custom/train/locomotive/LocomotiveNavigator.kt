@@ -1,17 +1,17 @@
-package com.github.bonndan.humblevehicles.entity.navigation
+package com.github.bonndan.humblevehicles.entity.custom.train.locomotive
 
-import com.mojang.datafixers.util.Pair
 import com.github.bonndan.humblevehicles.block.rail.MultiShapeRail
-import com.github.bonndan.humblevehicles.entity.custom.train.locomotive.AbstractLocomotiveEntity
 import com.github.bonndan.humblevehicles.util.RailHelper
 import com.github.bonndan.humblevehicles.util.Route
+import com.mojang.datafixers.util.Pair
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.IntArrayTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.Tag
-import java.util.*
+import java.util.List
+import java.util.Optional
 import java.util.stream.Collectors
 
 class LocomotiveNavigator(private val locomotive: AbstractLocomotiveEntity) {
@@ -49,7 +49,7 @@ class LocomotiveNavigator(private val locomotive: AbstractLocomotiveEntity) {
     }
 
     fun serverTick() {
-        RailHelper.getRail(locomotive.onPos.above(), locomotive.level()).ifPresent { railPos: BlockPos ->
+        RailHelper.Companion.getRail(locomotive.onPos.above(), locomotive.level()).ifPresent { railPos: BlockPos ->
             if (routeNodes.contains(railPos)) {
                 visitedNodes.add(railPos)
             }
@@ -86,7 +86,7 @@ class LocomotiveNavigator(private val locomotive: AbstractLocomotiveEntity) {
                                 val decision = railHelper.pickCheaperDir(
                                     choices,
                                     nextRail,
-                                    RailHelper.samePositionHeuristicSet(potential),
+                                    RailHelper.Companion.samePositionHeuristicSet(potential),
                                     locomotive.level()
                                 )
                                 decisionCache[nextRail] = decision
@@ -150,7 +150,7 @@ class LocomotiveNavigator(private val locomotive: AbstractLocomotiveEntity) {
         private fun convertSetToTag(set: Set<BlockPos>): ListTag {
             val tag = ListTag()
             for (pos in set) {
-                tag.add(IntArrayTag(java.util.List.of(pos.x, pos.y, pos.z)))
+                tag.add(IntArrayTag(List.of(pos.x, pos.y, pos.z)))
             }
             return tag
         }

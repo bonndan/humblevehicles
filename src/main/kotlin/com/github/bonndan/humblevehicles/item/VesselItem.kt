@@ -2,7 +2,7 @@ package com.github.bonndan.humblevehicles.item
 
 import net.minecraft.stats.Stats
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntitySelector
 import net.minecraft.world.entity.player.Player
@@ -19,12 +19,12 @@ class VesselItem(props: Properties, private val addEntity: AddEntityFunction) : 
         fun apply(level: Level, x: Double, y: Double, z: Double): Entity
     }
 
-    override fun use(world: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
+    override fun use(world: Level, player: Player, hand: InteractionHand): InteractionResult {
 
         val itemstack = player.getItemInHand(hand)
         val hitResult = getPlayerPOVHitResult(world, player, ClipContext.Fluid.ANY)
         if (hitResult.type == HitResult.Type.MISS) {
-            return InteractionResultHolder.pass(itemstack)
+            return InteractionResult.PASS
         }
 
         val vector3d = player.getViewVector(1.0f)
@@ -37,7 +37,7 @@ class VesselItem(props: Properties, private val addEntity: AddEntityFunction) : 
             for (entity in entities) {
                 val axisalignedBox = entity.boundingBox.inflate(entity.pickRadius.toDouble())
                 if (axisalignedBox.contains(vector3d1)) {
-                    return InteractionResultHolder.pass(itemstack)
+                    return InteractionResult.PASS
                 }
             }
         }
@@ -47,7 +47,7 @@ class VesselItem(props: Properties, private val addEntity: AddEntityFunction) : 
             entity.yRot = player.yRot
 
             return if (!world.noCollision(entity, entity.boundingBox.inflate(-0.1))) {
-                InteractionResultHolder.fail(itemstack)
+                InteractionResult.FAIL
             } else {
                 if (!world.isClientSide) {
                     world.addFreshEntity(entity)
@@ -57,11 +57,11 @@ class VesselItem(props: Properties, private val addEntity: AddEntityFunction) : 
                 }
 
                 player.awardStat(Stats.ITEM_USED[this])
-                InteractionResultHolder.sidedSuccess(itemstack, world.isClientSide())
+                InteractionResult.SUCCESS
             }
         }
 
-        return InteractionResultHolder.pass(itemstack)
+        return InteractionResult.PASS
     }
 
     private fun getEntity(world: Level, stack: ItemStack, hitResult: BlockHitResult): Entity {

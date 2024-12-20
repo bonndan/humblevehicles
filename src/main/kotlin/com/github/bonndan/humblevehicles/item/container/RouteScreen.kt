@@ -3,6 +3,7 @@ package com.github.bonndan.humblevehicles.item.container
 import com.mojang.math.Divisor
 import com.github.bonndan.humblevehicles.HumVeeMod
 import com.github.bonndan.humblevehicles.util.Route
+import com.mojang.blaze3d.systems.RenderSystem
 import it.unimi.dsi.fastutil.ints.IntIterator
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.Font
@@ -11,6 +12,9 @@ import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.Button.OnPress
 import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.renderer.CoreShaders
+import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.RenderType.guiTextured
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
@@ -144,40 +148,23 @@ class RouteScreen(
      * This assumes the GUI texture is 12x12, with 4x4 chunks representing each of the chunks above.
      */
     override fun renderBg(graphics: GuiGraphics, partialTicks: Float, x: Int, y: Int) {
-//        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-//        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-//        RenderSystem.setShaderTexture(0, GUI);
+        RenderSystem.setShader(CoreShaders.POSITION_TEX)
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, GUI);
         val left = this.guiLeft
         val top = this.guiTop
 
-        // topleft
-        graphics.blit(
-            GUI,
-            left, top,
-            0, 0,
-            4, 4
-        )
-        // topright
-        graphics.blit(
-            GUI,
-            getRight() - 4, top,
-            8, 0,
-            4, 4
-        )
+        // top left
+        graphics.blit(RenderType::guiTextured, GUI, left, top, 0f, 0f, 4, 4, 256, 256)
+
+        // top right
+        graphics.blit(RenderType::guiTextured, GUI, getRight() - 4, top, 8f, 0f, 4, 4, 256, 256)
+
         // botleft
-        graphics.blit(
-            GUI,
-            left, getBottom() - 4,
-            0, 8,
-            4, 4
-        )
+        graphics.blit(RenderType::guiTextured, GUI, left, getBottom() - 4, 0f, 8f, 4, 4, 256, 256)
+
         // botright
-        graphics.blit(
-            GUI,
-            getRight() - 4, getBottom() - 4,
-            8, 8,
-            4, 4
-        )
+        graphics.blit(RenderType::guiTextured, GUI, getRight() - 4, getBottom() - 4, 8f, 8f, 4, 4, 256, 256)
 
         // top
         blitRepeating(GUI, left + 4, top, (xSize - 8), 4, 4, 0, 4, 4, graphics = graphics)
@@ -224,6 +211,7 @@ class RouteScreen(
                 i1 = intiterator1.nextInt()
                 val j1 = (p_282324_ - i1) / 2
                 graphics.blit(
+                    RenderType::guiTextured,
                     resourceLocation, i, l,
                     (p_282691_ + k).toFloat(),
                     (p_281912_ + j1).toFloat(), j, i1, textureWidth, textureHeight
@@ -244,12 +232,11 @@ class RouteScreen(
         graphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false)
     }
 
-    fun getFont(): Font {
+    override fun getFont(): Font {
         return font
     }
 
     companion object {
-        val GUI: ResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/container/tug_route.png")
+        val GUI = ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "textures/container/tug_route.png")
     }
 }

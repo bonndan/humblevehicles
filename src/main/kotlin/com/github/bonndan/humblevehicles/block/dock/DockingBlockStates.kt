@@ -8,14 +8,14 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.entity.HopperBlockEntity
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import net.minecraft.world.level.block.state.properties.BooleanProperty
-import net.minecraft.world.level.block.state.properties.DirectionProperty
+import net.minecraft.world.level.block.state.properties.EnumProperty
 import java.util.*
 
 object DockingBlockStates {
 
     val INVERTED: BooleanProperty = BlockStateProperties.INVERTED
 
-    val FACING: DirectionProperty = HorizontalDirectionalBlock.FACING
+    val FACING: EnumProperty<Direction>  = HorizontalDirectionalBlock.FACING
 
     val POWERED: BooleanProperty = BlockStateProperties.POWERED
 

@@ -1,7 +1,6 @@
 package com.github.bonndan.humblevehicles.entity.custom.train.wagon
 
 import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
-import com.github.bonndan.humblevehicles.entity.custom.vessel.tug.AbstractTugEntity
 import com.github.bonndan.humblevehicles.setup.ModEntityTypes
 import com.github.bonndan.humblevehicles.setup.ModItems
 import com.github.bonndan.humblevehicles.util.FluidDisplayUtil
@@ -102,7 +101,7 @@ class FluidTankCarEntity : AbstractWagonEntity {
                 tank.fluid = FluidStack(clientCurrFluid, clientCurrAmount)
             } else if (FLUID_TYPE == key) {
                 val fluidName = ResourceLocation.parse(entityData.get(FLUID_TYPE))
-                clientCurrFluid = BuiltInRegistries.FLUID[fluidName]
+                clientCurrFluid = BuiltInRegistries.FLUID[fluidName].get().value()
                 tank.fluid = FluidStack(clientCurrFluid, clientCurrAmount)
             }
         }

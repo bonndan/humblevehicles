@@ -1,12 +1,13 @@
 package com.github.bonndan.humblevehicles.entity.container
 
-import com.mojang.blaze3d.systems.RenderSystem
 import com.github.bonndan.humblevehicles.HumVeeMod
 import com.github.bonndan.humblevehicles.entity.custom.HeadVehicle
+import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.Tooltip
-import net.minecraft.client.renderer.GameRenderer
+import net.minecraft.client.renderer.CoreShaders
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
@@ -89,12 +90,12 @@ abstract class AbstractHeadVehicleScreen<U, T : AbstractHeadVehicleContainer<U>>
 
     override fun renderBg(graphics: GuiGraphics, pPartialTick: Float, pMouseX: Int, pMouseY: Int) {
 
-        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.setShader(CoreShaders.POSITION_TEX)
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F)
         RenderSystem.setShaderTexture(0, REGISTRATION)
         val i = this.guiLeft + 175
         val j = this.guiTop
-        graphics.blit(REGISTRATION, i, j, 0, 0, this.xSize, this.ySize)
+        graphics.blit(RenderType::guiTextured, REGISTRATION, i, j, 0f, 0f, this.xSize, this.ySize, 256, 256)
         off.active = menu.isOn
         on.active = !menu.isOn
         register.active = menu.owner == ""
