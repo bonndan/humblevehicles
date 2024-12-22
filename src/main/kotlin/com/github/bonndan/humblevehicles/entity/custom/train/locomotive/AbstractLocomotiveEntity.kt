@@ -54,7 +54,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     ItemHandlerVanillaContainerWrapper, HeadVehicle, Stalling, WorldlyContainer {
 
     protected val enrollmentHandler: ChunkManagerEnrollmentHandler
-    protected val saveStateCallback = object: SaveStateCallback {
+    protected val saveStateCallback = object : SaveStateCallback {
         override fun saveState(engineState: Boolean, remainingBurnTime: Int) {
             entityData[ENGINE_IS_ON] = engineState
             entityData[REMAINING_BURN_TIME] = remainingBurnTime
@@ -183,14 +183,18 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
         super.onSyncedDataUpdated(key)
 
-        if (level().isClientSide && INDEPENDENT_MOTION == key) {
+        if (!level().isClientSide) return
+
+        if (INDEPENDENT_MOTION == key) {
             independentMotion = entityData[INDEPENDENT_MOTION]
-            if (ENGINE_IS_ON == key) {
-                setEngineOn(entityData[ENGINE_IS_ON])
-            }
-            if (REMAINING_BURN_TIME == key) {
-                engine.setRemainingBurnTime(entityData[REMAINING_BURN_TIME])
-            }
+        }
+
+        if (ENGINE_IS_ON == key) {
+            setEngineOn(entityData[ENGINE_IS_ON])
+        }
+
+        if (REMAINING_BURN_TIME == key) {
+            engine.setRemainingBurnTime(entityData[REMAINING_BURN_TIME])
         }
     }
 
@@ -628,12 +632,18 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
     // duplicate due to linking issues
     override fun isValid(pPlayer: Player): Boolean =
-        if (this.isRemoved) { false }
-        else { this.distanceToSqr(pPlayer) <= 64.0 }
+        if (this.isRemoved) {
+            false
+        } else {
+            this.distanceToSqr(pPlayer) <= 64.0
+        }
 
     override fun stillValid(pPlayer: Player): Boolean =
-        if (this.isRemoved) { false }
-        else { this.distanceToSqr(pPlayer) <= 64.0 }
+        if (this.isRemoved) {
+            false
+        } else {
+            this.distanceToSqr(pPlayer) <= 64.0
+        }
 
     override fun setEngineOn(state: Boolean) {
         this.engine.setEngineOn(state)

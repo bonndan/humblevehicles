@@ -1,6 +1,5 @@
 package com.github.bonndan.humblevehicles.entity.custom.train.wagon
 
-import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
 import com.github.bonndan.humblevehicles.setup.ModEntityTypes
 import com.github.bonndan.humblevehicles.setup.ModItems
 import com.github.bonndan.humblevehicles.util.FluidDisplayUtil
@@ -28,10 +27,10 @@ class FluidTankCarEntity : AbstractWagonEntity {
     companion object {
         var CAPACITY: Int = FluidType.BUCKET_VOLUME * 10
         private val VOLUME: EntityDataAccessor<Int> = SynchedEntityData.defineId(
-            AbstractTrainCarEntity::class.java, EntityDataSerializers.INT
+            FluidTankCarEntity::class.java, EntityDataSerializers.INT
         )
         private val FLUID_TYPE: EntityDataAccessor<String> = SynchedEntityData.defineId(
-            AbstractTrainCarEntity::class.java, EntityDataSerializers.STRING
+            FluidTankCarEntity::class.java, EntityDataSerializers.STRING
         )
     }
 

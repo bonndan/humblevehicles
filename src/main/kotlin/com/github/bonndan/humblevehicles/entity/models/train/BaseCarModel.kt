@@ -1,8 +1,7 @@
 package com.github.bonndan.humblevehicles.entity.models.train
 
 import com.github.bonndan.humblevehicles.HumVeeMod
-import com.github.bonndan.humblevehicles.entity.models.VesselRenderState
-import net.minecraft.client.model.EntityModel
+import net.minecraft.client.model.MinecartModel
 import net.minecraft.client.model.geom.ModelLayerLocation
 import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.client.model.geom.PartPose
@@ -11,7 +10,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition
 import net.minecraft.client.model.geom.builders.MeshDefinition
 import net.minecraft.resources.ResourceLocation
 
-class BaseCarModel(root: ModelPart) : EntityModel<VesselRenderState>(root.getChild("bb_main")) {
+class BaseCarModel(root: ModelPart) : MinecartModel(root) {
 
     companion object {
         // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor

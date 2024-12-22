@@ -5,13 +5,13 @@ import com.github.bonndan.humblevehicles.block.fluid.render.FluidHopperTileEntit
 import com.github.bonndan.humblevehicles.entity.models.EmptyModel
 import com.github.bonndan.humblevehicles.entity.models.insert.*
 import com.github.bonndan.humblevehicles.entity.models.train.*
-import com.github.bonndan.humblevehicles.entity.render.TrainRenderer
-import com.github.bonndan.humblevehicles.entity.render.train.TrainCarRenderer
+import com.github.bonndan.humblevehicles.entity.render.AbstractMinecartRendererCopy
 import com.github.bonndan.humblevehicles.setup.ModBlocks
 import com.github.bonndan.humblevehicles.setup.ModBlocks.buildCreativeTab
 import com.github.bonndan.humblevehicles.setup.ModEntityTypes
 import com.github.bonndan.humblevehicles.setup.ModItems
 import com.github.bonndan.humblevehicles.setup.ModTileEntitiesTypes
+import net.minecraft.client.model.geom.ModelLayers
 import net.minecraft.client.renderer.ItemBlockRenderTypes
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
@@ -48,24 +48,19 @@ object ModClientEventHandler {
     fun onRegisterEntityRenderers(event: EntityRenderersEvent.RegisterRenderers) {
 
         event.registerEntityRenderer(ModEntityTypes.STEAM_LOCOMOTIVE.get()) { ctx: EntityRendererProvider.Context ->
-            TrainRenderer(ctx, SteamLocomotiveModel.LAYER_LOCATION,)
-//            TrainCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
-//                .baseModel(
-//                    { root -> SteamLocomotiveModel(root) },
-//                    SteamLocomotiveModel.LAYER_LOCATION,
-//                    entityTexture("car/steam_locomotive_base.png")
-//                )
-//                .trimModel(
-//                    { root -> SteamLocomotiveModel(root) },
-//                    SteamLocomotiveModel.LAYER_LOCATION,
-//                    entityTexture("car/steam_locomotive_trim.png")
-//                )
-//                .emptyInsert()
-//                .build()
+            AbstractMinecartRendererCopy(
+                context = ctx,
+                layer = SteamLocomotiveModel.LAYER_LOCATION,
+                textureLocation = ResourceLocation.fromNamespaceAndPath(MOD_ID, "car/steam_locomotive_base.png"),
+                modelSupplier = { part -> SteamLocomotiveModel(part) },
+                trimTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "car/steam_locomotive_trim.png"),
+                trimLayer = SteamLocomotiveModel.LAYER_LOCATION,
+            )
         }
 
-        event.registerEntityRenderer(ModEntityTypes.ENERGY_LOCOMOTIVE.get()) { ctx: EntityRendererProvider.Context ->
-            TrainRenderer(ctx, EnergyLocomotiveModel.LAYER_LOCATION)
+
+//            event.registerEntityRenderer(ModEntityTypes.ENERGY_LOCOMOTIVE.get()) { ctx: EntityRendererProvider.Context ->
+//                TrainRenderer(ctx, EnergyLocomotiveModel.LAYER_LOCATION)
 //            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
 //                .baseModel(
 //                    { root -> EnergyLocomotiveModel(root) },
@@ -79,96 +74,36 @@ object ModClientEventHandler {
 //                )
 //                .emptyInsert()
 //                .build()
-        }
 
         event.registerEntityRenderer(ModEntityTypes.CHEST_CAR.get()) { ctx: EntityRendererProvider.Context ->
-            TrainRenderer(ctx, BaseCarModel.LAYER_LOCATION)
-//            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
-//                .baseModel(
-//                    { root -> BaseCarModel(root) },
-//                    BaseCarModel.LAYER_LOCATION,
-//                    entityTexture("car/base.png")
-//                )
-//                .trimModel(
-//                    { root -> TrimCarModel(root) },
-//                    TrimCarModel.LAYER_LOCATION,
-//                    entityTexture("car/trim.png")
-//                )
-//                .insertModel(
-//                    { root -> CubeInsertCarModel(root) },
-//                    CubeInsertCarModel.LAYER_LOCATION,
-//                    entityTexture("car/chest_insert.png")
-//                )
-//                .build()
-        }
-
-        event.registerEntityRenderer(ModEntityTypes.BARREL_CAR.get()) { ctx: EntityRendererProvider.Context ->
-            TrainRenderer(ctx, BaseCarModel.LAYER_LOCATION)
-//            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
-//                .baseModel(
-//                    { root -> BaseCarModel(root) },
-//                    BaseCarModel.LAYER_LOCATION,
-//                    entityTexture("car/base.png")
-//                )
-//                .trimModel(
-//                    { root -> TrimCarModel(root) },
-//                    TrimCarModel.LAYER_LOCATION,
-//                    entityTexture("car/trim.png")
-//                )
-//                .insertModel(
-//                    { root -> CubeInsertCarModel(root) },
-//                    CubeInsertCarModel.LAYER_LOCATION,
-//                    entityTexture("car/barrel_insert.png")
-//                )
-//                .build()
-        }
-
-        event.registerEntityRenderer(ModEntityTypes.FLUID_CAR.get()) { ctx: EntityRendererProvider.Context ->
-            TrainRenderer(ctx, FluidTankInsertCarModel.LAYER_LOCATION)
-//            FluidTankCarRenderer.Builder<FluidTankCarEntity>(ctx)
-//                .baseModel(
-//                    { root -> BaseCarModel(root) },
-//                    BaseCarModel.LAYER_LOCATION,
-//                    entityTexture("car/base.png")
-//                )
-//                .trimModel(
-//                    { root -> TrimCarModel(root) },
-//                    TrimCarModel.LAYER_LOCATION,
-//                    entityTexture("car/trim.png")
-//                )
-//                .insertModel(
-//                    { root -> FluidTankInsertCarModel(root) },
-//                    FluidTankInsertCarModel.LAYER_LOCATION,
-//                    entityTexture("car/fluid_tank_insert.png")
-//                )
-//                .build()
-        }
-
-        event.registerEntityRenderer(ModEntityTypes.CHUNK_LOADER_CAR.get()) { ctx: EntityRendererProvider.Context ->
-            TrainCarRenderer(
-                ctx,
-                { root -> ChunkLoaderCarModel(root) },
-                ChunkLoaderCarModel.LAYER_LOCATION,
-                "textures/entity/chunk_loader_car.png"
+            AbstractMinecartRendererCopy(
+                context = ctx,
+                layer = ModelLayers.CHEST_MINECART,
+                trimTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "car/trim.png"),
+                trimLayer = TrimCarModel.LAYER_LOCATION,
             )
         }
 
-        event.registerEntityRenderer(ModEntityTypes.SEATER_CAR.get()) { ctx: EntityRendererProvider.Context ->
-            TrainRenderer(ctx, BaseCarModel.LAYER_LOCATION)
-//            MultipartCarRenderer.Builder<AbstractTrainCarEntity>(ctx)
-//                .baseModel(
-//                    { root -> BaseCarModel(root) },
-//                    BaseCarModel.LAYER_LOCATION,
-//                    entityTexture("car/base.png")
-//                )
-//                .trimModel(
-//                    { root -> TrimCarModel(root) },
-//                    TrimCarModel.LAYER_LOCATION,
-//                    entityTexture("car/trim.png")
-//                )
-//                .emptyInsert()
-//                .build()
+
+        event.registerEntityRenderer(ModEntityTypes.FLUID_CAR.get()) { ctx: EntityRendererProvider.Context ->
+            AbstractMinecartRendererCopy(
+                context = ctx,
+                layer = ModelLayers.HOPPER_MINECART,
+                trimTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "car/trim.png"),
+                trimLayer = TrimCarModel.LAYER_LOCATION,
+            )
         }
+
+        event.registerEntityRenderer(ModEntityTypes.FLUID_CAR.get()) { ctx: EntityRendererProvider.Context ->
+            AbstractMinecartRendererCopy(
+                context = ctx,
+                layer = ChunkLoaderCarModel.LAYER_LOCATION,
+                textureLocation = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/chunk_loader_car.png"),
+                trimTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "car/trim.png"),
+                trimLayer = TrimCarModel.LAYER_LOCATION,
+            )
+        }
+
 
         event.registerBlockEntityRenderer(ModTileEntitiesTypes.FLUID_HOPPER.get()) { context ->
             FluidHopperTileEntityRenderer(context)
