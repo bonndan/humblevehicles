@@ -18,10 +18,6 @@ class SteamLocomotiveModel(root: ModelPart) : MinecartModel(root.getChild("bb_ma
         return -1.0f
     }
 
-    override fun getYRotation(): Float {
-        return 90.0f
-    }
-
     companion object {
         // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
         val LAYER_LOCATION: ModelLayerLocation = ModelLayerLocation(

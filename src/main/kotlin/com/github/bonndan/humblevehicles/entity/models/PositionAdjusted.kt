@@ -1,8 +1,7 @@
 package com.github.bonndan.humblevehicles.entity.models
 
-interface  PositionAdjusted {
+interface PositionAdjusted {
 
     fun getYOffset(): Float
 
-    fun getYRotation(): Float
 }

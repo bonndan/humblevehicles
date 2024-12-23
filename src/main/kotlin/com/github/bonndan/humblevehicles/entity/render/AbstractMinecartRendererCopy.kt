@@ -112,7 +112,6 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
 
         //model corrections
         if (this.model is PositionAdjusted) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(this.model.getYRotation()))
             poseStack.translate(0f, this.model.getYOffset(), 0f)
         }
 
