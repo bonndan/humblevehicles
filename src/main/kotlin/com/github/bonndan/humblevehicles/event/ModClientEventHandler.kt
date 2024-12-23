@@ -11,6 +11,7 @@ import com.github.bonndan.humblevehicles.setup.ModBlocks.buildCreativeTab
 import com.github.bonndan.humblevehicles.setup.ModEntityTypes
 import com.github.bonndan.humblevehicles.setup.ModItems
 import com.github.bonndan.humblevehicles.setup.ModTileEntitiesTypes
+import net.minecraft.client.model.MinecartModel
 import net.minecraft.client.model.geom.ModelLayers
 import net.minecraft.client.renderer.ItemBlockRenderTypes
 import net.minecraft.client.renderer.RenderType
@@ -78,23 +79,22 @@ object ModClientEventHandler {
         event.registerEntityRenderer(ModEntityTypes.CHEST_CAR.get()) { ctx: EntityRendererProvider.Context ->
             AbstractMinecartRendererCopy(
                 context = ctx,
-                layer = ModelLayers.CHEST_MINECART,
                 trimTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "car/trim.png"),
                 trimLayer = TrimCarModel.LAYER_LOCATION,
+                blockStateYOffset = -0.5f
             )
         }
-
 
         event.registerEntityRenderer(ModEntityTypes.FLUID_CAR.get()) { ctx: EntityRendererProvider.Context ->
             AbstractMinecartRendererCopy(
                 context = ctx,
-                layer = ModelLayers.HOPPER_MINECART,
                 trimTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "car/trim.png"),
                 trimLayer = TrimCarModel.LAYER_LOCATION,
+                blockStateYOffset = -0.5f
             )
         }
 
-        event.registerEntityRenderer(ModEntityTypes.FLUID_CAR.get()) { ctx: EntityRendererProvider.Context ->
+        event.registerEntityRenderer(ModEntityTypes.CHUNK_LOADER_CAR.get()) { ctx: EntityRendererProvider.Context ->
             AbstractMinecartRendererCopy(
                 context = ctx,
                 layer = ChunkLoaderCarModel.LAYER_LOCATION,
@@ -123,7 +123,6 @@ object ModClientEventHandler {
 
         // CAR
         event.registerLayerDefinition(TrimCarModel.LAYER_LOCATION) { TrimCarModel.createBodyLayer() }
-        event.registerLayerDefinition(BaseCarModel.LAYER_LOCATION) { BaseCarModel.createBodyLayer() }
         event.registerLayerDefinition(FluidTankInsertCarModel.LAYER_LOCATION) { FluidTankInsertCarModel.createBodyLayer() }
 
         event.registerLayerDefinition(SteamLocomotiveModel.LAYER_LOCATION) { SteamLocomotiveModel.createBodyLayer() }

@@ -4,12 +4,14 @@ import com.github.bonndan.humblevehicles.HumVeeMod.Companion.MOD_ID
 import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
 import com.github.bonndan.humblevehicles.entity.custom.train.wagon.ChestCarEntity
 import com.github.bonndan.humblevehicles.entity.custom.train.wagon.FluidTankCarEntity
+import com.github.bonndan.humblevehicles.entity.models.PositionAdjusted
 import com.github.bonndan.humblevehicles.entity.models.VesselRenderState
 import com.github.bonndan.humblevehicles.entity.models.train.ChainModel
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.model.MinecartModel
 import net.minecraft.client.model.geom.ModelLayerLocation
+import net.minecraft.client.model.geom.ModelLayers
 import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.block.BlockRenderDispatcher
@@ -46,18 +48,21 @@ import kotlin.math.max
 @OnlyIn(Dist.CLIENT)
 class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
     context: EntityRendererProvider.Context,
-    layer: ModelLayerLocation,
+    layer: ModelLayerLocation = ModelLayers.MINECART,
     val textureLocation: ResourceLocation = ResourceLocation.withDefaultNamespace("textures/entity/minecart.png"),
     modelSupplier: Function<ModelPart, MinecartModel> = Function { part: ModelPart -> MinecartModel(part) },
-    trimTexture: ResourceLocation,
-    trimLayer: ModelLayerLocation,
+    trimTexture: ResourceLocation? = null,
+    trimLayer: ModelLayerLocation? = null,
+    private val blockStateYOffset: Float = 0f,
 ) : EntityRenderer<T, VesselRenderState>(context), RenderLayerParent<VesselRenderState, MinecartModel> {
 
     private val model: MinecartModel
     private val blockRenderer: BlockRenderDispatcher
     private val chainModel: ChainModel = ChainModel(context.bakeLayer(ChainModel.Companion.LAYER_LOCATION))
-    private val colorLayer: RenderLayer<VesselRenderState, MinecartModel> =
-        TrainColorLayer(this, context.modelSet, trimTexture, trimLayer)
+
+    private val colorLayer: RenderLayer<VesselRenderState, MinecartModel>? =
+        if (trimTexture != null && trimLayer != null)
+            TrainColorLayer(this, context.modelSet, trimTexture, trimLayer) else null
 
     init {
         this.shadowRadius = 0.7f
@@ -94,27 +99,41 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
         if (blockstate.renderShape != RenderShape.INVISIBLE) {
             poseStack.pushPose()
             poseStack.scale(0.75f, 0.75f, 0.75f)
-            poseStack.translate(-0.5f, (renderState.displayOffset - 0).toFloat() / 16.0f, 0.5f)
+            var yCorr = (renderState.displayOffset - 0).toFloat() / 16.0f + blockStateYOffset
+            poseStack.translate(-0.5f, yCorr, 0.5f)
             poseStack.mulPose(Axis.YP.rotationDegrees(90.0f))
+
+            // contents
             this.renderMinecartContents(blockstate, poseStack, buffer, packedLight)
             poseStack.popPose()
         }
 
         poseStack.scale(-1.0f, -1.0f, 1.0f)
+
+        //model corrections
+        if (this.model is PositionAdjusted) {
+            poseStack.mulPose(Axis.YP.rotationDegrees(this.model.getYRotation()))
+            poseStack.translate(0f, this.model.getYOffset(), 0f)
+        }
+
         this.model.setupAnim(renderState)
 
         val vertexconsumer = buffer.getBuffer(this.model.renderType(textureLocation))
         this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY)
 
-        colorLayer.render(poseStack, buffer, packedLight, renderState, renderState.yRot, renderState.xRot);
+        //coloring
+        colorLayer?.render(poseStack, buffer, packedLight, renderState, renderState.yRot, renderState.xRot);
 
         poseStack.popPose()
 
+        //chain
         if (renderState.follower.isPresent) {
 
-            renderState.renderPos?.let { pos ->
+            val entity = renderState.follower.get()
+
+            renderState.backPos?.let { pos ->
                 val from = pos.add(0.0, .44, 0.0)
-                val to = pos.add(0.0, .44, 0.0)
+                val to = entity.position().add(0.0, .44, 0.0)
                 getAndRenderChain(from, to, poseStack, buffer, packedLight)
             }
         }
@@ -156,16 +175,24 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
         }
     }
 
-    protected fun renderMinecartContents(
+    private fun renderMinecartContents(
         state: BlockState,
         poseStack: PoseStack,
         bufferSource: MultiBufferSource,
         packedLight: Int
     ) {
-        this.blockRenderer.renderSingleBlock(state, poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY)
+        this.blockRenderer.renderSingleBlock(
+            state,
+            poseStack,
+            bufferSource,
+            packedLight,
+            OverlayTexture.NO_OVERLAY,
+            net.neoforged.neoforge.client.model.data.ModelData.EMPTY,
+            null
+        )
     }
 
-    protected fun getAndRenderChain(
+    private fun getAndRenderChain(
         from: Vec3,
         to: Vec3,
         matrixStack: PoseStack,
