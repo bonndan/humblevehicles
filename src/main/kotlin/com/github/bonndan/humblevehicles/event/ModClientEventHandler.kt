@@ -6,13 +6,12 @@ import com.github.bonndan.humblevehicles.entity.models.EmptyModel
 import com.github.bonndan.humblevehicles.entity.models.insert.*
 import com.github.bonndan.humblevehicles.entity.models.train.*
 import com.github.bonndan.humblevehicles.entity.render.AbstractMinecartRendererCopy
+import com.github.bonndan.humblevehicles.entity.render.RendererConfig
 import com.github.bonndan.humblevehicles.setup.ModBlocks
 import com.github.bonndan.humblevehicles.setup.ModBlocks.buildCreativeTab
 import com.github.bonndan.humblevehicles.setup.ModEntityTypes
 import com.github.bonndan.humblevehicles.setup.ModItems
 import com.github.bonndan.humblevehicles.setup.ModTileEntitiesTypes
-import net.minecraft.client.model.MinecartModel
-import net.minecraft.client.model.geom.ModelLayers
 import net.minecraft.client.renderer.ItemBlockRenderTypes
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
@@ -51,11 +50,14 @@ object ModClientEventHandler {
         event.registerEntityRenderer(ModEntityTypes.STEAM_LOCOMOTIVE.get()) { ctx: EntityRendererProvider.Context ->
             AbstractMinecartRendererCopy(
                 context = ctx,
-                layer = SteamLocomotiveModel.LAYER_LOCATION,
-                textureLocation = ResourceLocation.fromNamespaceAndPath(MOD_ID, "car/steam_locomotive_base.png"),
-                modelSupplier = { part -> SteamLocomotiveModel(part) },
-                trimTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "car/steam_locomotive_trim.png"),
-                trimLayer = SteamLocomotiveModel.LAYER_LOCATION,
+                RendererConfig(
+                    layer = SteamLocomotiveModel.LAYER_LOCATION,
+                    textureLocation = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/steam_locomotive_base.png"),
+                    modelSupplier = { part -> SteamLocomotiveModel(part) },
+                    modelYRotation = 90f,
+                    colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/steam_locomotive_trim.png"),
+                    colorLayer = SteamLocomotiveModel.LAYER_LOCATION
+                )
             )
         }
 
@@ -79,28 +81,39 @@ object ModClientEventHandler {
         event.registerEntityRenderer(ModEntityTypes.CHEST_CAR.get()) { ctx: EntityRendererProvider.Context ->
             AbstractMinecartRendererCopy(
                 context = ctx,
-                trimTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "car/trim.png"),
-                trimLayer = TrimCarModel.LAYER_LOCATION,
-                blockStateYOffset = -0.5f
+                RendererConfig(
+                    colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/trim.png"),
+                    colorLayer = TrimCarModel.LAYER_LOCATION,
+                    blockStateYOffset = -0.5f
+                )
             )
         }
 
         event.registerEntityRenderer(ModEntityTypes.FLUID_CAR.get()) { ctx: EntityRendererProvider.Context ->
             AbstractMinecartRendererCopy(
                 context = ctx,
-                trimTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "car/trim.png"),
-                trimLayer = TrimCarModel.LAYER_LOCATION,
-                blockStateYOffset = -0.5f
+                RendererConfig(
+                    colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/trim.png"),
+                    colorLayer = TrimCarModel.LAYER_LOCATION,
+                    trimModelYOffset = -1.05f,
+                    trimModelYRotation = 90f,
+                    blockStateYOffset = -0.5f
+                )
             )
         }
 
         event.registerEntityRenderer(ModEntityTypes.CHUNK_LOADER_CAR.get()) { ctx: EntityRendererProvider.Context ->
             AbstractMinecartRendererCopy(
                 context = ctx,
-                layer = ChunkLoaderCarModel.LAYER_LOCATION,
-                textureLocation = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/chunk_loader_car.png"),
-                trimTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "car/trim.png"),
-                trimLayer = TrimCarModel.LAYER_LOCATION,
+                RendererConfig(
+                    layer = ChunkLoaderCarModel.LAYER_LOCATION,
+                    textureLocation = ResourceLocation.fromNamespaceAndPath(
+                        MOD_ID,
+                        "textures/entity/chunk_loader_car.png"
+                    ),
+                    colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/trim.png"),
+                    colorLayer = TrimCarModel.LAYER_LOCATION,
+                )
             )
         }
 

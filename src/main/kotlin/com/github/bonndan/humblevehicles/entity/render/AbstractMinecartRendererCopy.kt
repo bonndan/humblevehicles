@@ -1,27 +1,20 @@
 package com.github.bonndan.humblevehicles.entity.render
 
-import com.github.bonndan.humblevehicles.HumVeeMod.Companion.MOD_ID
 import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
 import com.github.bonndan.humblevehicles.entity.custom.train.wagon.ChestCarEntity
 import com.github.bonndan.humblevehicles.entity.custom.train.wagon.FluidTankCarEntity
 import com.github.bonndan.humblevehicles.entity.models.PositionAdjusted
 import com.github.bonndan.humblevehicles.entity.models.VesselRenderState
-import com.github.bonndan.humblevehicles.entity.models.train.ChainModel
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.model.MinecartModel
-import net.minecraft.client.model.geom.ModelLayerLocation
-import net.minecraft.client.model.geom.ModelLayers
-import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.block.BlockRenderDispatcher
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.RenderLayerParent
-import net.minecraft.client.renderer.entity.layers.RenderLayer
 import net.minecraft.client.renderer.entity.state.MinecartRenderState
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.vehicle.AbstractMinecart
 import net.minecraft.world.entity.vehicle.NewMinecartBehavior
@@ -34,12 +27,9 @@ import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import java.util.*
-import java.util.function.Function
 import kotlin.math.abs
-import kotlin.math.asin
 import kotlin.math.atan
 import kotlin.math.atan2
-import kotlin.math.ceil
 import kotlin.math.max
 
 /**
@@ -48,25 +38,19 @@ import kotlin.math.max
 @OnlyIn(Dist.CLIENT)
 class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
     context: EntityRendererProvider.Context,
-    layer: ModelLayerLocation = ModelLayers.MINECART,
-    val textureLocation: ResourceLocation = ResourceLocation.withDefaultNamespace("textures/entity/minecart.png"),
-    modelSupplier: Function<ModelPart, MinecartModel> = Function { part: ModelPart -> MinecartModel(part) },
-    trimTexture: ResourceLocation? = null,
-    trimLayer: ModelLayerLocation? = null,
-    private val blockStateYOffset: Float = 0f,
+    private val config: RendererConfig
 ) : EntityRenderer<T, VesselRenderState>(context), RenderLayerParent<VesselRenderState, MinecartModel> {
 
     private val model: MinecartModel
     private val blockRenderer: BlockRenderDispatcher
-    private val chainModel: ChainModel = ChainModel(context.bakeLayer(ChainModel.Companion.LAYER_LOCATION))
-
-    private val colorLayer: RenderLayer<VesselRenderState, MinecartModel>? =
-        if (trimTexture != null && trimLayer != null)
-            TrainColorLayer(this, context.modelSet, trimTexture, trimLayer) else null
+    private val chainRenderer = ChainRenderer(context = context)
+    private val colorLayerRenderer: ColorLayerRenderer? =
+        config.getColorLayer(this, context)
+            ?.let { ColorLayerRenderer(it, config.trimModelYOffset, config.trimModelYRotation) }
 
     init {
         this.shadowRadius = 0.7f
-        this.model = modelSupplier.apply(context.bakeLayer(layer))
+        this.model = config.getModel(context)
         this.blockRenderer = context.blockRenderDispatcher
     }
 
@@ -95,11 +79,12 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
             poseStack.mulPose(Axis.XP.rotationDegrees(Mth.sin(f3) * f3 * renderState.damageTime / 10.0f * renderState.hurtDir.toFloat()))
         }
 
+        // render block inserted into minecart
         val blockstate = renderState.displayBlockState
         if (blockstate.renderShape != RenderShape.INVISIBLE) {
             poseStack.pushPose()
             poseStack.scale(0.75f, 0.75f, 0.75f)
-            var yCorr = (renderState.displayOffset - 0).toFloat() / 16.0f + blockStateYOffset
+            var yCorr = (renderState.displayOffset - 0).toFloat() / 16.0f + config.blockStateYOffset
             poseStack.translate(-0.5f, yCorr, 0.5f)
             poseStack.mulPose(Axis.YP.rotationDegrees(90.0f))
 
@@ -114,29 +99,33 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
         if (this.model is PositionAdjusted) {
             poseStack.translate(0f, this.model.getYOffset(), 0f)
         }
+        poseStack.mulPose(Axis.YP.rotationDegrees(config.modelYRotation))
 
         this.model.setupAnim(renderState)
 
-        val vertexconsumer = buffer.getBuffer(this.model.renderType(textureLocation))
-        this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY)
+        val vertexConsumer = buffer.getBuffer(this.model.renderType(config.textureLocation))
+        this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY)
 
         //coloring
-        colorLayer?.render(poseStack, buffer, packedLight, renderState, renderState.yRot, renderState.xRot);
+        colorLayerRenderer?.renderColorLayer(poseStack, buffer, packedLight, renderState)
 
         poseStack.popPose()
 
         //chain
         if (renderState.follower.isPresent) {
 
-            val entity = renderState.follower.get()
-
-            renderState.backPos?.let { pos ->
-                val from = pos.add(0.0, .44, 0.0)
-                val to = entity.position().add(0.0, .44, 0.0)
-                getAndRenderChain(from, to, poseStack, buffer, packedLight)
+            renderState.backPos?.let { backPos ->
+                chainRenderer.getAndRenderChain(
+                    backPos,
+                    renderState.follower.get().position(),
+                    poseStack,
+                    buffer,
+                    packedLight
+                )
             }
         }
     }
+
 
     override fun createRenderState(): VesselRenderState {
         return VesselRenderState()
@@ -191,33 +180,6 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
         )
     }
 
-    private fun getAndRenderChain(
-        from: Vec3,
-        to: Vec3,
-        matrixStack: PoseStack,
-        buffer: MultiBufferSource,
-        p_225623_6_: Int
-    ) {
-        matrixStack.pushPose()
-        val vec = from.vectorTo(to)
-        val dist = vec.length()
-        val segments = ceil(dist * 4).toInt()
-
-        // TODO: fix pitch
-        matrixStack.mulPose(Axis.YP.rotation(-atan2(vec.z, vec.x).toFloat()))
-        matrixStack.mulPose(Axis.ZP.rotation((asin(vec.y / dist)).toFloat()))
-        matrixStack.pushPose()
-        val ivertexbuilderChain = buffer.getBuffer(chainModel.renderType(CHAIN_TEXTURE))
-        for (i in 1 until segments) {
-            matrixStack.pushPose()
-            matrixStack.translate(i / 4.0, 0.0, 0.0)
-            chainModel.renderToBuffer(matrixStack, ivertexbuilderChain, p_225623_6_, OverlayTexture.NO_OVERLAY)
-            matrixStack.popPose()
-        }
-
-        matrixStack.popPose()
-        matrixStack.popPose()
-    }
 
     override fun getBoundingBoxForCulling(minecraft: T): AABB {
         val aabb = super.getBoundingBoxForCulling(minecraft)
@@ -246,7 +208,6 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
 
     companion object {
 
-        private val CHAIN_TEXTURE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/chain.png")
 
         private fun <S : MinecartRenderState?> newRender(renderState: S?, poseStack: PoseStack) {
             poseStack.mulPose(Axis.YP.rotationDegrees(renderState!!.yRot))

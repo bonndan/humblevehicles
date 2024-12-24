@@ -22,13 +22,16 @@ class TrimCarModel(root: ModelPart) : EntityModel<VesselRenderState>(root.getChi
             val meshdefinition = MeshDefinition()
 
             meshdefinition.getRoot().addOrReplaceChild(
-                "bb_main", CubeListBuilder.create() // Long sides trim
+                "bb_main", CubeListBuilder.create()
+                    // Long sides trim
                     .texOffs(0, 18).addBox(-7.0f, -14.0f, -8.0f, 2.0f, 1f, 16.0f)
-                    .texOffs(0, 18).addBox(5.0f, -14.0f, -8.0f, 2.0f, 1f, 16.0f) // Short sides trim
+                    .texOffs(0, 18).addBox(5.0f, -14.0f, -8.0f, 2.0f, 1f, 16.0f)
 
+                    // Short sides trim
                     .texOffs(36, 18).addBox(-5.0f, -14.0f, -8.0f, 10.0f, 1f, 2.0f)
-                    .texOffs(36, 18).addBox(-5.0f, -14.0f, 6.0f, 10.0f, 1f, 2.0f) // Base
+                    .texOffs(36, 18).addBox(-5.0f, -14.0f, 6.0f, 10.0f, 1f, 2.0f)
 
+                    // Base
                     .texOffs(0, 0).addBox(-7.0f, -4.0f, -8.0f, 14.0f, 2.0f, 16.0f),
 
                 PartPose.offset(0.0f, 24.0f, 0.0f)
