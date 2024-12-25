@@ -401,42 +401,44 @@ abstract class AbstractTrainCarEntity : AbstractMinecart,
 
 
     private fun doChainMath() {
-        linkingHandler.leader.ifPresent { parent: AbstractTrainCarEntity ->
+        linkingHandler.leader.ifPresent { leader: AbstractTrainCarEntity ->
             val railDirDis =
-                railHelper.traverseBi(this.onPos.above(), RailHelper.samePositionPredicate(parent), 5, this)
+                railHelper.traverseBi(this.onPos.above(), RailHelper.samePositionPredicate(leader), 5, this)
             // this is a fix to mitigate "bouncing" when trains start moving from a stopped position
             // todo: fix based on "docked" instead.
             val tug = linkingHandler.train?.tug
             val docked = tug?.isPresent == true && tug.get().deltaMovement == Vec3.ZERO
-            val maxDist = if (docked) 1.0 else 1.2
-            val minDist = 1.0
+            val maxDist = if (docked) 1.2 else 1.4
+            val minDist = 1.2
 
-            val distance =
-                railDirDis.map { obj: Pair<Direction, Int> -> obj.second }
-                    .filter { a: Int -> a > 0 }.map { di: Int ->
-                        val euclid = this.distanceTo(parent)
+            val distance = railDirDis.map { obj: Pair<Direction, Int> -> obj.second }
+                    .filter { a: Int -> a > 0 }
+                    .map { di: Int ->
+                        val euclid = this.distanceTo(leader)
                         if (euclid < maxDist) di.toFloat() else euclid
-                    }.orElse(this.distanceTo(parent))
+                    }
+                    .orElse(this.distanceTo(leader))
+
             if (distance <= 6) {
-                val euclideanDir = parent.position().subtract(position()).normalize()
+                val euclideanDir = leader.position().subtract(position()).normalize()
                 val parentDirection = railDirDis
                     .map { obj: Pair<Direction, Int> -> obj.first }
                     .map { obj: Direction -> obj.unitVec3i }
                     .map { pToCopy -> Vec3.atLowerCornerOf(pToCopy) }
                     .orElse(euclideanDir)
                     .normalize()
-                val parentVelocity = parent.deltaMovement
+                val leaderVelocity = leader.deltaMovement
 
                 if (distance > maxDist) {
-                    if (parentVelocity.length() == 0.0) {
+                    if (leaderVelocity.length() == 0.0) {
                         deltaMovement = parentDirection.scale(0.05)
                     } else {
-                        deltaMovement = parentDirection.scale(parentVelocity.length())
+                        deltaMovement = parentDirection.scale(leaderVelocity.length())
                         if (distance > maxDist + 0.2) {
                             deltaMovement = deltaMovement.scale(distance * 0.8)
                         }
                     }
-                } else if (parent.distanceTo(this) < minDist && parent.deltaMovement.length() < 0.01) {
+                } else if (leader.distanceTo(this) < minDist && leader.deltaMovement.length() < 0.01) {
                     this.moveTo(floor(x) + 0.5, y, floor(z) + 0.5)
                     deltaMovement = Vec3.ZERO
                 } else {
