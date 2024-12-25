@@ -17,6 +17,9 @@ import net.minecraft.world.entity.MobCategory
 import net.minecraft.world.level.Level
 import java.util.function.Supplier
 
+private const val MINECART_DIMENSION_WIDTH = 1.25f
+private const val MINECART_DIMENSION_HEIGHT = 1.0f
+
 object ModEntityTypes {
 
     fun register() {
@@ -26,7 +29,8 @@ object ModEntityTypes {
         ENTITIES.register("chest_car", Supplier<EntityType<ChestCarEntity>> {
             EntityType.Builder.of(
                 { type: EntityType<ChestCarEntity>, level: Level -> ChestCarEntity(type, level) }, MobCategory.MISC
-            ).sized(0.7f, 0.9f).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
+            ).sized(MINECART_DIMENSION_WIDTH, MINECART_DIMENSION_HEIGHT).clientTrackingRange(8)
+                .setShouldReceiveVelocityUpdates(true)
                 .build(asResourceKey("chest_car"))
         })
 
@@ -35,7 +39,7 @@ object ModEntityTypes {
         ENTITIES.register("barrel_car", Supplier<EntityType<ChestCarEntity>> {
             EntityType.Builder.of(
                 { type: EntityType<ChestCarEntity>, level: Level -> ChestCarEntity(type, level) }, MobCategory.MISC
-            ).sized(0.7f, 0.9f).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
+            ).sized(0.7f, MINECART_DIMENSION_HEIGHT).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
                 .build(asResourceKey("barrel_car"))
         })
 
@@ -43,7 +47,7 @@ object ModEntityTypes {
     val SEATER_CAR: Supplier<EntityType<SeaterCarEntity>> =
         ENTITIES.register("seater_car", Supplier<EntityType<SeaterCarEntity>> {
             EntityType.Builder.of({ type, level -> SeaterCarEntity(type, level) }, MobCategory.MISC)
-                .sized(0.7f, 0.9f)
+                .sized(0.7f, MINECART_DIMENSION_HEIGHT)
                 .clientTrackingRange(8)
                 .setShouldReceiveVelocityUpdates(true)
                 .build(asResourceKey("seater_car"))
@@ -54,8 +58,10 @@ object ModEntityTypes {
         ENTITIES.register("fluid_car", Supplier<EntityType<FluidTankCarEntity>> {
             EntityType.Builder.of(
                 { type, level -> FluidTankCarEntity(type, level) }, MobCategory.MISC
-            ).sized(0.7f, 0.9f).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
-                .build(asResourceKey( "fluid_car"))
+            ).sized(MINECART_DIMENSION_WIDTH, MINECART_DIMENSION_HEIGHT)
+                .clientTrackingRange(8)
+                .setShouldReceiveVelocityUpdates(true)
+                .build(asResourceKey("fluid_car"))
         })
 
 
@@ -67,7 +73,7 @@ object ModEntityTypes {
                         type, level
                     )
                 }, MobCategory.MISC
-            ).sized(0.7f, 0.9f).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
+            ).sized(MINECART_DIMENSION_WIDTH, MINECART_DIMENSION_HEIGHT).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
                 .build(asResourceKey("chunk_loader_car"))
         })
 
@@ -78,7 +84,7 @@ object ModEntityTypes {
                     { type: EntityType<AbstractLocomotiveEntity>, level: Level -> SteamLocomotiveEntity(type, level) },
                     MobCategory.MISC
                 )
-                .sized(0.7f, 0.9f)
+                .sized(0.9f, 0.9f)
                 .clientTrackingRange(8)
                 .setShouldReceiveVelocityUpdates(true)
                 .build(asResourceKey("steam_locomotive"))

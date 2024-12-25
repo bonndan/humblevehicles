@@ -95,8 +95,9 @@ object ModClientEventHandler {
                 RendererConfig(
                     colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/trim.png"),
                     colorLayer = TrimCarModel.LAYER_LOCATION,
-                    trimModelYOffset = -1.05f,
-                    trimModelYRotation = 90f,
+                    colorModelSupplier = { part -> TrimCarModel(part) },
+                    colorModelYOffset = -1.0f,
+                    colorModelYRotation = 90f,
                     blockStateYOffset = -0.5f
                 )
             )

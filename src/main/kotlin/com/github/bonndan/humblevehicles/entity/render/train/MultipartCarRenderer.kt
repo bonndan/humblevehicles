@@ -15,7 +15,6 @@ import net.minecraft.client.model.geom.ModelLayerLocation
 //import com.github.bonndan.humblevehicles.entity.render.ModelPack
 //import com.github.bonndan.humblevehicles.entity.render.ModelSupplier
 //import net.minecraft.client.Minecraft
-import net.minecraft.client.model.EntityModel
 //import net.minecraft.client.model.geom.ModelLayerLocation
 //import net.minecraft.client.renderer.MultiBufferSource
 //import net.minecraft.client.renderer.culling.Frustum
@@ -70,7 +69,7 @@ abstract class MultipartCarRenderer<T : AbstractTrainCarEntity> protected constr
 //
     override fun extractRenderState(entity: T, renderState: VesselRenderState, partialTicks: Float) {
         super.extractRenderState(entity, renderState, partialTicks)
-        renderState.setColor(entity.getColor())
+        renderState.setColorId(entity.getColorId())
         renderState.follower = entity.getLeader()
     }
 

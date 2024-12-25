@@ -11,11 +11,11 @@ class VesselRenderState : MinecartRenderState(), Colorable {
     private var color: Int? = null
     var follower: Optional<AbstractTrainCarEntity> = Optional.empty()
 
-    override fun getColor(): Int {
-        return color ?: DyeColor.RED.textureDiffuseColor
+    override fun getColorId(): Int {
+        return color ?: DyeColor.RED.id
     }
 
-    override fun setColor(color: Int?) {
+    override fun setColorId(color: Int?) {
         this.color = color
     }
 }

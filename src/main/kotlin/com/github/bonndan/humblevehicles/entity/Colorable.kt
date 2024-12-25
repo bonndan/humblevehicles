@@ -2,7 +2,7 @@ package com.github.bonndan.humblevehicles.entity
 
 interface Colorable {
 
-    fun getColor(): Int?
+    fun getColorId(): Int?
 
-    fun setColor(color: Int?)
+    fun setColorId(color: Int?)
 }

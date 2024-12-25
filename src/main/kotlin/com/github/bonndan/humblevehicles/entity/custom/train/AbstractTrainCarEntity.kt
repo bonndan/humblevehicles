@@ -99,12 +99,12 @@ abstract class AbstractTrainCarEntity : AbstractMinecart,
         return pickResult.item
     }
 
-    override fun getColor(): Int? {
+    override fun getColorId(): Int? {
         val color = getEntityData().get(COLOR_DATA)
         return if (color == -1) null else color
     }
 
-    override fun setColor(color: Int?) {
+    override fun setColorId(color: Int?) {
         var color = color
         if (color == null) color = -1
         getEntityData()[COLOR_DATA] = color
@@ -131,7 +131,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart,
         super.readAdditionalSaveData(compound)
 
         if (compound.contains("Color", Tag.TAG_INT.toInt())) {
-            setColor(compound.getInt("Color"))
+            setColorId(compound.getInt("Color"))
         }
 
         linkingHandler.readAdditionalSaveData(compound)
@@ -140,7 +140,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart,
     override fun addAdditionalSaveData(compound: CompoundTag) {
         super.addAdditionalSaveData(compound)
 
-        val color = getColor()
+        val color = getColorId()
         if (color != null) {
             compound.putInt("Color", color)
         }
@@ -159,6 +159,9 @@ abstract class AbstractTrainCarEntity : AbstractMinecart,
     override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
         super.onSyncedDataUpdated(key)
         linkingHandler.onSyncedDataUpdated(key)
+        if (key == COLOR_DATA) {
+            setColorId(entityData[COLOR_DATA])
+        }
     }
 
 

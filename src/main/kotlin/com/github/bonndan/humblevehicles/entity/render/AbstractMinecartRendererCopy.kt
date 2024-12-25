@@ -5,10 +5,12 @@ import com.github.bonndan.humblevehicles.entity.custom.train.wagon.ChestCarEntit
 import com.github.bonndan.humblevehicles.entity.custom.train.wagon.FluidTankCarEntity
 import com.github.bonndan.humblevehicles.entity.models.PositionAdjusted
 import com.github.bonndan.humblevehicles.entity.models.VesselRenderState
+import com.github.bonndan.humblevehicles.entity.models.train.TrimCarModel
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.model.MinecartModel
 import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.block.BlockRenderDispatcher
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
@@ -19,6 +21,7 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.vehicle.AbstractMinecart
 import net.minecraft.world.entity.vehicle.NewMinecartBehavior
 import net.minecraft.world.entity.vehicle.OldMinecartBehavior
+import net.minecraft.world.item.DyeColor
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.RenderShape
 import net.minecraft.world.level.block.state.BlockState
@@ -42,15 +45,14 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
 ) : EntityRenderer<T, VesselRenderState>(context), RenderLayerParent<VesselRenderState, MinecartModel> {
 
     private val model: MinecartModel
+    private val colorModel: TrimCarModel?
     private val blockRenderer: BlockRenderDispatcher
     private val chainRenderer = ChainRenderer(context = context)
-    private val colorLayerRenderer: ColorLayerRenderer? =
-        config.getColorLayer(this, context)
-            ?.let { ColorLayerRenderer(it, config.trimModelYOffset, config.trimModelYRotation) }
 
     init {
         this.shadowRadius = 0.7f
         this.model = config.getModel(context)
+        this.colorModel = config.getColorModel(context)
         this.blockRenderer = context.blockRenderDispatcher
     }
 
@@ -106,8 +108,20 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
         val vertexConsumer = buffer.getBuffer(this.model.renderType(config.textureLocation))
         this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY)
 
-        //coloring
-        colorLayerRenderer?.renderColorLayer(poseStack, buffer, packedLight, renderState)
+        if (config.colorTexture != null && !renderState.isInvisible && this.colorModel != null) {
+
+            poseStack.pushPose()
+            poseStack.translate(0f, config.colorModelYOffset, 0f)
+            poseStack.mulPose(Axis.YP.rotationDegrees(config.colorModelYRotation))
+            this.colorModel.renderToBuffer(
+                poseStack,
+                buffer.getBuffer(RenderType.entityCutoutNoCull(config.colorTexture)),
+                packedLight,
+                OverlayTexture.NO_OVERLAY,
+                DyeColor.byId(renderState.getColorId()).textureDiffuseColor
+            )
+            poseStack.popPose()
+        }
 
         poseStack.popPose()
 
@@ -125,7 +139,6 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
             }
         }
     }
-
 
     override fun createRenderState(): VesselRenderState {
         return VesselRenderState()
@@ -151,7 +164,7 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
         reusedState.displayOffset = entity.displayOffset
         reusedState.displayBlockState = entity.displayBlockState
 
-        reusedState.setColor(entity.getColor())
+        reusedState.setColorId(entity.getColorId())
         reusedState.follower = entity.getFollower()
 
         if (entity is ChestCarEntity) {
