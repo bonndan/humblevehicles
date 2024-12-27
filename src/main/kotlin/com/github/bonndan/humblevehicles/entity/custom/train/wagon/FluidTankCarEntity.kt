@@ -1,6 +1,5 @@
 package com.github.bonndan.humblevehicles.entity.custom.train.wagon
 
-import com.github.bonndan.humblevehicles.setup.ModEntityTypes
 import com.github.bonndan.humblevehicles.setup.ModItems
 import com.github.bonndan.humblevehicles.util.FluidDisplayUtil
 import net.minecraft.core.registries.BuiltInRegistries
@@ -36,7 +35,7 @@ class FluidTankCarEntity : AbstractWagonEntity {
         )
     }
 
-    protected var tank: FluidTank = object : FluidTank(CAPACITY) {
+    private var tank: FluidTank = object : FluidTank(CAPACITY) {
         override fun onContentsChanged() {
             sendInfoToClient()
         }

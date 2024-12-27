@@ -67,13 +67,10 @@ object ModEntityTypes {
 
     val CHUNK_LOADER_CAR: Supplier<EntityType<ChunkLoaderCarEntity>> =
         ENTITIES.register("chunk_loader_car", Supplier<EntityType<ChunkLoaderCarEntity>> {
-            EntityType.Builder.of(
-                { type, level ->
-                    ChunkLoaderCarEntity(
-                        type, level
-                    )
-                }, MobCategory.MISC
-            ).sized(MINECART_DIMENSION_WIDTH, MINECART_DIMENSION_HEIGHT).clientTrackingRange(8).setShouldReceiveVelocityUpdates(true)
+            EntityType.Builder.of({ type, level -> ChunkLoaderCarEntity(type, level) }, MobCategory.MISC)
+                .sized(MINECART_DIMENSION_WIDTH, MINECART_DIMENSION_HEIGHT)
+                .clientTrackingRange(8)
+                .setShouldReceiveVelocityUpdates(true)
                 .build(asResourceKey("chunk_loader_car"))
         })
 
@@ -84,7 +81,7 @@ object ModEntityTypes {
                     { type: EntityType<AbstractLocomotiveEntity>, level: Level -> SteamLocomotiveEntity(type, level) },
                     MobCategory.MISC
                 )
-                .sized(0.9f, 0.9f)
+                .sized(MINECART_DIMENSION_WIDTH + 0.1f, MINECART_DIMENSION_HEIGHT + 0.3f)
                 .clientTrackingRange(8)
                 .setShouldReceiveVelocityUpdates(true)
                 .build(asResourceKey("steam_locomotive"))

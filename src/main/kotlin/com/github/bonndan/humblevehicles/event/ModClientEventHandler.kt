@@ -110,13 +110,16 @@ object ModClientEventHandler {
             AbstractMinecartRendererCopy(
                 context = ctx,
                 RendererConfig(
-                    modelLayer = ChunkLoaderCarModel.LAYER_LOCATION,
-                    modelTextureLocation = ResourceLocation.fromNamespaceAndPath(
-                        MOD_ID,
-                        "textures/entity/chunk_loader_car.png"
-                    ),
                     colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/trim.png"),
                     colorLayer = TrimCarModel.LAYER_LOCATION,
+                    colorModelSupplier = { part -> TrimCarModel(part) },
+                    colorModelYOffset = -1.0f,
+                    colorModelYRotation = 90f,
+                    additionalTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/barge/chunk_loader_insert.png"),
+                    additionalLayer = ChunkLoaderCarModel.LAYER_LOCATION,
+                    additionalModelSupplier = { part -> ChunkLoaderCarModel(part) },
+                    additionalModelYOffset = -1.05f,
+                    additionalModelYRotation = 90f,
                 )
             )
         }
@@ -142,7 +145,6 @@ object ModClientEventHandler {
         event.registerLayerDefinition(TrimCarModel.LAYER_LOCATION) { TrimCarModel.createBodyLayer() }
         event.registerLayerDefinition(FluidTankInsertCarModel.LAYER_LOCATION) { FluidTankInsertCarModel.createBodyLayer() }
 
-        event.registerLayerDefinition(SteamLocomotiveModel.LAYER_LOCATION) { SteamLocomotiveModel.createBodyLayer() }
         event.registerLayerDefinition(SteamEngineModel.LAYER_LOCATION) { SteamEngineModel.createBodyLayer() }
         event.registerLayerDefinition(EnergyLocomotiveModel.LAYER_LOCATION) { EnergyLocomotiveModel.createBodyLayer() }
 
