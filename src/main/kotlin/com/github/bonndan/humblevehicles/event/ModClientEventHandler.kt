@@ -2,6 +2,7 @@ package com.github.bonndan.humblevehicles.event
 
 import com.github.bonndan.humblevehicles.HumVeeMod.Companion.MOD_ID
 import com.github.bonndan.humblevehicles.block.fluid.render.FluidHopperTileEntityRenderer
+import com.github.bonndan.humblevehicles.entity.custom.train.locomotive.SteamLocomotiveEntity
 import com.github.bonndan.humblevehicles.entity.models.EmptyModel
 import com.github.bonndan.humblevehicles.entity.models.insert.*
 import com.github.bonndan.humblevehicles.entity.models.train.*
@@ -50,13 +51,17 @@ object ModClientEventHandler {
         event.registerEntityRenderer(ModEntityTypes.STEAM_LOCOMOTIVE.get()) { ctx: EntityRendererProvider.Context ->
             AbstractMinecartRendererCopy(
                 context = ctx,
-                RendererConfig(
-                    layer = SteamLocomotiveModel.LAYER_LOCATION,
-                    textureLocation = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/steam_locomotive_base.png"),
-                    modelSupplier = { part -> SteamLocomotiveModel(part) },
-                    modelYRotation = 90f,
-                    colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/steam_locomotive_trim.png"),
-                    colorLayer = SteamLocomotiveModel.LAYER_LOCATION
+                config = RendererConfig(
+                    colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/trim.png"),
+                    colorLayer = TrimCarModel.LAYER_LOCATION,
+                    colorModelSupplier = { part -> TrimCarModel(part) },
+                    colorModelYOffset = -1.0f,
+                    colorModelYRotation = 90f,
+                    additionalTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/steam_locomotive.png"),
+                    additionalLayer = SteamEngineModel.LAYER_LOCATION,
+                    additionalModelSupplier = { part -> SteamEngineModel(part) },
+                    additionalModelYOffset = -1.05f,
+                    additionalModelYRotation = 90f,
                 )
             )
         }
@@ -84,7 +89,6 @@ object ModClientEventHandler {
                 RendererConfig(
                     colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/trim.png"),
                     colorLayer = TrimCarModel.LAYER_LOCATION,
-                    blockStateYOffset = -0.5f
                 )
             )
         }
@@ -98,7 +102,6 @@ object ModClientEventHandler {
                     colorModelSupplier = { part -> TrimCarModel(part) },
                     colorModelYOffset = -1.0f,
                     colorModelYRotation = 90f,
-                    blockStateYOffset = -0.5f
                 )
             )
         }
@@ -107,8 +110,8 @@ object ModClientEventHandler {
             AbstractMinecartRendererCopy(
                 context = ctx,
                 RendererConfig(
-                    layer = ChunkLoaderCarModel.LAYER_LOCATION,
-                    textureLocation = ResourceLocation.fromNamespaceAndPath(
+                    modelLayer = ChunkLoaderCarModel.LAYER_LOCATION,
+                    modelTextureLocation = ResourceLocation.fromNamespaceAndPath(
                         MOD_ID,
                         "textures/entity/chunk_loader_car.png"
                     ),
@@ -140,6 +143,7 @@ object ModClientEventHandler {
         event.registerLayerDefinition(FluidTankInsertCarModel.LAYER_LOCATION) { FluidTankInsertCarModel.createBodyLayer() }
 
         event.registerLayerDefinition(SteamLocomotiveModel.LAYER_LOCATION) { SteamLocomotiveModel.createBodyLayer() }
+        event.registerLayerDefinition(SteamEngineModel.LAYER_LOCATION) { SteamEngineModel.createBodyLayer() }
         event.registerLayerDefinition(EnergyLocomotiveModel.LAYER_LOCATION) { EnergyLocomotiveModel.createBodyLayer() }
 
         // LEGACY
@@ -156,7 +160,4 @@ object ModClientEventHandler {
         ModItems.buildCreativeTab(event)
     }
 
-    private fun entityTexture(suffix: String): ResourceLocation {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, String.format("textures/entity/%s", suffix))
-    }
 }

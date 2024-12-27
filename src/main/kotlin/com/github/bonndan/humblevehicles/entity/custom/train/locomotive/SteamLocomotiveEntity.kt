@@ -2,7 +2,6 @@ package com.github.bonndan.humblevehicles.entity.custom.train.locomotive
 
 import com.github.bonndan.humblevehicles.entity.container.SteamHeadVehicleContainer
 import com.github.bonndan.humblevehicles.entity.custom.engine.FueledEngine
-import com.github.bonndan.humblevehicles.setup.ModEntityTypes
 import com.github.bonndan.humblevehicles.setup.ModItems
 import com.github.bonndan.humblevehicles.setup.ModSounds
 import com.github.bonndan.humblevehicles.util.ItemHandlerVanillaContainerWrapper
@@ -26,10 +25,6 @@ class SteamLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaContai
     }
 
     constructor(type: EntityType<*>, level: Level) : super(type, level)
-
-    constructor(level: Level, x: Double, y: Double, z: Double) : super(
-        ModEntityTypes.STEAM_LOCOMOTIVE.get(), level, x, y, z
-    )
 
     override fun onUndock() {
         super.onUndock()

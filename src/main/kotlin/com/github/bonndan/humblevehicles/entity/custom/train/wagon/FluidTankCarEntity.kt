@@ -15,6 +15,8 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.material.Fluid
 import net.minecraft.world.level.material.Fluids
 import net.neoforged.neoforge.fluids.FluidStack
@@ -44,12 +46,9 @@ class FluidTankCarEntity : AbstractWagonEntity {
 
     constructor(p_38087_: EntityType<*>, p_38088_: Level) : super(p_38087_, p_38088_)
 
-    constructor(
-        level: Level,
-        aDouble: Double,
-        aDouble1: Double,
-        aDouble2: Double
-    ) : super(ModEntityTypes.FLUID_CAR.get(), level, aDouble, aDouble1, aDouble2)
+    override fun getDefaultDisplayBlockState(): BlockState {
+        return Blocks.CAULDRON.defaultBlockState()
+    }
 
     override fun getPickResult(): ItemStack {
         return ItemStack(ModItems.FLUID_CAR.get())

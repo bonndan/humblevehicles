@@ -37,6 +37,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.GameRules
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseRailBlock
+import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.RailShape
 import net.minecraft.world.phys.Vec3
 import java.util.*
@@ -604,7 +605,6 @@ abstract class AbstractTrainCarEntity : AbstractMinecart,
     }
 
     abstract override fun getPickResult(): ItemStack
-
 
     companion object {
         val COLOR_DATA: EntityDataAccessor<Int> = SynchedEntityData.defineId(

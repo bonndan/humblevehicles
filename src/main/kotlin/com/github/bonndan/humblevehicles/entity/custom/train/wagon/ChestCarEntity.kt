@@ -13,22 +13,20 @@ import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.ChestMenu
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.state.BlockState
 import net.neoforged.neoforge.items.ItemStackHandler
 import java.util.stream.IntStream
 
 class ChestCarEntity : AbstractWagonEntity, ItemHandlerVanillaContainerWrapper, WorldlyContainer, MenuProvider {
 
-    protected val itemHandler: ItemStackHandler = createHandler()
+    private val itemHandler: ItemStackHandler = createHandler()
 
     constructor(type: EntityType<ChestCarEntity>, level: Level) : super(type, level)
 
-    constructor(type: EntityType<ChestCarEntity>, level: Level, x: Double, y: Double, z: Double) : super(
-        type,
-        level,
-        x,
-        y,
-        z
-    )
+    override fun getDefaultDisplayBlockState(): BlockState {
+        return Blocks.CHEST.defaultBlockState()
+    }
 
     override fun remove(r: RemovalReason) {
         if (!level().isClientSide) {

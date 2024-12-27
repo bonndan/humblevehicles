@@ -9,7 +9,7 @@ import net.minecraft.world.item.Item
 
 object ModItemModelProperties {
     fun register() {
-
+// TODO
 
 //        ItemProperties.register(
 //            ModItems.SPRING.get(),

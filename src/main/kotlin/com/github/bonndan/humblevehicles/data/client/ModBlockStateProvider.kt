@@ -6,14 +6,12 @@ import com.github.bonndan.humblevehicles.block.fluid.FluidHopperBlock
 import com.github.bonndan.humblevehicles.block.rail.AbstractDockingRail
 import com.github.bonndan.humblevehicles.block.rail.SwitchRail
 import com.github.bonndan.humblevehicles.setup.ModBlocks
-import net.minecraft.core.Direction
 import net.minecraft.data.PackOutput
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.RailShape
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel
-import net.neoforged.neoforge.client.model.generators.ModelFile
 import net.neoforged.neoforge.common.data.ExistingFileHelper
 
 class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper) :
