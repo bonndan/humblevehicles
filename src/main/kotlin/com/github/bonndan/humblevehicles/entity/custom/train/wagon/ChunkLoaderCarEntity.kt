@@ -15,15 +15,6 @@ class ChunkLoaderCarEntity : AbstractWagonEntity {
         mobileChunkLoader = MobileChunkLoader(this)
     }
 
-    constructor(
-        level: Level,
-        aDouble: Double,
-        aDouble1: Double,
-        aDouble2: Double
-    ) : super(ModEntityTypes.CHUNK_LOADER_CAR.get(), level, aDouble, aDouble1, aDouble2) {
-        mobileChunkLoader = MobileChunkLoader(this)
-    }
-
     override fun getPickResult(): ItemStack {
         return ItemStack(ModItems.SEATER_CAR.get())
     }

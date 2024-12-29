@@ -23,10 +23,6 @@ class EnergyLocomotiveEntity : AbstractLocomotiveEntity, ItemHandlerVanillaConta
 
     constructor(type: EntityType<*>, level: Level) : super(type, level)
 
-    constructor(level: Level, x: Double, y: Double, z: Double) : super(
-        ModEntityTypes.ENERGY_LOCOMOTIVE.get(), level, x, y, z
-    )
-
     override fun createContainerProvider(): MenuProvider {
         return object : MenuProvider {
             override fun getDisplayName(): Component {

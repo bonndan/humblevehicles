@@ -2,7 +2,6 @@ package com.github.bonndan.humblevehicles.event
 
 import com.github.bonndan.humblevehicles.ShippingConfig
 import com.github.bonndan.humblevehicles.HumVeeMod
-import com.github.bonndan.humblevehicles.entity.custom.train.VehicleFrontPart
 import com.github.bonndan.humblevehicles.global.PlayerTrainChunkManager
 import com.github.bonndan.humblevehicles.global.TrainChunkManagerManager
 import com.github.bonndan.humblevehicles.item.SpringItem
@@ -80,12 +79,12 @@ object ForgeEventHandler {
 
         val item = event.itemStack.item
         if (item is SpringItem) {
-            if (target is LinkableEntity<*> || target is VehicleFrontPart) {
+            if (target is LinkableEntity<*>) {
                 item.onUsedOnEntity(event.itemStack, event.entity, event.level, target)
 
                 (event as ICancellableEvent).isCanceled = true
                 if (event is EntityInteractSpecific) {
-                    event.cancellationResult = (InteractionResult.SUCCESS)
+                    event.cancellationResult = InteractionResult.SUCCESS
                 }
             }
         }
@@ -95,7 +94,7 @@ object ForgeEventHandler {
                 target.handleShearsCut()
                 (event as ICancellableEvent).isCanceled = true
                 if (event is EntityInteractSpecific) {
-                    event.cancellationResult = (InteractionResult.SUCCESS)
+                    event.cancellationResult = InteractionResult.SUCCESS
                 }
             }
         }

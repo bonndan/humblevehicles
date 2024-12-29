@@ -19,7 +19,6 @@ data class RendererConfig(
     val modelLayer: ModelLayerLocation = ModelLayers.MINECART,
     val modelTextureLocation: ResourceLocation = ResourceLocation.withDefaultNamespace("textures/entity/minecart.png"),
     val modelSupplier: Function<ModelPart, MinecartModel> = Function { part: ModelPart -> MinecartModel(part) },
-    val modelYRotation: Float = 0f,
 
     /**
      * y-axis offset for blocks inserted into the mine cart. The default suits most blocks.
@@ -29,14 +28,14 @@ data class RendererConfig(
     /**
      * The color model defaults to the TrimCarModel (legacy model, more or less a rim around the cart)
      */
-    val colorModelSupplier: Function<ModelPart, TrimCarModel> = Function { part: ModelPart -> TrimCarModel(part) },
+    val colorModelSupplier: Function<ModelPart, TrimCarModel> = TrimCarModel.colorModelSupplier,
     /**
      * A mostly white-ish texture to be rendered with a color that comes from RenderState
      */
-    val colorTexture: ResourceLocation? = null,
-    val colorLayer: ModelLayerLocation? = null,
-    val colorModelYOffset: Float = 0f,
-    val colorModelYRotation: Float = 0f,
+    val colorTexture: ResourceLocation? = TrimCarModel.textureLocation,
+    val colorLayer: ModelLayerLocation? = TrimCarModel.LAYER_LOCATION,
+    val colorModelYOffset: Float = -0.95f,
+    val colorModelYRotation: Float = 90f,
 
     /**
      * An additional model to be rendered, like an engine front part

@@ -1,6 +1,6 @@
 package com.github.bonndan.humblevehicles.entity.models.train
 
-import com.github.bonndan.humblevehicles.HumVeeMod
+import com.github.bonndan.humblevehicles.HumVeeMod.Companion.MOD_ID
 import com.github.bonndan.humblevehicles.entity.models.VesselRenderState
 import net.minecraft.client.model.EntityModel
 import net.minecraft.client.model.geom.ModelLayerLocation
@@ -10,13 +10,14 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder
 import net.minecraft.client.model.geom.builders.LayerDefinition
 import net.minecraft.client.model.geom.builders.MeshDefinition
 import net.minecraft.resources.ResourceLocation
+import java.util.function.Function
 
 class TrimCarModel(root: ModelPart) : EntityModel<VesselRenderState>(root.getChild("bb_main")) {
 
     companion object {
         // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
         val LAYER_LOCATION: ModelLayerLocation =
-            ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(HumVeeMod.MOD_ID, "trim_car_model"), "main")
+            ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(MOD_ID, "trim_car_model"), "main")
 
         fun createBodyLayer(): LayerDefinition {
             val meshdefinition = MeshDefinition()
@@ -39,5 +40,10 @@ class TrimCarModel(root: ModelPart) : EntityModel<VesselRenderState>(root.getChi
 
             return LayerDefinition.create(meshdefinition, 128, 128)
         }
+
+        val colorModelSupplier: Function<ModelPart, TrimCarModel> =
+            Function { part: ModelPart -> TrimCarModel(part) }
+
+        val textureLocation = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/trim.png")
     }
 }

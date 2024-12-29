@@ -1,6 +1,5 @@
 package com.github.bonndan.humblevehicles.item
 
-import com.github.bonndan.humblevehicles.entity.custom.train.VehicleFrontPart
 import com.github.bonndan.humblevehicles.item.ItemStackUtil.getCompoundTag
 import com.github.bonndan.humblevehicles.util.LinkableEntity
 import net.minecraft.nbt.CompoundTag
@@ -44,19 +43,15 @@ class SpringItem(properties: Properties) : Item(properties) {
 
     // because 'itemInteractionForEntity' is only for Living entities
     fun onUsedOnEntity(stack: ItemStack, player: Player, world: Level, target: Entity) {
-        var current = target
-        if (current is VehicleFrontPart) {
-            current = current.parent!!
-        }
-        if (world.isClientSide) return
-        when (getState(stack)) {
-            State.WAITING_NEXT -> {
-                createSpringHelper(stack, player, world, current)
-            }
 
-            else -> {
-                setDominant(stack, current)
-            }
+        if (world.isClientSide) {
+            return
+        }
+
+        if (getState(stack) == State.WAITING_NEXT) {
+            createSpringHelper(stack, player, world, target)
+        } else {
+            setDominant(stack, target)
         }
     }
 

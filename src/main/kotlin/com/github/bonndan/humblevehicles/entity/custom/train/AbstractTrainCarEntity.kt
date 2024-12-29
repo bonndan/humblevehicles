@@ -8,12 +8,9 @@ import com.github.bonndan.humblevehicles.util.LinkableEntity
 import com.github.bonndan.humblevehicles.util.LinkingHandler
 import com.github.bonndan.humblevehicles.util.RailHelper
 import com.github.bonndan.humblevehicles.util.Train
-import com.google.common.collect.Maps
 import com.mojang.datafixers.util.Pair
-import net.minecraft.Util
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
-import net.minecraft.core.Vec3i
 import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
@@ -30,14 +27,13 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.entity.vehicle.AbstractMinecart
+import net.minecraft.world.entity.vehicle.Minecart
 import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.GameRules
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BaseRailBlock
-import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.RailShape
 import net.minecraft.world.phys.Vec3
 import java.util.*
@@ -47,8 +43,7 @@ import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.sqrt
 
-abstract class AbstractTrainCarEntity : AbstractMinecart,
-    LinkableEntity<AbstractTrainCarEntity>, Colorable {
+abstract class AbstractTrainCarEntity : Minecart, LinkableEntity<AbstractTrainCarEntity>, Colorable {
 
     protected val linkingHandler: LinkingHandler<AbstractTrainCarEntity> = LinkingHandler(
         this, AbstractTrainCarEntity::class.java, DOMINANT_ID, DOMINATED_ID
@@ -65,27 +60,7 @@ abstract class AbstractTrainCarEntity : AbstractMinecart,
         railHelper = RailHelper(this)
     }
 
-    constructor(entityType: EntityType<*>, level: Level, x: Double, y: Double, z: Double) : super(
-        entityType,
-        level,
-        x,
-        y,
-        z
-    ) {
-
-        val pos = BlockPos.containing(x, y, z)
-        val state = level.getBlockState(pos)
-        if (state.block is BaseRailBlock) {
-            val railshape: RailShape = (state.block as BaseRailBlock).getRailDirection(state, this.level(), pos, this)
-            val exit = RailHelper.EXITS[railshape]!!.first
-            this.yRot =
-                RailHelper.directionFromVelocity(Vec3(exit.x.toDouble(), exit.y.toDouble(), exit.z.toDouble())).toYRot()
-        }
-        linkingHandler.train = Train(this)
-        railHelper = RailHelper(this)
-    }
-
-    protected val railShape: Optional<RailShape>
+    val railShape: Optional<RailShape>
         get() {
             for (pos in mutableListOf(onPos.above(), onPos)) {
                 val state = level().getBlockState(pos)
@@ -165,13 +140,9 @@ abstract class AbstractTrainCarEntity : AbstractMinecart,
         }
     }
 
-
     override fun tick() {
         linkingHandler.tickLoad()
-        tickYRot()
-        val yrot = this.yRot
-        tickVanilla()
-        this.yRot = yrot
+        super.tick()
         if (!level().isClientSide) {
             doChainMath()
         }
@@ -281,89 +252,6 @@ abstract class AbstractTrainCarEntity : AbstractMinecart,
         return blockpos
     }
 
-    protected fun tickYRot() {
-        this.yRot = computeYaw()
-    }
-
-    fun computeYaw(): Float {
-        val yrot = this.yRot
-        // if the car is part of a train, enforce that direction instead
-        val railShape = railShape
-        if (linkingHandler.follower.isPresent && railShape.isPresent) {
-            val r = railHelper.traverseBi(
-                onPos.above(),
-                RailHelper.samePositionPredicate(linkingHandler.follower.get()), 5, this
-            )
-            if (r.isPresent) {
-                val yaw = yawHelper(r.get(), linkingHandler.follower.get())
-                val directionOpt = RailHelper.getDirectionToOtherExit(yaw, railShape.get())
-                if (directionOpt.isPresent) {
-                    val direction = directionOpt.get()
-                    return ((Mth.atan2(
-                        direction.z.toDouble(),
-                        direction.x.toDouble()
-                    ) * 180.0 / Math.PI).toFloat() + 90)
-                }
-            }
-        } else if (linkingHandler.leader.isPresent && railShape.isPresent) {
-            val r = railHelper.traverseBi(
-                onPos.above(),
-                RailHelper.samePositionPredicate(linkingHandler.leader.get()), 5, this
-            )
-            if (r.isPresent) {
-                val hordir = yawHelper(r.get(), linkingHandler.leader.get())
-                val directionOpt = RailHelper.getDirectionToOtherExit(hordir, railShape.get())
-                if (directionOpt.isPresent) {
-                    val direction = directionOpt.get()
-                    return ((Mth.atan2(
-                        -direction.z.toDouble(),
-                        -direction.x.toDouble()
-                    ) * 180.0 / Math.PI).toFloat() + 90)
-                }
-            }
-        } else {
-            val d1 = this.xo - this.x
-            val d3 = this.zo - this.z
-            if (d1 * d1 + d3 * d3 > 0.001) {
-                return ((Mth.atan2(d3, d1) * 180.0 / Math.PI).toFloat() + 90)
-            }
-        }
-
-        return yrot
-    }
-
-    private fun yawHelper(directionIntPair: Pair<Direction, Int>, other: Entity): Direction {
-        var hordir: Direction? = null
-        if (directionIntPair.second == 0) {
-            val dirvec = Vec3(other.xo - this.xo, 0.0, other.zo - this.zo)
-
-            hordir = Direction.getNearest(dirvec.normalize().x.toInt(), 0, dirvec.normalize().z.toInt(), null) //todo see below
-            //Direction.fromDelta(dirvec.normalize().x.toInt(), 0, dirvec.normalize().z.toInt()) // may fail
-        }
-        // if still null
-        if (hordir == null) {
-            return directionIntPair.first
-        }
-        return hordir
-    }
-
-    // force render since we delegate rendering to the head of the train
-    override fun shouldRender(pX: Double, pY: Double, pZ: Double): Boolean {
-        return true
-    }
-
-    override fun getMotionDirection(): Direction {
-        return Direction.fromYRot((this.yRot).toDouble())
-    }
-
-    override fun setYRot(pYRot: Float) {
-        super.setYRot(pYRot)
-    }
-
-    protected fun tickVanilla() {
-        super.tick()
-    }
-
     override fun remove(r: RemovalReason) {
         handleLinkableKill()
         super.remove(r)
@@ -387,20 +275,6 @@ abstract class AbstractTrainCarEntity : AbstractMinecart,
         }
     }
 
-    protected fun prevent180() {
-        val dir =
-            Vec3(this.direction.stepX.toDouble(), this.direction.stepY.toDouble(), this.direction.stepZ.toDouble())
-        val vel = this.deltaMovement
-        val mag = vel.multiply(dir)
-        val fixer = Vec3(fixUtil(mag.x), 1.0, fixUtil(mag.z))
-        this.deltaMovement = deltaMovement.multiply(fixer)
-    }
-
-    private fun fixUtil(mag: Double): Double {
-        return if (mag < 0) 0.0 else 1.0
-    }
-
-
     private fun doChainMath() {
         linkingHandler.leader.ifPresent { leader: AbstractTrainCarEntity ->
             val railDirDis =
@@ -413,12 +287,12 @@ abstract class AbstractTrainCarEntity : AbstractMinecart,
             val minDist = 1.2
 
             val distance = railDirDis.map { obj: Pair<Direction, Int> -> obj.second }
-                    .filter { a: Int -> a > 0 }
-                    .map { di: Int ->
-                        val euclid = this.distanceTo(leader)
-                        if (euclid < maxDist) di.toFloat() else euclid
-                    }
-                    .orElse(this.distanceTo(leader))
+                .filter { a: Int -> a > 0 }
+                .map { di: Int ->
+                    val euclid = this.distanceTo(leader)
+                    if (euclid < maxDist) di.toFloat() else euclid
+                }
+                .orElse(this.distanceTo(leader))
 
             if (distance <= 6) {
                 val euclideanDir = leader.position().subtract(position()).normalize()
@@ -617,32 +491,6 @@ abstract class AbstractTrainCarEntity : AbstractMinecart,
         val DOMINATED_ID: EntityDataAccessor<Int> = SynchedEntityData.defineId(
             AbstractTrainCarEntity::class.java, EntityDataSerializers.INT
         )
-
-        private val EXITS: Map<RailShape?, Pair<Vec3i, Vec3i>> = Util.make(Maps.newEnumMap(RailShape::class.java))
-        { enumMap: EnumMap<RailShape?, Pair<Vec3i, Vec3i>> ->
-            val west = Direction.WEST.unitVec3i
-            val east = Direction.EAST.unitVec3i
-            val north = Direction.NORTH.unitVec3i
-            val south = Direction.SOUTH.unitVec3i
-            val westUnder = west.below()
-            val eastUnder = east.below()
-            val northUnder = north.below()
-            val southUnder = south.below()
-            enumMap[RailShape.NORTH_SOUTH] = Pair(north, south)
-            enumMap[RailShape.EAST_WEST] = Pair(west, east)
-            enumMap[RailShape.ASCENDING_EAST] = Pair.of(westUnder, east)
-            enumMap[RailShape.ASCENDING_WEST] = Pair.of(west, eastUnder)
-            enumMap[RailShape.ASCENDING_NORTH] = Pair.of(north, southUnder)
-            enumMap[RailShape.ASCENDING_SOUTH] = Pair.of(northUnder, south)
-            enumMap[RailShape.SOUTH_EAST] = Pair.of(south, east)
-            enumMap[RailShape.SOUTH_WEST] = Pair.of(south, west)
-            enumMap[RailShape.NORTH_WEST] = Pair.of(north, west)
-            enumMap[RailShape.NORTH_EAST] = Pair.of(north, east)
-        }
-
-        private fun exits(pShape: RailShape): Pair<Vec3i, Vec3i> {
-            return EXITS[pShape]!!
-        }
 
         private fun caseTailHead(
             trainTail: Train<AbstractTrainCarEntity>,

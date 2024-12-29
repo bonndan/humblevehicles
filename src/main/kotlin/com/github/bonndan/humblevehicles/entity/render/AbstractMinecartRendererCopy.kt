@@ -1,7 +1,6 @@
 package com.github.bonndan.humblevehicles.entity.render
 
 import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
-import com.github.bonndan.humblevehicles.entity.models.PositionAdjusted
 import com.github.bonndan.humblevehicles.entity.models.VesselRenderState
 import com.github.bonndan.humblevehicles.entity.models.train.TrimCarModel
 import com.mojang.blaze3d.vertex.PoseStack
@@ -16,6 +15,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.RenderLayerParent
 import net.minecraft.client.renderer.entity.state.MinecartRenderState
 import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.core.Direction
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.vehicle.AbstractMinecart
@@ -40,7 +40,7 @@ import kotlin.math.max
 @OnlyIn(Dist.CLIENT)
 class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
     context: EntityRendererProvider.Context,
-    private val config: RendererConfig
+    private val config: RendererConfig,
 ) : EntityRenderer<T, VesselRenderState>(context), RenderLayerParent<VesselRenderState, MinecartModel> {
 
     private val model: MinecartModel
@@ -61,7 +61,7 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
         renderState: VesselRenderState,
         poseStack: PoseStack,
         buffer: MultiBufferSource,
-        packedLight: Int
+        packedLight: Int,
     ) {
         super.render(renderState, poseStack, buffer, packedLight)
 
@@ -82,6 +82,13 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
             poseStack.mulPose(Axis.XP.rotationDegrees(Mth.sin(f3) * f3 * renderState.damageTime / 10.0f * renderState.hurtDir.toFloat()))
         }
 
+        poseStack.scale(-1.0f, -1.0f, 1.0f)
+
+        this.model.setupAnim(renderState)
+
+        val vertexConsumer = buffer.getBuffer(this.model.renderType(config.modelTextureLocation))
+        this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY)
+
         // render block inserted into minecart
         val blockstate = renderState.displayBlockState
         if (blockstate.renderShape != RenderShape.INVISIBLE) {
@@ -95,19 +102,6 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
             this.renderMinecartContents(blockstate, poseStack, buffer, packedLight)
             poseStack.popPose()
         }
-
-        poseStack.scale(-1.0f, -1.0f, 1.0f)
-
-        //model corrections
-        if (this.model is PositionAdjusted) {
-            poseStack.translate(0f, this.model.getYOffset(), 0f)
-        }
-        poseStack.mulPose(Axis.YP.rotationDegrees(config.modelYRotation))
-
-        this.model.setupAnim(renderState)
-
-        val vertexConsumer = buffer.getBuffer(this.model.renderType(config.modelTextureLocation))
-        this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY)
 
         if (!renderState.isInvisible) {
             if (config.colorTexture != null && this.colorModel != null) {
@@ -130,7 +124,6 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
                     buffer,
                     config.additionalTexture!!,
                     packedLight,
-                    renderState,
                     config.additionalModelYOffset,
                     config.additionalModelYRotation
                 )
@@ -163,10 +156,11 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
         packedLight: Int,
         renderState: VesselRenderState,
         yOffset: Float,
-        yRotation: Float
+        yRotation: Float,
     ) {
         poseStack.pushPose()
         poseStack.translate(0f, yOffset, 0f)
+        poseStack.scale(1.0f, 0.95f, 1.0f)
         poseStack.mulPose(Axis.YP.rotationDegrees(yRotation))
         colorModel.renderToBuffer(
             poseStack,
@@ -184,9 +178,8 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
         buffer: MultiBufferSource,
         colorTexture: ResourceLocation,
         packedLight: Int,
-        renderState: VesselRenderState,
         yOffset: Float,
-        yRotation: Float
+        yRotation: Float,
     ) {
         poseStack.pushPose()
         poseStack.translate(0f, yOffset, 0f)
@@ -231,7 +224,7 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
         state: BlockState,
         poseStack: PoseStack,
         bufferSource: MultiBufferSource,
-        packedLight: Int
+        packedLight: Int,
     ) {
         this.blockRenderer.renderSingleBlock(
             state,
@@ -272,42 +265,43 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
 
     companion object {
 
-
-        private fun <S : MinecartRenderState?> newRender(renderState: S?, poseStack: PoseStack) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(renderState!!.yRot))
+        private fun <S : MinecartRenderState> newRender(renderState: S, poseStack: PoseStack) {
+            poseStack.mulPose(Axis.YP.rotationDegrees(renderState.yRot))
             poseStack.mulPose(Axis.ZP.rotationDegrees(-renderState.xRot))
             poseStack.translate(0.0f, 0.375f, 0.0f)
         }
 
-        private fun <S : MinecartRenderState?> oldRender(renderState: S?, poseStack: PoseStack) {
-            val d0 = renderState!!.x
+        private fun <S : VesselRenderState> oldRender(renderState: S, poseStack: PoseStack) {
+            val d0 = renderState.x
             val d1 = renderState.y
             val d2 = renderState.z
             var f = renderState.xRot
-            var f1 = renderState.yRot
+            var yRot = renderState.yRot
+            var inverted = false
             if (renderState.posOnRail != null && renderState.frontPos != null && renderState.backPos != null) {
-                val vec3: Vec3 = renderState.frontPos!!
-                val vec31: Vec3 = renderState.backPos!!
+                val front: Vec3 = renderState.frontPos!!
+                val back: Vec3 = renderState.backPos!!
                 poseStack.translate(
                     renderState.posOnRail!!.x - d0,
-                    (vec3.y + vec31.y) / 2.0 - d1,
+                    (front.y + back.y) / 2.0 - d1,
                     renderState.posOnRail!!.z - d2
                 )
-                var vec32 = vec31.add(-vec3.x, -vec3.y, -vec3.z)
-                if (vec32.length() != 0.0) {
-                    vec32 = vec32.normalize()
-                    f1 = (atan2(vec32.z, vec32.x) * 180.0 / Math.PI).toFloat()
-                    f = (atan(vec32.y) * 73.0).toFloat()
+
+                var trackDirection = front.subtract(back)
+                if (trackDirection.length() != 0.0) {
+                    trackDirection = trackDirection.normalize()
+                    yRot = (atan2(trackDirection.z, trackDirection.x) * 180.0 / Math.PI).toFloat()
+                    f = (atan(trackDirection.y) * 73.0).toFloat()
                 }
             }
 
             poseStack.translate(0.0f, 0.375f, 0.0f)
-            poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - f1))
+            poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - yRot))
             poseStack.mulPose(Axis.ZP.rotationDegrees(-f))
         }
 
-        private fun <T : AbstractMinecart?> newExtractState(
-            minecart: T?, behavior: NewMinecartBehavior, renderState: VesselRenderState, partialTick: Float
+        private fun <T : AbstractMinecart> newExtractState(
+            minecart: T, behavior: NewMinecartBehavior, renderState: VesselRenderState, partialTick: Float,
         ) {
             if (behavior.cartHasPosRotLerp()) {
                 renderState.renderPos = behavior.getCartLerpPosition(partialTick)
@@ -315,26 +309,53 @@ class AbstractMinecartRendererCopy<T : AbstractTrainCarEntity>(
                 renderState.yRot = behavior.getCartLerpYRot(partialTick)
             } else {
                 renderState.renderPos = null
-                renderState.xRot = minecart!!.xRot
+                renderState.xRot = minecart.xRot
                 renderState.yRot = minecart.yRot
             }
         }
 
-        private fun <T : AbstractMinecart?> oldExtractState(
-            minecart: T?, behavior: OldMinecartBehavior, renderState: VesselRenderState, partialTick: Float
+        private fun <T : AbstractTrainCarEntity> oldExtractState(
+            minecart: T, behavior: OldMinecartBehavior, renderState: VesselRenderState, partialTick: Float,
         ) {
-            renderState.xRot = minecart!!.getXRot(partialTick)
+            renderState.xRot = minecart.getXRot(partialTick)
             renderState.yRot = minecart.getYRot(partialTick)
             val d0 = renderState.x
             val d1 = renderState.y
             val d2 = renderState.z
-            val vec3 = behavior.getPos(d0, d1, d2)
-            if (vec3 != null) {
-                renderState.posOnRail = vec3
-                val vec31 = behavior.getPosOffs(d0, d1, d2, 0.3)
-                val vec32 = behavior.getPosOffs(d0, d1, d2, -0.3)
-                renderState.frontPos = Objects.requireNonNullElse<Vec3?>(vec31, vec3)
-                renderState.backPos = Objects.requireNonNullElse<Vec3?>(vec32, vec3)
+
+            val pos = behavior.getPos(d0, d1, d2)
+
+
+            if (pos != null) {
+                renderState.posOnRail = pos
+
+                /*
+                 * This is a hack to prevent the sudden visual flips of the cars, but still flickers in some cases.
+                 *
+                 */
+                val xDir = minecart.x - minecart.xOld
+                val zDir = minecart.z - minecart.zOld
+                val direction = Direction.getApproximateNearest(xDir, 0.0, zDir)
+                var factor = 1.0
+                if (direction == Direction.EAST) { //undo flip
+                    factor = -1.0
+                }
+                if (direction == Direction.SOUTH) { //undo flip
+                    factor = -1.0
+                }
+                if (direction == Direction.WEST && renderState.direction == Direction.EAST) { //prevent flicker
+                    factor = -1.0
+                }
+                if (direction == Direction.NORTH && renderState.direction == Direction.SOUTH) {//prevent flicker
+                    factor = -1.0
+                }
+
+                /* extrapolate the positions of front and back of the car*/
+                val newFront = behavior.getPosOffs(d0, d1, d2, 0.3 * factor)
+                val newBack = behavior.getPosOffs(d0, d1, d2, -0.3 * factor)
+                renderState.frontPos = Objects.requireNonNullElse<Vec3?>(newFront, pos)
+                renderState.backPos = Objects.requireNonNullElse<Vec3?>(newBack, pos)
+                renderState.direction = direction
             } else {
                 renderState.posOnRail = null
                 renderState.frontPos = null

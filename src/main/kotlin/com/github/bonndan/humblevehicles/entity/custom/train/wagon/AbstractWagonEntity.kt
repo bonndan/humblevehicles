@@ -9,16 +9,12 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import java.util.*
 
+/**
+ * Base for all cars with are not locomotives / train heads. Handles stalling/freezing
+ */
 abstract class AbstractWagonEntity : AbstractTrainCarEntity {
-    constructor(entityType: EntityType<*>, level: Level) : super(entityType, level)
 
-    constructor(entityType: EntityType<*>, level: Level, aDouble: Double, aDouble1: Double, aDouble2: Double) : super(
-        entityType,
-        level,
-        aDouble,
-        aDouble1,
-        aDouble2
-    )
+    constructor(entityType: EntityType<*>, level: Level) : super(entityType, level)
 
     override fun setDominated(entity: AbstractTrainCarEntity) {
         linkingHandler.follower = Optional.of(entity)

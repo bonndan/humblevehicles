@@ -15,13 +15,6 @@ import net.minecraft.world.phys.Vec3
 class SeaterCarEntity : AbstractWagonEntity {
     constructor(p_38087_: EntityType<SeaterCarEntity>, p_38088_: Level) : super(p_38087_, p_38088_)
 
-    constructor(
-        level: Level,
-        aDouble: Double,
-        aDouble1: Double,
-        aDouble2: Double
-    ) : super(ModEntityTypes.SEATER_CAR.get(), level, aDouble, aDouble1, aDouble2)
-
     override fun getPickResult(): ItemStack {
         return ItemStack(ModItems.SEATER_CAR.get())
     }

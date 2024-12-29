@@ -2,9 +2,10 @@ package com.github.bonndan.humblevehicles.event
 
 import com.github.bonndan.humblevehicles.HumVeeMod.Companion.MOD_ID
 import com.github.bonndan.humblevehicles.block.fluid.render.FluidHopperTileEntityRenderer
-import com.github.bonndan.humblevehicles.entity.custom.train.locomotive.SteamLocomotiveEntity
 import com.github.bonndan.humblevehicles.entity.models.EmptyModel
-import com.github.bonndan.humblevehicles.entity.models.insert.*
+import com.github.bonndan.humblevehicles.entity.models.insert.CubeInsertCarModel
+import com.github.bonndan.humblevehicles.entity.models.insert.FluidTankInsertCarModel
+import com.github.bonndan.humblevehicles.entity.models.insert.SteamEngineModel
 import com.github.bonndan.humblevehicles.entity.models.train.*
 import com.github.bonndan.humblevehicles.entity.render.AbstractMinecartRendererCopy
 import com.github.bonndan.humblevehicles.entity.render.RendererConfig
@@ -52,11 +53,6 @@ object ModClientEventHandler {
             AbstractMinecartRendererCopy(
                 context = ctx,
                 config = RendererConfig(
-                    colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/trim.png"),
-                    colorLayer = TrimCarModel.LAYER_LOCATION,
-                    colorModelSupplier = { part -> TrimCarModel(part) },
-                    colorModelYOffset = -1.0f,
-                    colorModelYRotation = 90f,
                     additionalTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/steam_locomotive.png"),
                     additionalLayer = SteamEngineModel.LAYER_LOCATION,
                     additionalModelSupplier = { part -> SteamEngineModel(part) },
@@ -84,37 +80,17 @@ object ModClientEventHandler {
 //                .build()
 
         event.registerEntityRenderer(ModEntityTypes.CHEST_CAR.get()) { ctx: EntityRendererProvider.Context ->
-            AbstractMinecartRendererCopy(
-                context = ctx,
-                RendererConfig(
-                    colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/trim.png"),
-                    colorLayer = TrimCarModel.LAYER_LOCATION,
-                )
-            )
+            AbstractMinecartRendererCopy(context = ctx, RendererConfig())
         }
 
         event.registerEntityRenderer(ModEntityTypes.FLUID_CAR.get()) { ctx: EntityRendererProvider.Context ->
-            AbstractMinecartRendererCopy(
-                context = ctx,
-                RendererConfig(
-                    colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/trim.png"),
-                    colorLayer = TrimCarModel.LAYER_LOCATION,
-                    colorModelSupplier = { part -> TrimCarModel(part) },
-                    colorModelYOffset = -1.0f,
-                    colorModelYRotation = 90f,
-                )
-            )
+            AbstractMinecartRendererCopy(context = ctx, RendererConfig())
         }
 
         event.registerEntityRenderer(ModEntityTypes.CHUNK_LOADER_CAR.get()) { ctx: EntityRendererProvider.Context ->
             AbstractMinecartRendererCopy(
                 context = ctx,
                 RendererConfig(
-                    colorTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/car/trim.png"),
-                    colorLayer = TrimCarModel.LAYER_LOCATION,
-                    colorModelSupplier = { part -> TrimCarModel(part) },
-                    colorModelYOffset = -1.0f,
-                    colorModelYRotation = 90f,
                     additionalTexture = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/barge/chunk_loader_insert.png"),
                     additionalLayer = ChunkLoaderCarModel.LAYER_LOCATION,
                     additionalModelSupplier = { part -> ChunkLoaderCarModel(part) },

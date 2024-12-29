@@ -73,17 +73,11 @@ class RailHelper(private val minecart: AbstractMinecart) {
             val second = traverse(pos, minecart.level(), dirs.first.horizontal.opposite, predicate, limit)
             if (second.isEmpty) {
                 return@flatMap first.map<Pair<Direction, Int>> { i: Int ->
-                    Pair.of<Direction, Int>(
-                        dirs.first.horizontal,
-                        i
-                    )
+                    Pair.of<Direction, Int>(dirs.first.horizontal, i)
                 }
             } else if (first.isEmpty) {
                 return@flatMap second.map<Pair<Direction, Int>> { i: Int ->
-                    Pair.of<Direction, Int>(
-                        dirs.second.horizontal,
-                        i
-                    )
+                    Pair.of<Direction, Int>(dirs.second.horizontal, i)
                 }
             } else {
                 return@flatMap Optional.of<Pair<Direction, Int>>(

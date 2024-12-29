@@ -10,7 +10,6 @@ import com.github.bonndan.humblevehicles.entity.custom.Stalling
 import com.github.bonndan.humblevehicles.entity.custom.engine.Engine
 import com.github.bonndan.humblevehicles.entity.custom.engine.SaveStateCallback
 import com.github.bonndan.humblevehicles.entity.custom.train.AbstractTrainCarEntity
-import com.github.bonndan.humblevehicles.entity.custom.train.VehicleFrontPart
 import com.github.bonndan.humblevehicles.item.LocoRouteItem
 import com.github.bonndan.humblevehicles.setup.ModBlocks.LOCOMOTIVE_DOCK_RAIL
 import com.github.bonndan.humblevehicles.setup.ModItems
@@ -19,18 +18,17 @@ import com.github.bonndan.humblevehicles.util.*
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.util.Mth
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.WorldlyContainer
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityDimensions
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.AbstractMinecart
@@ -42,13 +40,13 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.properties.RailShape
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
-import net.neoforged.neoforge.entity.PartEntity
 import net.neoforged.neoforge.items.ItemStackHandler
 import java.util.*
 import java.util.function.Function
 import java.util.function.Predicate
 import kotlin.math.abs
 import kotlin.math.floor
+
 
 abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntityHead<AbstractTrainCarEntity>,
     ItemHandlerVanillaContainerWrapper, HeadVehicle, Stalling, WorldlyContainer {
@@ -65,7 +63,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
     private var independentMotion = false
     var isDocked: Boolean = false
         private set
-    private val frontHitbox: VehicleFrontPart
     private var speedRecomputeCooldown = 0
     private var speedLimit = -1.0
     private var collisionCheckCooldown = 0
@@ -84,12 +81,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
 
     constructor(type: EntityType<*>, world: Level) : super(type, world) {
-        frontHitbox = VehicleFrontPart(this)
-        enrollmentHandler = ChunkManagerEnrollmentHandler(this)
-    }
-
-    constructor(type: EntityType<*>, level: Level, x: Double, y: Double, z: Double) : super(type, level, x, y, z) {
-        frontHitbox = VehicleFrontPart(this)
         enrollmentHandler = ChunkManagerEnrollmentHandler(this)
     }
 
@@ -219,12 +210,10 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
             enrollmentHandler.playerName.ifPresent { name -> entityData.set(OWNER, name) }
         }
 
-        tickYRot()
-        val yrot = this.yRot
-        tickVanilla()
-        this.yRot = yrot
+        super.tick()
+        //TODO check: this prevents loco getting stuck in slopes
         if (linkingHandler.follower.isEmpty && deltaMovement.length() > 0.05) {
-            this.yRot = RailHelper.directionFromVelocity(deltaMovement).toYRot()
+            //this.yRot = RailHelper.directionFromVelocity(deltaMovement).toYRot()
         }
         if (!level().isClientSide) {
             tickDockCheck()
@@ -235,7 +224,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
             doMovementEffect()
         }
 
-        frontHitbox.updatePosition(this)
     }
 
     private fun tickOldBlockPos() {
@@ -250,10 +238,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
                 currentHorizontalBlockPos = getBlockPos()
             }
         }
-    }
-
-    fun flip() {
-        this.yRot = direction.opposite.toYRot()
     }
 
     protected open fun doMovementEffect() {
@@ -320,10 +304,8 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
                 if (level().getBlockState(block).block is MultiShapeRail) {
 
                     val r = level().getBlockState(block).block as MultiShapeRail
-                    if (level().getEntitiesOfClass<Entity>(
-                            Entity::class.java, AABB(pos)
-                        ) { e: Entity -> e == this || e == frontHitbox }.isNotEmpty()
-                    ) {
+                    if (level().getEntitiesOfClass<Entity>(Entity::class.java, AABB(pos)) { e: Entity -> e == this }
+                            .isNotEmpty()) {
                         return@flatMap Optional.empty<Boolean>()
                     }
 
@@ -346,9 +328,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
     private fun checkCollision(pos: BlockPos): Boolean {
         val aabb = AABB(pos)
-        return level().getEntitiesOfClass(
-            Entity::class.java, aabb
-        ) { entity ->
+        return level().getEntitiesOfClass(Entity::class.java, aabb) { entity ->
             when (entity) {
 
                 is AbstractTrainCarEntity -> {
@@ -359,10 +339,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
 
                 is AbstractMinecart -> {
                     true
-                }
-
-                is VehicleFrontPart -> {
-                    !entity.`is`(this)
                 }
 
                 else -> false
@@ -378,12 +354,8 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
             when (e) {
                 //TODO check this kotlin conversion
                 is AbstractLocomotiveEntity -> {
-                    e.getTrain()?.tug?.map { f -> f?.uuid != this.getUUID() }
+                    e.getTrain().tug.map { f -> f.uuid != this.getUUID() }
                         ?.orElse(true) ?: true
-                }
-
-                is VehicleFrontPart -> {
-                    !e.`is`(this)
                 }
 
                 else -> false
@@ -391,23 +363,9 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         }.isNotEmpty()
     }
 
-    override fun getParts(): Array<PartEntity<*>> {
-        return arrayOf(frontHitbox)
-    }
-
-    override fun isMultipartEntity(): Boolean {
-        return true
-    }
-
     override fun isPoweredCart(): Boolean {
         return true
     }
-
-    override fun recreateFromPacket(p_149572_: ClientboundAddEntityPacket) {
-        super.recreateFromPacket(p_149572_)
-        frontHitbox.id = p_149572_.id
-    }
-
 
     protected fun onDock() {
         this.playSound(ModSounds.DOCKING.get(), 0.6f, 1.0f)
@@ -475,9 +433,11 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
             }
     }
 
+    /**
+     * adjust speed based on slope etc.
+     */
     private val speedModifier: Double
         get() {
-            // adjust speed based on slope etc.
             val state = level().getBlockState(this.onPos.above())
             if (state.`is`(Blocks.POWERED_RAIL)) {
                 return if (!state.getValue(PoweredRailBlock.POWERED)) {
@@ -531,6 +491,7 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
             || linkingHandler.train?.asList()?.any { trainCarEntity -> trainCarEntity.isFrozen() } ?: false
 
     private fun accelerate() {
+
         val dir = this.direction
         if (abs(deltaMovement.x) < speedLimit && abs(deltaMovement.z) < speedLimit) {
             val mod = this.speedModifier
@@ -653,9 +614,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         return routeItemHandler
     }
 
-    /*
-    * Seater stuff
-    */
 
     /**
      * Called every tick the minecart is on an activator rail.
@@ -675,37 +633,6 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         }
     }
 
-    override fun positionRider(passenger: Entity, pCallback: MoveFunction) {
-        if (this.hasPassenger(passenger)) {
-            if (passenger is Player) {
-                // Position player differently than all other entities
-                // TODO: Maybe we could override Entity#getPassengersRidingOffset instead
-                val f = -0.22f
-                val vector3d = Vec3(
-                    f.toDouble(),
-                    0.0,
-                    0.0
-                ).yRot(-this.yRot * (Math.PI.toFloat() / 180f) - (Math.PI.toFloat() / 2f))
-                pCallback.accept(passenger, this.x + vector3d.x, this.y, this.z + vector3d.z)
-            } else {
-                super.positionRider(passenger, pCallback)
-            }
-        }
-    }
-
-    private fun clampRotation(p_184454_1_: Entity) {
-        p_184454_1_.setYBodyRot(this.yRot)
-        val f = Mth.wrapDegrees(p_184454_1_.yRot - this.yRot)
-        val f1 = Mth.clamp(f, -105.0f, 105.0f)
-        p_184454_1_.yRotO += f1 - f
-        p_184454_1_.yRot = p_184454_1_.yRot + f1 - f
-        p_184454_1_.yHeadRot = p_184454_1_.yRot
-    }
-
-    override fun onPassengerTurned(p_184190_1_: Entity) {
-        this.clampRotation(p_184190_1_)
-    }
-
     override fun canTakeItemThroughFace(index: Int, itemStack: ItemStack, dir: Direction): Boolean {
         return false
     }
@@ -718,10 +645,16 @@ abstract class AbstractLocomotiveEntity : AbstractTrainCarEntity, LinkableEntity
         return getStalling().isDocked()
     }
 
+    override fun getPassengerAttachmentPoint(entity: Entity, dimensions: EntityDimensions, partialTick: Float): Vec3 {
+        return super.getPassengerAttachmentPoint(entity, dimensions, partialTick).subtract(PASSENGER_ATTACHMENT_OFFSET)
+    }
+
     companion object {
         // item handler for loco routes
         private const val LOCO_ROUTE_INV_TAG = "locoRouteInv"
         private const val NAVIGATOR_TAG = "navigator"
+
+        val PASSENGER_ATTACHMENT_OFFSET = Vec3(0.0, 1.0, 0.0)
 
         private val INDEPENDENT_MOTION: EntityDataAccessor<Boolean> = SynchedEntityData.defineId(
             AbstractLocomotiveEntity::class.java, EntityDataSerializers.BOOLEAN
